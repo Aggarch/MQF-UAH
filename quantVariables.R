@@ -223,7 +223,7 @@ Indexes
 
 Indexes %>% 
   pivot_wider(names_from = Indexes, values_from = price) %>% 
-  select(-date) %>%  
+  select(-date,-symbol) %>%  
   na.omit() %>% 
   cor() -> index_cor
 
@@ -393,7 +393,10 @@ Commodities_Corrplot
 # browseURL("https://www.bloomberg.com/quote/DXY:CUR")
 
 #Dollar Basket:
-DXY_CUR <- tq_get("DTWEXM", get = "economic.data",from = "2010-01-01") 
+# DXY_CUR <- tq_get("DTWEXM", get = "economic.data",from = "2010-01-01")  
+
+
+DXY_CUR <- tq_get("DTWEXAFEGS", get = "economic.data",from = "2010-01-01") 
 EUR_USD <- tq_get("DEXUSEU", get = "economic.data", from = "2010-01-01")
 GBP_USD <- tq_get("DEXUSUK", get = "economic.data", from = "2010-01-01")
 USD_JPY <- tq_get("DEXJPUS", get = "economic.data", from = "2010-01-01")

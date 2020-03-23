@@ -35,7 +35,12 @@ ui <- dashboardPage(
                 column(4,
                        wellPanel(
                          h2("Titulo"),
-                         helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl. Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. Fusce fringilla tellus pretium, egestas lorem at, volutpat leo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus."),
+                         helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
+                                  sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
+                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
+                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
+                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus."),
                          pickerInput(
                            inputId = "variable",
                            label = "Variables",
@@ -64,6 +69,7 @@ ui <- dashboardPage(
                                              "Aluminium"        = "PALUMUSDM",
                                              "Corn"             = "PMAIZMTUSDM",
                                              "Soy"              = "PSOYBUSDQ")
+                             #Currencies
                            ),
                            multiple = TRUE
                          ),
@@ -81,10 +87,17 @@ ui <- dashboardPage(
                        fluidPage(
                          wellPanel(
                            tabsetPanel(
-                             tabPanel("Static correlation", withSpinner(plotOutput("index_cor_plot"),
-                                                                        color="#0dc5c1"))
-                             # tabPanel("Rolling correlation", dataTableOutput("table")),
-                             # tabPanel("Price evolution", dataTableOutput("table")),
+                             tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor"),
+                                                                        color="#0dc5c1")),
+  
+                             tabPanel("Rolling Correlation", withSpinner(plotlyOutput("rolling_cor"),
+                                                                         color="#0dc5c1")), 
+                             
+                             tabPanel("Price Evolution", withSpinner(plotlyOutput("evolution"),
+                                                                     color="#0dc5c1")),
+                             
+                             tabPanel("Price Returns", withSpinner(plotlyOutput("returns"),
+                                                                   color="#0dc5c1"))
                              # tabPanel("Price variation", dataTableOutput("table")),
                              # tabPanel("Technical analysis", dataTableOutput("table"))
                            )

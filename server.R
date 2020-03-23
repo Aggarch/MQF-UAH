@@ -2,15 +2,8 @@
 
 shinyServer(function(input, output) {
   
-  
+  # Correlation Matrix
   index_cor <- eventReactive(input$observe, {
-    
-    {
-      #
-      # input <- list(variable = c("SP500","GOLDAMGBD228NLBM"),
-      #               daterange = today() - 10,
-      #               daterange2 = today())
-    }
     
     behavior_data <- tq_get(input$variable, get = "economic.data",
                             from = input$daterange[1],
@@ -44,8 +37,7 @@ shinyServer(function(input, output) {
       #                   "Corn"             = "PMAIZMTUSDM",
       #                   "Soy"              = "PSOYBUSDQ")
       # ),
-    }
-    
+    }  # Use case_when to resolve names look. 
     
     index_cor <- behavior_data %>%
       pivot_wider(names_from = symbol, values_from = price) %>%
@@ -57,8 +49,88 @@ shinyServer(function(input, output) {
     
   })
   
+  # Rolling Correlation 
+  rolling_cor <- eventReactive(input$observe, {
+
+  behavior_data <- tq_get(input$variable, get = "economic.data",
+                            from = input$daterange[1],
+                            to = input$daterange[2]
+    )
   
-  output$index_cor_plot <- renderPlot({
+  price_return <- behavior_data %>%
+    group_by(symbol) %>%
+    tq_transmute(select = price,
+                 mutate_fun = periodReturn,
+                 period = "daily")
+  
+  baseline_return <- "DTWEXAFEGS" %>%
+    tq_get(get  = "economic.data",
+           from = input$daterange[1],
+           to   = input$daterange[2]) %>%
+    tq_transmute(select     = price,
+                 mutate_fun = periodReturn,
+                 period     = "daily")
+  
+  returns_joined <- left_join(price_return,
+                              baseline_return,
+                              by = "date") %>% na.omit
+  
+  rolling_cor <- returns_joined %>%
+    tq_transmute_xy(x          = daily.returns.x,
+                    y          = daily.returns.y,
+                    mutate_fun = runCor,
+                    n          = 6,
+                    col_rename = "rolling.corr") %>% 
+    na.omit()
+  
+  rolling_cor
+  
+  })
+  
+  # Price Returns 
+  price_return <- eventReactive(input$observe, {
+    
+    behavior_data <- tq_get(input$variable, get = "economic.data",
+                            from = input$daterange[1],
+                            to = input$daterange[2]
+    )
+    
+
+    price_return <- behavior_data %>%
+           group_by(symbol) %>%
+           tq_transmute(select = price,
+                        mutate_fun = periodReturn,
+                        period = "daily")
+    
+    
+    price_return
+    
+  })
+  
+  # Price Evolution 
+  price_evolution <- eventReactive(input$observe, {
+    
+    behavior_data <- tq_get(input$variable, get = "economic.data",
+                            from = input$daterange[1],
+                            to = input$daterange[2]
+    )
+    
+    # behavior_data <- tq_get(input$variable, get = "economic.data",
+    #                         from = input$daterange[1],
+    #                         to = input$daterange[2]
+    # )
+    
+    price_evolution <- behavior_data 
+    
+    
+    price_evolution
+    
+  })
+  
+  
+ ##### Outputs ---
+     
+  output$index_cor   <- renderPlot({
     
     col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
     
@@ -68,12 +140,64 @@ shinyServer(function(input, output) {
              addCoef.col = "black",
              tl.col = "darkblue",
              order = "hclust")
+   })
+  
+  output$rolling_cor <- renderPlotly({
+    
+    # DXY_mean_cor <- mean(index_cor [,7:7])
+    
+     ggplotly( 
+      rolling_cor() %>%
+        filter(symbol != "DXY") %>% 
+        ggplot(aes(x = date, y = rolling.corr, color = symbol)) +
+        geom_hline(yintercept =  0, color = palette_light()[[8]]) +
+        geom_line(size = 1.5) +
+        labs(title = "Rolling Correlation to DXY",
+             x = "", y = "Dynamic Correlation", color = "") +
+        facet_wrap(~ symbol, ncol = 2) +
+        theme_tq() +
+        scale_color_tq()
+    )
+    
     
   })
   
-  output$table <- renderDataTable({
+  output$returns     <- renderPlotly({
+
+    ggplotly(
+      price_return()%>%
+        mutate(Color = ifelse(daily.returns > 0.00, "green", "red")) %>%
+        ggplot(aes(x = date, y = daily.returns, color = Color))+
+        theme_tq()+
+        geom_point(size = 3)+
+        geom_line(color = "gray", size = 1)+
+        # geom_smooth(color = "orange", method = loess)+
+        labs(x = "Date", y = "Price Returns",
+             title = paste0(input$variable))+
+        theme(legend.position = "none")
+      )
+
+  })
+  
+  output$evolution   <- renderPlotly({
+    
+    ggplotly(
+      price_evolution()%>%
+        ggplot(aes(x = date, y = price))+
+        theme_tq()+
+        geom_point(color = "steelblue", size = 2)+
+        geom_line(color = "gray", size = 1)+
+        geom_smooth(color = "orange", method = loess)+
+        labs(x = "Date", y = "Price Evolution",
+             title = paste0(input$variable))
+    )
     
   })
+  
+  
+  #output$table <- renderDataTable({
+    
+  #})
   
   
   output$macroPrimes <- renderTable({
