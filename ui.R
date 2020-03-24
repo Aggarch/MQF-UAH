@@ -6,7 +6,7 @@ if (skin == "")
 
 
 ui <- dashboardPage(
-  dashboardHeader(title = "Market Risk Analisys"),
+  dashboardHeader(title = "quantApp"),
   dashboardSidebar(width = 272,
                    sidebarMenu(
                      menuItem("Home", tabName = "home", icon = icon("home")),
@@ -34,7 +34,7 @@ ui <- dashboardPage(
               fluidPage(
                 column(4,
                        wellPanel(
-                         h2("Titulo"),
+                         h2("Market Analytics"),
                          helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
                                   sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
                                   Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
@@ -68,12 +68,23 @@ ui <- dashboardPage(
                                              "Gold"             = "GOLDAMGBD228NLBM",
                                              "Aluminium"        = "PALUMUSDM",
                                              "Corn"             = "PMAIZMTUSDM",
-                                             "Soy"              = "PSOYBUSDQ")
-                             #Currencies
+                                             "Soy"              = "PSOYBUSDQ"),
+                             Currencies = c("DXY_CUR" = "DTWEXAFEGS",
+                                            "EUR_USD" = "DEXUSEU",
+                                            "GBP_USD" = "DEXUSUK",
+                                            "USD_JPY" = "DEXJPUS",
+                                            "USD_CAD" = "DEXCAUS",
+                                            "AUD_USD" = "DEXUSAL",
+                                            "USD_CHF" = "DEXSZUS",
+                                            "USD_SEK" = "DEXSDUS"
+                                            )
                            ),
                            multiple = TRUE
                          ),
-                         dateRangeInput ( "daterange" , "Intervalo de fechas:" ,
+                         textInput(inputId = "text", 
+                                   label = "Stock Ticker", value = "Enter text..."),  ####
+                         
+                         dateRangeInput ("daterange" , "Intervalo de fechas:" ,
                                           start   =  today()-365,
                                           end     =  today(),
                                           min     =  "2008-01-01",
@@ -98,6 +109,9 @@ ui <- dashboardPage(
                              
                              tabPanel("Price Returns", withSpinner(plotlyOutput("returns"),
                                                                    color="#0dc5c1"))
+                             
+                             # tabPanel("Technical Analysis", withSpinner(plotlyOutput("tech"),
+                             #                                           color="#0dc5c1"))
                              # tabPanel("Price variation", dataTableOutput("table")),
                              # tabPanel("Technical analysis", dataTableOutput("table"))
                            )

@@ -9,7 +9,7 @@
 
 # Vignettes :::
 
-# browseVignetteas(package = "tidyquant")
+# browseVignettes(package = "tidyquant")
 # browseVignettes(package = "timetk")
 
 
@@ -292,6 +292,24 @@ MSFT  <- tq_get("MSFT", get = "stock.prices", from = "2010-01-01")
 AMZN  <- tq_get("AMZN", get = "stock.prices", from = "2010-01-01")
 FB  <- tq_get("FB", get = "stock.prices", from = "2010-01-01")
 TWTR  <- tq_get("TWTR", get = "stock.prices", from = "2010-01-01")
+
+
+# 4.1.1) Charting 
+
+AAPL %>%
+  ggplot(aes(x = date, y = close, open = open,
+             high = high, low = low, close = close)) +
+  geom_candlestick() +
+  geom_bbands(ma_fun = SMA, sd = 2, n = 20, 
+              linetype = 4, size = 1, alpha = 0.2, 
+              fill        = palette_light()[[1]], 
+              color_bands = palette_light()[[1]], 
+              color_ma    = palette_light()[[2]]) +
+  labs(title = paste0(input$variable, "Candlestick Chart"), 
+       subtitle = "BBands with SMA Applied, Experimenting with Formatting", 
+       y = "Closing Price", x = "") + 
+  theme_tq()
+
 
 # 4.1) Tidy tibble of Stocks ####
 Stocks <- bind_rows("AAPL" = AAPL, "GOOG" = GOOG, "MSFT" = MSFT,
@@ -1248,12 +1266,31 @@ wts_map
 
 av_api_key("K40OVQLGD2QIE4TO")
 
+# aplicable to currencies
 my_intraday_data <- c("FB", "MSFT") %>%
   tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
 
+eur_usd <- c("EURUSD") %>%
+  tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
 
 my_intraday_data <- c("FB", "MSFT") %>%
   tq_get(get = "alphavantager", av_fun = "TIME_SERIES_DAILY_ADJUSTED")
+
+
+
+#Intraday data for indexes: 
+
+#SP500
+sp_data <- c("SPX") %>%
+  tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
+
+#DOW JONES
+dow_data <- c("DJIA") %>%
+  tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
+
+#NDAQ ?? 
+# my_intraday_data <- c("COMP") %>%
+#   tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
 
 
 EURUSD <- tq_get(get = "alphavantager", av_fun = "CURRENCY_EXCHANGE_RATE",
@@ -1263,7 +1300,7 @@ EURUSD <- tq_get(get = "alphavantager", av_fun = "CURRENCY_EXCHANGE_RATE",
 
 
 
-
+# SMA
 av_get(symbol = "EURUSD", av_fun = "SMA", interval = "5min", time_period = 60, series_type = "close") %>% print(n=100)
 
 

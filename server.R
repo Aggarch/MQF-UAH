@@ -115,17 +115,24 @@ shinyServer(function(input, output) {
                             to = input$daterange[2]
     )
     
-    # behavior_data <- tq_get(input$variable, get = "economic.data",
-    #                         from = input$daterange[1],
-    #                         to = input$daterange[2]
-    # )
-    
     price_evolution <- behavior_data 
     
     
     price_evolution
     
   })
+  
+  # Stock Ticker 
+  # stock_ticker    <- eventReactive(input$observe,{
+  #   
+  #   stock_ticker <- tq_get(input$text, get = "stock.prices",
+  #                           from = input$daterange[1],
+  #                           to = input$daterange[2]
+  #   )
+  #   
+  #   stock_ticker
+  #   
+  # })
   
   
  ##### Outputs ---
@@ -193,6 +200,27 @@ shinyServer(function(input, output) {
     )
     
   })
+  
+ {#  output$tech        <- renderPlotly({
+ #    
+ # #   ggplotly(
+ #      stock_ticker()%>%
+ #        ggplot(aes(x = date, y = close, open = open,
+ #                   high = high, low = low, close = close)) +
+ #        geom_candlestick() 
+ #        # geom_bbands(ma_fun = SMA, sd = 2, n = 20, 
+ #        #             linetype = 4, size = 1, alpha = 0.2, 
+ #        #             fill        = palette_light()[[1]], 
+ #        #             color_bands = palette_light()[[1]], 
+ #        #             color_ma    = palette_light()[[2]]) +
+ #        # labs(title = paste0(input$variable, "Candlestick Chart"), 
+ #        #      subtitle = "BBands with SMA Applied, Experimenting with Formatting", 
+ #        #      y = "Closing Price", x = "") + 
+ #        # theme_tq()
+ # #   )
+ #    
+ #  })
+}
   
   
   #output$table <- renderDataTable({
