@@ -1,4 +1,730 @@
-#### Quant  AG : Master in Quantitative Finance ####
+---
+title: "Código del Modelo"
+author: "Analítica"
+date: "23/03/2020"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libreries, include=FALSE}
+
+library(tidyverse)
+library(lubridate)
+library(pool)
+library(formattable)
+library(kableExtra)
+library(janitor)
+library(knitr)
+library(gridExtra)
+library(tidyquant)
+library(xml2)
+library(tidyquant)
+library(timetk)
+library(corrplot)
+library(alphavantager)
+library(plotly)
+library(prophet)
+
+```
+
+## R Markdown
+
+Este documento fue generado a través de R Markdown un paquete de formatos que nos permite compartir información de sintaxis, 
+utilizando HTML, PDF y en este caso documentos de Microsoft Word, el propósito de este capítulo, es compartir nuestra investigación sobre el código del modelo y cuáles son las principales funciones que hemos utilizado y su funcionamiento, 
+junto con ejemplos prácticos para la interpretación del usuario. 
+Si desea saber más sobre el paquete en cuestón visite <http://rmarkdown.rstudio.com>.
+
+En caso de que este observando este código directamente desde la carpeta de contenidos de la tesis, y no en el documento final, tenga en cuenta que al presionar el boton  **Knit** en el borde superior del IDE Rstudio podrá generar de manera automatica el documento en Word.
+
+El código del modelo, será presentado en cuadros de outputs, que exhibiran el resultado final, así como comentarios y referencias sobre la fuente de los datos y su significado e importancia para el modelo. 
+
+Tener en cuenta que el modelo, este documento y su respectivo instrumento ó aplicativo, utilizaran los siguientes paquetes, de los cuáles podrá acceder a su documentación oficial con los links disponibles en la última página de este documento:
+
+
+```{r librerias, eval=F}
+
+library(tidyverse)      # Integración de Recursos para Data Science. 
+library(lubridate)      # Configuración de strings de fechas. 
+library(kableExtra)     # Creación de Tablas tipo HTML.
+library(knitr)          # Generación de Informes dínamicos.
+library(tidyquant)      # Integración para analísis Financiero.
+library(xml2)           # Conversión de fragmentos a HTML
+library(timetk)         # Herramienta para trabajar Series de Tiempo.
+library(corrplot)       # Librería para dibujar matrices de correlación.
+library(alphavantager)  # API para importar datos de Mercado.
+library(plotly)         # Herramienta de Visualización interactiva.
+library(prophet)        # Analísis de series temporales. 
+
+```
+
+Como puede apreciarse en la documentación, cada paquete contiene pluralidad de funciones, por lo cual la lectura de la documentación es clave
+para aquellos que deseen un mejor entendimiento de la dinámica expuesta. 
+
+
+## Logíca General
+
+Para explorar el código seguiremos la logica del modelo general, para analítica, expuesto previamente en el capítulo sobre el paradigma
+del Data Science y su importancia para los procesos de toma de decisiones. 
+
+Este modelo general ha sido extraido del libro R for Data Science, un esfuerzo colaborativo, disponible online :  
+acceda al  libro a través de este link: <https://r4ds.had.co.nz/explore-intro.html>.
+
+```{r ds_flow, echo=FALSE, fig.cap="A caption", out.width = '100%'}
+knitr::include_graphics("data_science.png")
+```
+
+Es importante tener en cuenta que el conjunto de heramientas, armoniza en su filosofia Tidy, que esencialmente significa, que los conjuntos de datos, tienen una estructura basica, donde cada columna representa una variable y cada fila una observación, no todos los outputs de las funciones utilizadas, tiene la estructura deseada, pero gracias a las herramientas seleccionadas, su manipulación puede ser automatizada, con el fin de que cumplan con la arquitectura base. 
+para explorar más sobre esta "filosofia" del Data Science invitamos a la siguiente lectura del Journal of Statistical Software: <"https://vita.had.co.nz/papers/tidy-data.pdf">
+
+
+
+
+## Importación de Datos:
+
+Inicialmente se importaran los datos, estos serán importados directamente de la Reserva Fededral de St. Louis,
+los datos pueden explorarse en la siguiente página web: <https://fred.stlouisfed.org/>
+donde cada activo o indicador economico, tiene un ticket que puede se encontrado buscando el nombre general. 
+Sín embargo para automatizar la descarga necesitamos conocer el nombre tecnico e introducirlo como argumento de la función de importación
+que utiliaremos, funcion **("tq_get")** dicha funcion posee tres argumentos principales, la variable **(x)** que se refiere al activo ó indicador a analizar, para que sea interpretable por la función, usar el ticket respectivo, el argumento "get" hace referencia al api o lugar desde el cual,
+se pueden importar los datos, en este caso seleccionamos la opcion **"economic.data"** puesto que nos conecta con el API de la FRED y finalmente un rango de fechas donde: **"from"** es el momento anterior y **"to"** el posterior.
+Se ha seleccionado este paquete por su flexibilidad y por la calidad, prestigio e importancia de la institucion que los comparte
+
+### Ejercicio de Importación:
+
+Importar la medición sobre los niveles de incertidumbre...
+
+```{r import}
+EPU <- tq_get("USEPUINDXD", get = "economic.data", from = "2017-01-01")
+
+EPU <- EPU %>% arrange(desc(date))
+
+EPU
+# Aplicación sencilla de la función.
+
+```
+
+El ejemplo presentado, arroja como output un tibble o data frame, que contiene el símbolo importado, la fecha y su precio en el momento observado, se debe tener en cuenta que en este caso especifico, no se trata de un precio sino de un indicador de incertidumbre económica, 
+El indicador en cuestión, es conocido como **"EPU"** cuyas siglas corresponden a (ECONOMIC POLICY UNCERTAINTY), este indicador fue creado por el **NBER** (NATIONAL BUREAU OF ECONOMIC RESEARCH), el indicador fue construido para medir los niveles de incertidumbre de USA a través de proxies que identifican y calculan la frecuencia con la que se hace mención a la incertidumbre respecto a las politicas públicas económicas de impacto global, en los principales periodicos del país utilizando datos de primera calidad, para explorar más sobre este indicador específico, los remitimos a la documentación oficial de la institución creadora, 
+y a la serie temporal disponible en **FRED.** 
+
+**NBER**, Measuring Economic Policy Uncertainty : <http://www.policyuncertainty.com/media/BakerBloomDavis.pdf>
+
+**EPU** , FRED time series for Economic Policy Uncertainty: <https://fred.stlouisfed.org/series/USEPUINDXD/>
+
+Se debe tener en cuenta que la variable "EPU" gracias al asignador del código, ya contiene los datos importados, es decir que para realizar cualquier tipo de modificación ó transformación sobre los datos importados, basta con llamar la variable u objeto R y anexar los cambios ó transformaciones deseadas, es por esta razón, en el ejemplo planteado, después de asignar la variable "EPU" se anexo un ordenamiento que nos permite observar los datos más recientes en el tiempo, donde el operador **("%>%")** traduce "AND THEN" en este caso seguido de **"arrange(desc(date))"**, sintaxis que logra ordenar la data de forma tal que las fechas se ordenen de mayor a menor para lograr observar los puntos más recientes en el tiempo. 
+
+
+## Visualización:
+
+Para visualizar utilizaremos el paquete plotly, este paquete permite al usuario interactuar con el objeto representado, siempre y cuando este en un ambiente que permita dicha interaccion de lo contrario, solo cumplirá el proposito visual, para este ejemplo, visualizaremos la variable importada, **EPU** utilizando el paquete **ggplot2**, esta herramienta nos permite explicar a la funcion con facilidad, cuales con las variables a tener en cuenta para graficar en el plano cartesiano, en nuestro caso, el eje horizontal sera el tiempo y el verticar, el nivel del indicador.
+
+Ademas de graficar la evolucion en el tiempo de la variable **EPU**, se trazará una regresion lineal simple **(orange)**. 
+
+### **EPU**
+
+(Economic Policy Uncertainty, codigo para graficar ) :
+
+```{r visual_code}
+# A ggplot of the Global Economic Policy Uncertainty : 
+uncertainty_index <- 
+#  ggplotly(
+    EPU %>%
+      filter(date >= "2019-10-20") %>% 
+      ggplot(aes(x = date, y = price))+
+      theme_tq()+
+      geom_point(color = "steelblue", size = 2)+
+      geom_line(color = "gray", size = 1)+
+      geom_smooth(color = "orange", method = loess)+
+      labs(x = "Date", y = "Economic Policy Uncertainty Index",
+           title = "Global Economic Policy Uncertainty Evolution")  
+#    )
+
+# Se puede apreciar de forma muy intuitiva, a que corresponde cada variable y color de la funcion ggplot,
+# ggplot no necesita ser importado puesto que es contenido por tidyverse. 
+
+```
+
+### **EPU**
+
+(Economic Policy Uncertainty, Representación Visual) :
+
+
+```{r visual, warning=FALSE}
+uncertainty_index
+
+# Se observa un incremento considerable en los niveles de incertidumbre, producto de la coyuntuta actual, que a la fecha de ejecucion, de este reporte dinamico, es el COVID-19
+
+Sys.Date()
+
+```
+
+## Correlación
+
+Hasta ahora, un codigo tan simple ya es capaz de añadir valor a nuestro analísis, las razones por las que añade valor son varias, pero conviene destacar la calidad de la fuente primaria, la automatización del proceso y la calidad de la grafica, es de tener en cuenta que este documento en Word fue credo directamente desde Rstudio con relativamente poco esfuerzo, Word es un ambiente no reactivo, es decir que no cambia de manera dinamica, sin embargo el reporte cada vez que se ejecuta en el **IDE** de **R** intera en cada uno de sus pasos, y nos brinda informacion nueva de alta calidad y valor, ahora bien, solo hemos importado datos de un indicador específico y hemos graficado el comportamiento de dicho indicador **(EPU)**, este indicador es poderoso, pero las variables aisladas son poco dicientes, de manera de ejemplo, observemos como se relaciona esta variable con otras variables de mercado que son importantes para percibir los riesgos de mercado en los escenarios Mark to Market. 
+Ya esta claro el proceso de importacion de datos, es necesario escoger otras variables de mercado para ver como se relacionan entre si, para ello se han seleccionado, el **DOW JONES, SP500, VIX, WTI, Treasury_10y, CPI y Unemployment Rate**
+El **Dow Jones** y **SP500** represtaran el comportamiento de la renta variable, al ser dos de los indices mas importantes de la economia,
+El **VIX** mide los niveles de volatilidad conocido por sus siglas como **(Exchange Market Volatility Inde)** indice calculado por **Chicago Board Options**, el **Treasury_10y** se refiere a los bonos del Tesoro de Estados Unidos a 10 años, es decir un horizonte largoplacista, escogido para este ejemplo simplificado como indicador de la renta fija.
+Los ultimos dos seleccionados **CPI** y **Unemployment Rate** son seleccionados como indicadores economicos de relevancia, el **Consume Price Index** es un indicador que da pistas sobre el comportamiento inflacionario, una economia que crece de manera sana, tiene niveles de inflacion controlados, al rededor del 2% porque con esto se presume que hay una demanda estable de bienes y servicios, gran parte de la demanda esta justificada por los niveles de ingreso de los ciudadanos, que a grosso modo es muy influido en promedio, por los niveles de empleo **UNRATE**, es decir que a niveles altos de empleo, lo normal es que se estimule el consumo, lo que a su vez estimula la economia. 
+
+Con niveles de incertidumbre tan altos vale la pena observar estas correlaciónes junto al **USD** que mediremos utilizando el indice **DXY CUR** que es un indicador del valor relativo del dolar americano respecto a otras fiat de gran importancia en la economia global.
+
+Para cumplir dicho objetivo el primer paso es la importación de los datos de interés que a partir del ejemplo anterior, es generalizable:
+
+### Importación de Datos de Mercado: 
+
+```{r market_data}
+market_data <- tq_get(c("DJIA", "SP500", "VIXCLS", "DTWEXAFEGS",
+                         "UNRATE", "CPIAUCSL", "DGS10"),
+                     get = "economic.data", from = "2010-01-01")
+
+market_data
+# Datos de las variables seleccionadas desde el año 2010, "post Sub-prime Crisis" en el 2008
+# Los datos están representados de forma Tidy.  
+```
+
+
+
+### Transformacion:
+
+Con el fin de calcular la correlación de **Pearson**, necesitamos transformar los datos, es decir transponer por variable, para crear una matriz que nos permita crear la matriz de correlación, para ello operaremos sobre el objeto que ya contiene la información, los datos no se generan con la misma frecuencia, es decir los indicadores economicos se publican cada semana o pueden tener una temporalidad incluso mensual, sin embargo los precios de los activos, si que cotizan en el dia a dia, por lo que habrá momentos en el tiempo en los que no existan todos los datos, para solucionar el problema, asumiremos que los datos de baja frecuencia de publicación, permanencen constantes hasta que son actualizados,
+ademas la matriz no debe contemplar fechas, puesto que no es un valor al que vayamos a aplicarle la correlación, ya es sabido por el primer paso la franja temporal analizada. 
+
+```{r market_matrix}
+
+market_matrix <- market_data %>%
+  pivot_wider(names_from = symbol, values_from = price) %>% 
+  na.locf() %>% 
+  select(-date) 
+
+market_matrix
+
+# Con la matriz de precios depurada, el siguiente paso es correlar.
+
+```
+
+
+### Matriz
+Para correlaciónar la matriz de precios historicos, solo hemos de aplicar la funcion cor(), se debe tener en cuenta que el coeficiente de correlación solo indica la direccion y fuerza de la correlación, pero no es indicador alguno de causalidad. 
+la matriz de correlación calculada, ofrece mucho valor, sin embargo no es de interpretación intuitiva.
+
+Para solucionar este problema, y que el esfuerzo por interpretar el resultado sea menor, inmediatamente se explicara como crear una visualización y clusterizado eficiente y de facil ejecución.
+
+
+```{r corr_matrix}
+
+corr_matrix <- market_matrix %>% cor()
+
+
+corr_matrix %>% print()
+
+
+#Como resultado podemos observar el coeficiente de correlación de los datos historicos de las variables de interes.
+
+
+```
+
+
+Ademas de que la matriz de correlación tiene las limitaciones previamente expresadas, tambien se debe tener en cuenta que el coeficiente presentado, no cambia con mucha facilidad, es decir esta calculado con base a información historica, pero la correlación puede ser un fenomeno más dinámico, es decir si bién el coefiente de correlación siempre se encuenta en el rango **[-1 : 1]** es posible que cambie en el corto y mediano plazo, es decir que la correlación oscile en el paso del tiempo. 
+
+El coeficiente de correlación, se interpreta como: 
+
+                                                   1 = Perfecta Correlación Positiva.
+                                                  -1 = Perfecta Correlación Negativa.
+                                                  
+                                                  
+Cuando la correlación es **1**, las variables analizadas se comportan la mayor parte del tiempo, en el mismo sentido, dirección y fuerza
+cuando el valor es **-1**, las variables se comportan en sentido y dirección contraria, con la misma intensidad o fuerza.
+
+
+### Visualización de Matriz de Correlación: 
+
+Se puede apreciar, que los coeficientes de correlación, han sido ordenados, siguiendo un patrón de agrupamiento jerárquico, esto con el fin de mejorar la interpretabilidad.  
+
+```{r matrix_corrplot}
+
+col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+
+
+matrix_corrplot <- 
+    corrplot(corr_matrix,
+             method = "color",
+             col = col(200),
+             addCoef.col = "black",
+             tl.col = "darkblue",
+             order = "hclust")
+
+```
+
+Entonces bien, conocer en que sentido, dirección y con que intensidad se relacionan las variables de mercado es bastante interesante, pero que tal seria observar el comportamiento de esta relacion en el transcurso del tiempo ? 
+para se puede aplicar la misma funcion de correlacion en distintas ventanas de tiempo, esta tecnica se conoce como **"Rolling Window"**
+
+Claro esta que al ser dinamica seria muy laborioso visualizarla como una matriz, visualicemos una linea de evolución en el tiempo, despues de calcular esta correlacion dinamica de las mismas variables en cuestion pero respecto el **DXY CUR** como referencia, es decir si bien ya se tiene respuesta a la pregunta: 
+
+¿Como se relacionan la variables entre sí ? 
+
+A continuación buscaremos respuesta a la pregunta:
+
+¿Como evoluciona la relacion de las variables en el tiempo? 
+
+Se debe tener en cuenta que esta evolucion en el tiempo, sera respetando el rango permitido de correlación, es decir el máximo valor posible en el tiempo sera **+1** y el mínimo posible **-1** 
+
+### Correlación Dinámica:
+
+A diferencia de la matrix anterior, en ese ejercicio, se correlaciona las variaciones del precio no el precio como tal, es decir el retorno del activo o variación porcentual, el cociente entre el valor en el momento 1 y anterior. 
+
+```{r market_daily_returns, warning=F}
+# Retorno o variacion de las variables seleccionadas.
+
+market_daily_returns <- market_data %>% 
+  group_by(symbol) %>% 
+  tq_transmute(select = price,
+               mutate_fun = periodReturn,
+               period = "daily")
+
+market_daily_returns
+
+# Retornos del dolar, DXY CUR, valor base "baseline"
+baseline_daily <- "DTWEXAFEGS" %>%
+  tq_get(get  = "economic.data",
+         from = "2010-01-01",
+         to   = Sys.Date()) %>%
+  tq_transmute(select     = price,
+               mutate_fun = periodReturn,
+               period     = "daily")
+
+baseline_daily
+
+```
+
+A continuación, una sola matriz que contenga ambos conjuntos de datos, significa que la correlación será de cada una de las variables respecto al Baseline que en este caso es: **DXY CUR**, para observar la correlación de dichas variables respecto al dollar en el transcurso del tiempo.
+
+```{r joined}
+returns_joined <- left_join(market_daily_returns,
+                            baseline_daily,
+                            by = "date")%>% 
+  na.omit()
+
+returns_joined
+# Matriz unificada para correlar 
+```
+
+El siguiente paso es aplicar la formula de correlación a las variables ya ordenadas en el objeto anterior, para ello utilizaremos la funcion tq_transmute de tidyquant y la aplicaremos a ambas variables o columnas, la base : **DXY CUR** y el conjunto de variables. 
+
+```{r rolling_corr}
+
+#Calculate the correlation. 
+
+rolling_corr <- returns_joined %>%
+  tq_transmute_xy(x          = daily.returns.x,
+                  y          = daily.returns.y,
+                  mutate_fun = runCor,
+                  n          = 6,
+                  col_rename = "rolling.corr")
+
+rolling_corr %>% 
+  print(n = 25)
+
+#Observese que los valores "NA" corresponden a la ventana de tiempo contemplada* 
+
+
+```
+
+
+### Visualización de Correlación Dinámica:
+
+
+A continuación, despues de haber calculado la correlación, el ultimo paso para este analísis, es la visualización, para ello utilizaremos lineas y crearemos una division para cada uno de los objetos a visualizar.
+
+```{r rolling_corr_plot, warning=FALSE}
+
+rolling_corr_plot <- 
+# ggplotly( 
+  rolling_corr %>%
+    filter(symbol != "DTWEXAFEGS",
+           date>Sys.Date()-30) %>% 
+    ggplot(aes(x = date, y = rolling.corr, color = symbol)) +
+    geom_hline(yintercept = 0, color = palette_light()[[8]]) +
+    geom_line(size = 1.5) +
+    labs(title = "Rolling Correlation to DXY CUR",
+         x = "", y = "Correlation", color = "") +
+    facet_wrap(~ symbol, ncol = 2) +
+    theme_tq() +
+    scale_color_tq()
+#)
+
+rolling_corr_plot
+
+# Comportamiento de la correlación para los ultimas 30 dias. 
+```
+
+
+Despues de haber analizado el comportamiento de la correlación y gracias a la importación de los datos sobre niveles de incertidumbre, podemos tener una clara intuición de que los niveles de riesgo deben ser altos en este momento , puesto que la inceridumbre esta explorando nuevos maximos, ahora bien que hay del mito que ente más riesgo mayor el beneficio o rentabilidad? 
+
+importemos datos del **Dow Jones** y **Standard & Poors 500**, un indice importante conformado por las empresas mas representativas, y un portafolio bastante equilibrado y diversificado, despues comparemos el comportamiento  del riesgo vs el retorno en el paso del tiempo para cada elemento, **Dow Jones & SP500**. 
+
+
+# Ratio de Riesgo vd Rentabilidad: 
+
+
+```{r risk_reward_tbl, warning=FALSE}
+
+# DOW JONES
+dow_jones <-
+  tq_index("DOW") %>%
+  tq_get() %>%
+  group_by(symbol) %>%
+  tq_transmute(adjusted,
+               mutate_fun = periodReturn,
+               period = "daily",
+               type = "log",
+               col_rename = "dlr") %>%
+  summarize(MDLR  = mean(dlr),
+            SDDLR = sd(dlr))
+
+dow_jones
+
+# SP500
+# sp500 <-
+#   tq_index("SP500") %>%
+#   tq_get() %>%
+#   group_by(symbol) %>%
+#   tq_transmute(adjusted,
+#                mutate_fun = periodReturn,
+#                period = "daily",
+#                type = "log",
+#                col_rename = "dlr") %>%
+#   summarize(MDLR  = mean(dlr),
+#             SDDLR = sd(dlr))
+# 
+# sp500
+
+```
+
+
+## Visualizacion de Ratio: 
+
+
+```{r risk_reward_plot, warning=FALSE}
+
+# Evaluating Risk vs Reward for Dow Jones & SP500 Stocks:
+
+dow_jones %>%
+  ggplot(aes(x = SDDLR, y = MDLR)) +
+  geom_point(color = palette_light()[[1]], alpha = 0.5) +
+  geom_smooth(method = "lm") +
+  labs(title = "Evaluating Risk vs Reward for DOW Stocks") +
+  theme_tq()
+
+
+# sp500 %>%
+#   ggplot(aes(x = SDDLR, y = MDLR)) +
+#   geom_point(color = palette_light()[[1]], alpha = 0.5) +
+#   geom_smooth(method = "lm") +
+#   labs(title = "Evaluating Risk vs Reward for S&P500 Stocks") +
+#   theme_tq()
+
+
+```
+
+
+Podemos deducir facilmente, que los mayores niveles de riesgo no necesariamente se relacionan con mayor rentabilidad esperada, mucho menos en escenarios como el actual donde la incertidumbre es tan alta. 
+
+Observemos a continuación, el comportamiento historico del **SP500**, importando los datos y creando un grafico sencillo con regresión lineal.
+
+```{r sp_ggplot, warning=FALSE}
+
+sp_500   <- tq_get("SP500", get = "economic.data", from = "2010-01-01" )
+
+sp_500 %>% arrange(desc(date)) %>% 
+  print(n=25)
+
+# tibble del comportamiento historico del SP500 
+
+sp_ggplot <- 
+      sp_500%>%
+        ggplot(aes(x = date, y = price))+
+        theme_tq()+
+        geom_point(color = "steelblue", size = 2)+
+        geom_line(color = "gray", size = 1)+
+        geom_smooth(color = "orange", method = loess)+
+        labs(x = "Date", y = "Price Evolution",
+             title = paste0("Standard & Poors Lastt 10 years"))
+
+sp_ggplot
+
+# Evolución del precio historico
+
+```
+
+
+En casos como estos en los que poseemos tanta información, resulta prudente y necesario, cortar la serie temporal, es decir observar un periodo de tiempo que este mas acotado, para lograrlo podemos filtrar en el tiempo, para dotarlo de dinamismo, observaremos solo los ultimos 60 dias de manera automatica utilizando la fecha del sistema:  
+
+```{r sp500_ts, warning=FALSE}
+
+sp500_ts <- 
+  sp_500 %>%  
+     filter(date >= Sys.Date()-60) %>% 
+        ggplot(aes(x = date, y = price))+
+        theme_tq()+
+        geom_point(color = "steelblue", size = 2)+
+        geom_line(color = "gray", size = 1)+
+        geom_smooth(color = "orange", method = loess)+
+        labs(x = "Date", y = "Price Evolution",
+             title = paste0("Standard & Poors Last 60 days"))
+
+sp500_ts
+
+# Comportamiento de los ultimos 60 dias hasta la fecha de ejecución 
+
+today()
+
+# Podemos observar que a pesar de la tendencia alcista que subyacente al SP500, estos ultimos 2 meses se ha estado precipitando agresivamente. 
+
+```
+
+Una vez el escenario macroeconomico mejore, la compra del SP500 no entrañara tanto riesgo, la pregunta esta en el timing, es decir cuando se darán las circunstancias para que el comportamiento mejore, lo aconsejable en el momwnto de ejecución de este reporte es la mesura y causión, sin embargo como proposito de seguir elaborando el ejercicio, haremos un pronóstico del comportamiento de los datos utilizando un recurso creado por el equipo de Data Science de Facebook que se llama Prophet, este paquete se especializa en el analísis de series temporales. 
+Las series temporales son un conjunto de herramientas de gran ayuda en el analísis cuantitativo de este tipo de comportamientos, sin embargo su complejidad es alta y deben ser interpretadas como variables cuantitativas no como pronósticos exactos, porque no existen las predicciones perfectas, menos aun cuando los niveles de incertidumbre están tan elevados. 
+
+Más información sobre esta herramienta se encuentra disponible en este link <https://facebook.github.io/prophet/>
+
+
+## Prophet
+
+```{r prophet, echo=FALSE, fig.cap="A caption", out.width = '100%'}
+knitr::include_graphics("prophet.png")
+```
+
+El primer paso es segmentar la serie temporal como lo hicimos antes, se debe tener en cuenta que cualquier modelo o por lo menos la mayoria de estos, tienen un margen de error inferior en momentos no muy alejados del momento inical, puesto que a mayor horizonte temporal masyor incertidumbre respecto al desarrollo del escenario. 
+Se utilizara la serie anterior correspondiente al SP500 pero con datos del ultimpo año, el paquete es muy sencillo, solo utiliza dos variables, **ds** referente al tiempo y  **yhat** equivalente al valor a proyectar, por lo tanto, tomamos el objeto anterior y lo transformamos para poder utilizar las funciones de analísis.
+
+
+
+
+```{r prophet_forecast}
+
+# fitting the model by price
+sp <- 
+  sp_500 %>% 
+  filter(date >= Sys.Date()-600) %>% 
+  select(date, price) %>% 
+  rename(ds = date, y = price) %>% 
+    na.locf() %>% 
+    print(n = 30)
+
+sp
+m <- prophet(sp)
+m
+
+# fitting the model by returns
+sp_ret <- "SP500" %>%
+  tq_get(get  = "economic.data",
+         from = Sys.Date()-600,
+         to   = Sys.Date()) %>%
+  tq_transmute(select     = price,
+               mutate_fun = periodReturn,
+               period     = "daily") %>%
+   rename(ds = date, y = daily.returns) %>%
+    na.locf()
+
+sp_ret
+n <- prophet(sp_ret)
+
+
+```
+
+Una vez despues de ajustar el modelo, podemos conocer los outputs del mismo,y por ejemplo, crear una tibble o tabla con los valores proyectados en el futuro, en este caso estamos proyectando 
+```{r forecast}
+
+# Predict --- Prices
+
+future <- make_future_dataframe(m, periods = 15)
+future %>% tail(15)
+
+forecast <- predict(m, future)
+forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')] %>% 
+  tail(20)
+
+# Predict --- Returns
+
+future_n <- make_future_dataframe(n, periods = 15)
+future_n %>% tail(15)
+
+forecast_n <- predict(n, future)
+forecast_n[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')] %>%
+  tail(20)
+
+```
+
+Se puede observar que ya se han obtenido los valores proyectados en el futuro, con un intervalo de posible error que aumenta a lo largo del tiempo, en la tibble, se pueden observar sistintas variables, **ds** que es el tiempo, **yhat** la variable proyectada en el tiempo, **yhat_lower** de la proyeccion, valor minimo probable y finalmente **yhat_upper** valor maximo probable.
+La tabla con los valores proyectados es muy util para cualquier analísis que se desea hacer con mayor nivel de profundidad o detalle, por ejemplo para crear una alerta que notifique una proyeccion muy baja o alta. 
+Puede ser herramientas que combinadas con conocimiento del negocio y entendimiento de la dinamica actual, contribuya a que los procesos de toma de decisiones sea más sofisticado.
+A continuacion observaremos la visualización de los datos calculados, donde los valores proyectados, seran representados de color azul.
+```{r forecast_plot}
+plot(m, forecast)
+# identificamos con lineas rojas los cambios de dirección en el precio
+plot(m, forecast) + add_changepoints_to_plot(m)
+
+
+#Proyectar retornos en lugar de precios:
+plot(n, forecast_n)
+# identificamos con lineas rojas los cambios de dirección en el retorno
+plot(n, forecast_n) + add_changepoints_to_plot(n)
+```
+
+Debe tenerse en cuenta que los niveles de volatitlidad en los ultimos dias, hacen que la serie temporal tenga un comportamient muy erratico, lo que dificulta el proceso de analisis y proyección, para intentar atenuar el efecto, podriamos buscar mas puntos de datos en menos horizonte temporal, para ello la importacion de datos debe tener una mayor frecuencia, es decir, la importación tradicional es de cada dia al cierre, se intentara importar datos intraday, es decir, hora a hora, o a lo mejor cada diez minutos. 
+
+Para importar datos con una frecuencia tan alta, fue necesario investigar de donde descargar los datos, de una fuente que sea confiable, segura y de calidad, lo suficientemente rapida para proveer el servicio, este tipo se servicios son pagos, sin embargo se puede acceder a funciones de prueba, a continuación exploramos **AlphaVantage**, <"https://www.alphavantage.co/"> un API que permite infomación historica y en tiempo real, de series de tiempo del mercado. 
+
+Inicialmente se importaran los datos correspondientes al **SP500**, datos intraday con frecuencia de 1 minuto. 
+para poder acceder a dicha informacion se necesita una llave de acceso al API esta llave es personal, y se puede generar en el link compartido previamente. 
+
+A Continuación se comparte una vista de la data descargada en el momento de ejecusión para posteriormente dibujar los datos en el tiempo.
+Es de esperarse, que el comportamiento se erratico, por el escenario o conyuntura actual, y la alta frecuencia. 
+Conoce el servicio premium en <"https://www.alphavantage.co/premium/">
+
+```{r intraday}
+#key
+av_api_key("K40OVQLGD2QIE4TO")
+
+#SP500
+sp_data <- c("SPX") %>%
+  tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
+
+sp_data %>% print(n = 35)
+
+```
+
+### Visualización con datos Intraday. 
+
+graficación de los datos intradía con regresión lineal de ggplot.
+
+```{r intraday_forecast}
+
+sp_data %>% 
+      ggplot(aes(x = timestamp, y = open))+
+      theme_tq()+
+      geom_point(color = "steelblue", size = 2)+
+      geom_line(color = "gray", size = 1)+
+      geom_smooth(color = "orange", method = loess)+
+      labs(x = "Date", y = "Price",
+           title = "S&P Intraday")  
+
+```
+
+Esta serie temporal del S&P500 es intradia y por la representación grafica y la corta ventana temporal y alta frecuencia, a simple vista  no parece ser estacional ni tiene una tendencia clara. 
+
+A continuacion aplicaremos el modelo anteriormente aplicado de la libreria Prophet, para ello se deben transformar los datos de forma tal que puedan ser interpretables por la librería.
+
+Para que la serie tenga un comportamiento mas suavizado, se creara una columna llamada **adj** resultado del promedio del **open, close, high & low** en cada instante de tiempo. 
+
+```{r intraday_prophet}
+
+sp_data_ts <- sp_data %>% 
+  group_by(timestamp) %>%  
+  mutate(adj = mean(c(open,high,close,low))) %>% 
+  select("timestamp", "adj") %>% 
+  rename(ds = timestamp, y = adj) %>%
+  na.locf() 
+
+sp_data_ts
+
+
+m <- prophet(sp_data_ts, daily.seasonality = "auto",
+             fit = TRUE, seasonality.mode = "multiplicative",
+             uncertainty.samples = 100)
+
+
+# Predict --- Prices
+
+future <- make_future_dataframe(m, periods = 20)
+future %>% tail(15)
+
+forecast <- predict(m, future)
+forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')] %>% 
+  tail(20)
+
+plot(m, forecast)
+# identificamos con lineas rojas los cambios de dirección en el precio
+plot(m, forecast) + add_changepoints_to_plot(m)
+
+
+```
+
+
+Al leer el codigo detalladamente, se puede observar que el objeto que contiene la información, denominado **sp_data_ts**, es aquel que contiene los datos intradía, descargados con el API de AlphaVantager, ahora bien los datos, tienen una frecuencia de un minuto, es decir que cada fila es una observación de la variable minuto a minuto, y la columna, no incorpora más que un dia de información, esta frecuencia tan alta de importación de datos, genera un conflicto con las herramientas del packete **Prophet** y también con las herramientas de visualización, para slocuionarlo, se sugiere una transformacion de los datos en los que tomando la matriz original **sp_data_ts**, creamos una columna temporal que no es más que el conteo de las filas de la serie, esta es creada con el fin de modificar la variable temporal **ds** y añadir un dia a cada observación para que el modelo pueda funcionar y desplegar su output de manera exitosa.
+
+```{r intraday_fix_prophet}
+
+sp_data_ts <- sp_data_ts %>% 
+  ungroup() %>%  
+  mutate(ds = as.Date(ds),
+         day = row_number(),
+         ds = ds+day) %>% 
+  select(-day)
+
+sp_data_ts
+
+
+m <- prophet(sp_data_ts, daily.seasonality = "auto",
+             fit = TRUE, seasonality.mode = "multiplicative",
+             uncertainty.samples = 100)
+
+
+
+# Predict --- Prices
+
+future <- make_future_dataframe(m, periods = 20)
+future %>% tail(15)
+
+forecast <- predict(m, future)
+forecast[c('ds', 'yhat', 'yhat_lower', 'yhat_upper')] %>% 
+  tail(20)
+
+plot(m, forecast)
+# identificamos con lineas rojas los cambios de dirección en el precio
+plot(m, forecast) + add_changepoints_to_plot(m)
+
+```
+
+Finalmente al realizar las observaciones e implementaciones de modelo, este sugiere que según las ultimas observaciones, la tendencia al alza persistira, un ejercicio interesante sera observar el desarrollo de los mercados a ver cuando se recuperan de la crisis actual, en el momento que se perciba acercamiento de la recuperación y la economia empiece a responder a los estimulos economicos, es muy probable que se recupere el equity. 
+
+El modelo y aplicativo o instrumento de la tesis, permite al usuario hacer este tipo de analísis con más variables, y un mayor nivel de interactividad entre estas. 
+
+Este reporte dinámico, no constituye el instrumento de la investigación si no su socialización, el codigo para ejecutar y reproducir este documento con valores actuales al momento de ejecución, esta disponible en el siguiente repositorio, <"https://github.com/Aggarch/MQF-UAH">, lugar en el que también se encuentra disponible el código que compartiremos a continuación: 
+
+Estte repositorio permite hacer el control de versiones del instrumento para que pueda ser sometido a la mejora continua. 
+
+El codigo que se desplegara a continuación sigue la misma logica general, de los ejercicios desarrollados en este R Markdown. 
+
+El lector los podrá ejecutar sin dificultad en su consola R y buscar sus propios **insights** de negocio, tener en cuenta que cualquiera de los pasos y lineas de codigo a continuación, cumple uno o más de los siguientes objetivos;
+
+**Importar, Transformar, Modelar y/o Comunicar**
+
+Y que se trata de una dinamica Iterativa. 
+
+Codigo perfectamente reproducible si se cuentan con conocimientos muy basicos de la herramienta. 
+
+### Documentación 
+
+tidyverse:      <"https://cran.r-project.org/web/packages/tidyverse/index.html> 
+lubridate:      <"https://cran.r-project.org/web/packages/lubridate/vignettes/lubridate.html">
+knitr:          <"https://cran.r-project.org/web/packages/knitr/index.html">
+tidyquant       <"https://cran.r-project.org/web/packages/tidyquant/index.html">
+xml2            <"https://cran.r-project.org/web/packages/xml2/index.html">
+corrplot        <"https://cran.r-project.org/web/packages/corrplot/corrplot.pdf">
+alphavantager   <"https://cran.r-project.org/web/packages/alphavantager/alphavantager.pdf">
+plotly          <"https://cran.r-project.org/web/packages/plotly/index.html">
+prophet         <"https://cran.r-project.org/web/packages/prophet/index.html">
+
+
+```{r the_code, eval=F, echo=TRUE}
+
+#### QuantApp MBA Andrés García & Sagith Amín  ####
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ----
 
@@ -12,15 +738,6 @@
 # browseVignetteas(package = "tidyquant")
 # browseVignettes(package = "timetk")
 
-
-# Libraries activate the packs, please do install.packages() before continue.
-
-library(tidyverse)
-library(tidyquant)
-library(timetk)
-library(corrplot)
-library(alphavantager)
-library(plotly)
 
 # Thesis: Data treatment philosophy:
 # 1.)   Tidy - Data: ####
@@ -1248,12 +1965,31 @@ wts_map
 
 av_api_key("K40OVQLGD2QIE4TO")
 
+# aplicable to currencies
 my_intraday_data <- c("FB", "MSFT") %>%
   tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
 
+eur_usd <- c("EURUSD") %>%
+  tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
 
 my_intraday_data <- c("FB", "MSFT") %>%
   tq_get(get = "alphavantager", av_fun = "TIME_SERIES_DAILY_ADJUSTED")
+
+
+
+#Intraday data for indexes: 
+
+#SP500
+sp_data <- c("SPX") %>%
+  tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
+
+#DOW JONES
+dow_data <- c("DJIA") %>%
+  tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
+
+#NDAQ ?? 
+# my_intraday_data <- c("COMP") %>%
+#   tq_get(get = "alphavantager", av_fun = "TIME_SERIES_INTRADAY", interval = "1min")
 
 
 EURUSD <- tq_get(get = "alphavantager", av_fun = "CURRENCY_EXCHANGE_RATE",
@@ -1263,7 +1999,7 @@ EURUSD <- tq_get(get = "alphavantager", av_fun = "CURRENCY_EXCHANGE_RATE",
 
 
 
-
+# SMA
 av_get(symbol = "EURUSD", av_fun = "SMA", interval = "5min", time_period = 60, series_type = "close") %>% print(n=100)
 
 
@@ -1400,9 +2136,7 @@ sp500 %>%
   )
 
 
-
 browseURL("https://rpubs.com/the5ac/all_seasons_portfolio_part1")
-
 
 
 # 11) Financial Maths ####
@@ -1417,21 +2151,6 @@ t <- seq(1, 8)
 
 (pv.1 <- sum(1/(1 + rates)^t))
 
-
-
-
-
-
-
-
-# . ----
-# ... ----
-# ....... ---- 
-# ........... ---- 
-
-
-### Andres Garcia ----
-### Market Risk Analisys ---- 
 ### MQF - MBA Thesis. ---- 
 
 fth  <- read.csv("fth.csv") 
@@ -1442,4 +2161,7 @@ w<-  perfomance %>% slice(2) %>% pull(Amount)
 pl <- w-d
 trm <- 3250
 ppl<-pl*trm
+
+
+```
 
