@@ -2,7 +2,7 @@
 
 QuanTrader
 
-<img src="https://rstudio.com/wp-content/uploads/2018/10/RStudio-Logo-White.png" width="500" height="100">
+<img src="https://rstudio.com/wp-content/uploads/2018/10/RStudio-Logo-White.png" width="500" height="150">
 
 The Poupose of this project is to contribute to Mark to Market decision maing Processes
 
