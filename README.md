@@ -2,7 +2,7 @@
 
 QuanTrader
 
-![Image description](https://upload.wikimedia.org/wikipedia/commons/d/d0/RStudio_logo_flat.svg)
+![Image description](https://upload.wikimedia.org/wikipedia/commons/d/d0/RStudio_logo_flat.svg, width="400" height="790")
 
 The Poupose of this project is to contribute to Mark to Market decision maing Processes
 
