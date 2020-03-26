@@ -53,7 +53,7 @@ market_list <- list(
 
 # 2.) dashboardPage ####
 ui <- dashboardPage(
-      dashboardHeader(title = "quantApp - MQF"),
+      dashboardHeader(title = "QuanTrader"),
       dashboardSidebar(width = 250,
                    sidebarMenu(
                      menuItem("Home", tabName = "home", icon = icon("home")),
@@ -76,17 +76,25 @@ ui <- dashboardPage(
                      br(), br(),br(),br(),br(),  br(), br(),br(),br(),br(),
                      br(), br(),br(),br(),br(),  br(), br(),
                      
-                     tags$a(href="https://cran.r-project.org/web/packages/tidyquant/index.html","Powered by"),
+                     div(
+                     tags$a(href="https://cran.r-project.org/web/packages/tidyquant/index.html","Powered by",
+                              style = "padding-left:11px"),
+                     tags$a(href="https://fred.stlouisfed.org/" ,"©"),
+                     # tags$a(href="https://github.com/Aggarch/MQF-UAH" ,"*"),
+                     
                      br(),
-                     tags$img(src='rstudio_logo_white.png', height=50, width=150),
-                     tags$a(href="https://github.com/Aggarch/MQF-UAH" ,"*"),
-                     tags$img(src='fred_white_2.png', height=50, width=50),
-                     tags$a(href="https://fred.stlouisfed.org/" ,"*"))
+                     tags$img(src='rstudio_logo_white.png', height=40, width=120, 
+                              style = "padding-left:17px"),
+                     tags$img(src='fred_white_2.png', height=40, width=40,
+                              style= "padding-left:7px"),
+
+                     )
+                        )
                      # tags$blockquote("Andrés García & Sagith Amín"))
                  
                    
 
-#home
+#home 
 
 
 
@@ -100,6 +108,9 @@ ui <- dashboardPage(
                         column(12,
                                wellPanel(
                                  h1("Quantitative Market Analytics"), 
+                                 tags$a(href="https://github.com/Aggarch/MQF-UAH" ,"GitHub",
+                                        style = "padding-left:7px"),
+                                 
                                  hr(),
                                  helpText("**Lorem** ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
                                   sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
@@ -126,16 +137,15 @@ ui <- dashboardPage(
                                   Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus.",hr(),
                                   
 
-                                  tags$img(src = "data_science.png", width = "650px", height = "240px"))
+                                  tags$img(src   = "data_science.png", width = "650px", height = "240px", 
+                                           style = "width:650px;height:240px;display:block;margin:auto"),br(),
+                                  tags$a(href="https://r4ds.had.co.nz/","R for Data Science"))
                                  
                                  )
                              )
                          )
                       ),
       
-#description      
-
-#description
 
 
 # 4.) description ####
