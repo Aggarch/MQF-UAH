@@ -1,7 +1,7 @@
 ---
 title: "Código del Modelo"
 author: "Analítica"
-date: "23/03/2020"
+date: "`r Sys.Date()`"
 output: word_document
 editor_options: 
   chunk_output_type: console
@@ -75,7 +75,7 @@ Este modelo general ha sido extraido del libro R for Data Science, un esfuerzo c
 acceda al  libro a través de este link: <https://r4ds.had.co.nz/explore-intro.html>.
 
 ```{r ds_flow, echo=FALSE, fig.cap="A caption", out.width = '100%'}
-knitr::include_graphics("data_science.png")
+knitr::include_graphics("www/data_science.png")
 ```
 
 Es importante tener en cuenta que el conjunto de heramientas, armoniza en su filosofia Tidy, que esencialmente significa, que los conjuntos de datos, tienen una estructura basica, donde cada columna representa una variable y cada fila una observación, no todos los outputs de las funciones utilizadas, tiene la estructura deseada, pero gracias a las herramientas seleccionadas, su manipulación puede ser automatizada, con el fin de que cumplan con la arquitectura base. 
@@ -496,7 +496,7 @@ Más información sobre esta herramienta se encuentra disponible en este link <h
 ## Prophet
 
 ```{r prophet, echo=FALSE, fig.cap="A caption", out.width = '100%'}
-knitr::include_graphics("prophet.png")
+knitr::include_graphics("www/prophet.png")
 ```
 
 El primer paso es segmentar la serie temporal como lo hicimos antes, se debe tener en cuenta que cualquier modelo o por lo menos la mayoria de estos, tienen un margen de error inferior en momentos no muy alejados del momento inical, puesto que a mayor horizonte temporal masyor incertidumbre respecto al desarrollo del escenario. 

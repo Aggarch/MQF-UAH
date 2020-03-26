@@ -1,7 +1,13 @@
-## Server
+
+
+#  ( A-Z ) Server ####
 
 shinyServer(function(input, output) {
   
+  
+   # A) Reactive Expressions ####
+  
+  #description
   # Correlation Matrix
   index_cor <- eventReactive(input$observe, {
     
@@ -9,6 +15,7 @@ shinyServer(function(input, output) {
                             from = input$daterange[1],
                             to = input$daterange[2]
     )
+    
     {
       #   behavior_data %>%
       #
@@ -123,6 +130,7 @@ shinyServer(function(input, output) {
   })
   
   # Stock Ticker 
+  #
   # stock_ticker    <- eventReactive(input$observe,{
   #   
   #   stock_ticker <- tq_get(input$text, get = "stock.prices",
@@ -133,10 +141,18 @@ shinyServer(function(input, output) {
   #   stock_ticker
   #   
   # })
+
   
   
- ##### Outputs ---
-     
+   
+  
+  
+  
+
+   # B) Outputs ####
+
+  
+  #description
   output$index_cor   <- renderPlot({
     
     col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
@@ -148,7 +164,6 @@ shinyServer(function(input, output) {
              tl.col = "darkblue",
              order = "hclust")
    })
-  
   output$rolling_cor <- renderPlotly({
     
     # DXY_mean_cor <- mean(index_cor [,7:7])
@@ -158,24 +173,28 @@ shinyServer(function(input, output) {
         filter(symbol != "DXY") %>% 
         ggplot(aes(x = date, y = rolling.corr, color = symbol)) +
         geom_hline(yintercept =  0, color = palette_light()[[8]]) +
-        geom_line(size = 1.5) +
-        labs(title = "Rolling Correlation to DXY",
+        geom_point(size = 1.5)+
+        geom_line(size  = 1) +
+        labs(title = "DXY CUR Baseline ",br(),
              x = "", y = "Dynamic Correlation", color = "") +
         facet_wrap(~ symbol, ncol = 2) +
-        theme_tq() +
-        scale_color_tq()
+        # theme_tq() +
+        theme_minimal()+
+        scale_color_tq()+
+        theme(legend.position = "none")
+      
     )
     
     
   })
-  
   output$returns     <- renderPlotly({
 
     ggplotly(
       price_return()%>%
         mutate(Color = ifelse(daily.returns > 0.00, "green", "red")) %>%
         ggplot(aes(x = date, y = daily.returns, color = Color))+
-        theme_tq()+
+        # theme_tq()+
+        theme_minimal()+
         geom_point(size = 3)+
         geom_line(color = "gray", size = 1)+
         # geom_smooth(color = "orange", method = loess)+
@@ -185,13 +204,13 @@ shinyServer(function(input, output) {
       )
 
   })
-  
   output$evolution   <- renderPlotly({
     
     ggplotly(
       price_evolution()%>%
         ggplot(aes(x = date, y = price))+
-        theme_tq()+
+        # theme_tq()+
+        theme_minimal()+
         geom_point(color = "steelblue", size = 2)+
         geom_line(color = "gray", size = 1)+
         geom_smooth(color = "orange", method = loess)+
@@ -201,32 +220,10 @@ shinyServer(function(input, output) {
     
   })
   
- {#  output$tech        <- renderPlotly({
- #    
- # #   ggplotly(
- #      stock_ticker()%>%
- #        ggplot(aes(x = date, y = close, open = open,
- #                   high = high, low = low, close = close)) +
- #        geom_candlestick() 
- #        # geom_bbands(ma_fun = SMA, sd = 2, n = 20, 
- #        #             linetype = 4, size = 1, alpha = 0.2, 
- #        #             fill        = palette_light()[[1]], 
- #        #             color_bands = palette_light()[[1]], 
- #        #             color_ma    = palette_light()[[2]]) +
- #        # labs(title = paste0(input$variable, "Candlestick Chart"), 
- #        #      subtitle = "BBands with SMA Applied, Experimenting with Formatting", 
- #        #      y = "Closing Price", x = "") + 
- #        # theme_tq()
- # #   )
- #    
- #  })
-}
+
   
   
-  #output$table <- renderDataTable({
-    
-  #})
-  
+
   
   output$macroPrimes <- renderTable({
     
@@ -235,4 +232,9 @@ shinyServer(function(input, output) {
   
   
   
-})
+
+  
+  
+  
+  
+  })
