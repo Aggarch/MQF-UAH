@@ -7,7 +7,6 @@ if (skin == "")
   skin <- "black"
 
 
-
 # 1.) market_list ####
 
 market_list <- list(    
@@ -53,7 +52,24 @@ market_list <- list(
 
 # 2.) dashboardPage ####
 ui <- dashboardPage(
-      dashboardHeader(title = "QuanTrader"),
+      dashboardHeader(title = 'QuanTrader', titleWidth = 250, 
+                      
+                      tags$li(class="dropdown",tags$a(href="https://github.com/Aggarch/MQF-UAH", 
+                                                      icon("github","fa-2x"), "",
+                                                      style= "padding-left:27px,width:650px;height:40px",
+                                                      target="_blank")),
+                      tags$li(class="dropdown",tags$a(href="https://www.teletrader.com/", 
+                                                      icon("accusoft","fa-2x"), "",
+                                                      style= "padding-left:27px,width:650px;height:40px",
+                                                      target="_blank")),
+                      tags$li(class="dropdown",tags$a(href="https://twitter.com/AndgTrader", 
+                                                      icon("twitter","fa-2x"), "",
+                                                      style= "padding-left:27px,width:650px;height:40px",
+                                                      target="_blank")),
+                      tags$li(class="dropdown",tags$a(href="https://www.bloomberg.com/", 
+                                                      icon("newspaper","fa-2x"), "",
+                                                      style= "padding-left:27px,width:650px;height:40px",
+                                                      target="_blank"))),
       dashboardSidebar(width = 250,
                    sidebarMenu(
                      menuItem("Home", tabName = "home", icon = icon("home")),
@@ -74,7 +90,7 @@ ui <- dashboardPage(
                      ),
                      br(), br(),br(),br(),br(),  br(), br(),br(),br(),br(),
                      br(), br(),br(),br(),br(),  br(), br(),br(),br(),br(),
-                     br(), br(),br(),br(),br(),  br(), br(),
+                     br(), br(),br(),
                      
                      div(
                      tags$a(href="https://cran.r-project.org/web/packages/tidyquant/index.html","Powered by",
@@ -83,8 +99,9 @@ ui <- dashboardPage(
                      # tags$a(href="https://github.com/Aggarch/MQF-UAH" ,"*"),
                      
                      br(),
+                  
                      tags$img(src='rstudio_logo_white.png', height=40, width=120, 
-                              style = "padding-left:17px"),
+                              style = "padding-left:27px"),
                      tags$img(src='fred_white_2.png', height=40, width=40,
                               style= "padding-left:7px"),
 
@@ -108,8 +125,8 @@ ui <- dashboardPage(
                         column(12,
                                wellPanel(
                                  h1("Quantitative Market Analytics"), 
-                                 tags$a(href="https://github.com/Aggarch/MQF-UAH" ,"GitHub",
-                                        style = "padding-left:7px"),
+                                 # tags$a(href="https://github.com/Aggarch/MQF-UAH" ,"GitHub",
+                                 #        style = "padding-left:7px"),
                                  
                                  hr(),
                                  helpText("**Lorem** ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
@@ -123,22 +140,10 @@ ui <- dashboardPage(
                                   Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus.
                                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit,
                                   sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
-                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere.
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
-                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere.
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
-                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus.
-                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit,
-                                  sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
-                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere.
-                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus.",hr(),
-                                  
+                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere.",hr(),
 
                                   tags$img(src   = "data_science.png", width = "650px", height = "240px", 
-                                           style = "width:650px;height:240px;display:block;margin:auto"),br(),
+                                           style = "width:720px;height:300px;display:block;margin:auto"),br(),
                                   tags$a(href="https://r4ds.had.co.nz/","R for Data Science"))
                                  
                                  )
@@ -156,12 +161,25 @@ ui <- dashboardPage(
                 column(4,
                        wellPanel(
                          h2("Descriptive Market Analytics"),
-                         helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
+                         h2(
+                         helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit
                                   sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
                                   Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
                                   Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
                                   Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus."),
+                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purusat ipsum luctus varius. 
+                                  Proin varius quam at congue posuere.",
+                                  
+                                  "ictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
+                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
+                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purusat ipsum luctus varius. 
+                                  Proin varius quam at congue posuere. 
+                                  Fusce fringilla tellus pretium, ege
+                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
+                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus.")
+                         ),
                          pickerInput(
                            inputId = "variable",
                            label = "Variables",

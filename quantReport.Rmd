@@ -743,7 +743,7 @@ prophet         <"https://cran.r-project.org/web/packages/prophet/index.html">
 # 1.)   Tidy - Data: ####
 # makes reference to the macroeconomic data and treasury rates in a tidy format: 
 # Data tidyng phiosophy: Each Column represents a variable, each row show the values.
-browseURL("https://vita.had.co.nz/papers/tidy-data.pdf")
+# browseURL("https://vita.had.co.nz/papers/tidy-data.pdf")
 
 # Displpay some tidyquant options :::
 
@@ -2032,7 +2032,7 @@ getSymbols("GBPUSD",
 
 EURUSD %>% tail(); GBPUSD %>% tail()
 
-browseURL( "https://www.rdocumentation.org/packages/quantmod/versions/0.4-15/topics/getSymbols.av")
+# browseURL( "https://www.rdocumentation.org/packages/quantmod/versions/0.4-15/topics/getSymbols.av")
 
 # More Data sources: ####
 # browseURL("https://towardsdatascience.com/free-financial-data-a122a3cd5531")
@@ -2136,7 +2136,7 @@ sp500 %>%
   )
 
 
-browseURL("https://rpubs.com/the5ac/all_seasons_portfolio_part1")
+# browseURL("https://rpubs.com/the5ac/all_seasons_portfolio_part1")
 
 
 # 11) Financial Maths ####
