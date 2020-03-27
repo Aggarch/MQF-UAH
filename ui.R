@@ -129,14 +129,15 @@ ui <- dashboardPage(
                                  #        style = "padding-left:7px"),
                                  
                                  hr(),
-                                 helpText("**Lorem** ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
+                                 h3(
+                                 helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
                                   sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
                                   Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
                                   Fusce fringilla tellus pretium, egestas lorem at, volutpat tus et malesuada fames ac turpis egestas.
                                   Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus.      
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
-                                  ---
-                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.",
+
+                                  "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
                                   Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus.
                                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit,
                                   sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
@@ -145,6 +146,8 @@ ui <- dashboardPage(
                                   tags$img(src   = "data_science.png", width = "650px", height = "240px", 
                                            style = "width:720px;height:300px;display:block;margin:auto"),br(),
                                   tags$a(href="https://r4ds.had.co.nz/","R for Data Science"))
+                                 
+                                 )
                                  
                                  )
                              )
@@ -161,8 +164,8 @@ ui <- dashboardPage(
                 column(4,
                        wellPanel(
                          h2("Descriptive Market Analytics"),
-                         h2(
-                         helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit
+                         
+                           helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit
                                   sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
                                   Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
                                   Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
@@ -178,8 +181,8 @@ ui <- dashboardPage(
                                   Fusce fringilla tellus pretium, ege
                                   Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
                                   Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus.")
-                         ),
+                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus."),
+                         
                          pickerInput(
                            inputId = "variable",
                            label = "Variables",
