@@ -205,17 +205,18 @@ ui <- dashboardPage(
                        fluidPage(
                          wellPanel(
                            tabsetPanel(
-                             tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor"),
-                                                                        color="#0dc5c1")),
-  
-                             tabPanel("Rolling Correlation", withSpinner(plotlyOutput("rolling_cor"),
-                                                                         color="#0dc5c1")), 
-                             
                              tabPanel("Price Evolution", withSpinner(plotlyOutput("evolution"),
                                                                      color="#0dc5c1")),
                              
                              tabPanel("Price Returns", withSpinner(plotlyOutput("returns"),
-                                                                   color="#0dc5c1"))
+                                                                   color="#0dc5c1")),
+                             
+                             tabPanel("Rolling Correlation", withSpinner(plotlyOutput("rolling_cor"),
+                                                                         color="#0dc5c1")), 
+                             
+                             tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor"),
+                                                                        color="#0dc5c1"))
+                            
 
                            )
                          )
@@ -266,13 +267,13 @@ ui <- dashboardPage(
                        fluidPage(
                          wellPanel(
                            tabsetPanel(
-                             tabPanel("Time Series", withSpinner(plotOutput("forecast"),
+                             tabPanel("Time Series", withSpinner(plotlyOutput("fcast"),
                                                                         color="#0dc5c1")),
 
                              tabPanel("Trend Decomposition", withSpinner(plotlyOutput("trend"),
                                                                          color="#0dc5c1")),
 
-                             tabPanel("Ts Changepoints", withSpinner(plotlyOutput("changepoints"),
+                             tabPanel("Ts Changepoints", withSpinner(plotlyOutput("changep"),
                                                                      color="#0dc5c1"))
                              
                        

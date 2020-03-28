@@ -129,30 +129,14 @@ shinyServer(function(input, output) {
     
   })
   
-  # Stock Ticker 
-  #
-  # stock_ticker    <- eventReactive(input$observe,{
-  #   
-  #   stock_ticker <- tq_get(input$text, get = "stock.prices",
-  #                           from = input$daterange[1],
-  #                           to = input$daterange[2]
-  #   )
-  #   
-  #   stock_ticker
-  #   
-  # })
 
-  
-  
-   
-  
-  
   
 
    # B) Outputs ####
 
+  #description :::
   
-  #description
+  #corrmatrix
   output$index_cor   <- renderPlot({
     
     col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
@@ -164,6 +148,8 @@ shinyServer(function(input, output) {
              tl.col = "darkblue",
              order = "hclust")
    })
+  
+  #rollingcorr
   output$rolling_cor <- renderPlotly({
     
     # DXY_mean_cor <- mean(index_cor [,7:7])
@@ -187,6 +173,8 @@ shinyServer(function(input, output) {
     
     
   })
+  
+  #returns
   output$returns     <- renderPlotly({
 
     ggplotly(
@@ -204,6 +192,8 @@ shinyServer(function(input, output) {
       )
 
   })
+  
+  #evolution
   output$evolution   <- renderPlotly({
     
     ggplotly(
@@ -221,8 +211,9 @@ shinyServer(function(input, output) {
   })
   
 
+  #prediction ::: 
   
-  
+
 
   
   output$macroPrimes <- renderTable({
