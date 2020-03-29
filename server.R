@@ -139,14 +139,35 @@ shinyServer(function(input, output) {
     b_data <- tq_get(input$variable_1, get = "economic.data",
                             from = input$daterange_1[1],
                             to = input$daterange_1[2]
-    )
+    ) %>%
+      select(date, price) %>%
+      rename(ds=date, y=price) %>% 
+      na.locf() 
     
-    time_series <- b_data %>% 
-      select(date, price) %>% 
-      rename(ds = date, y = price)
+    
+    # b_data <-  tq_get(input$variable_1, get  = "economic.data",
+    #                   from = input$daterange_1[1],
+    #                   to   = input$daterange_2[2] %>%
+    #                     tq_transmute(select     = price,
+    #                                  mutate_fun = periodReturn,
+    #                                  period     = "daily") %>%
+    #                     rename(ds = date, y = daily.returns) %>%
+    #                     na.locf()
+    # )
+
+
+   m <- prophet(b_data)
+   future   <- make_future_dataframe(m,periods = 60)
+   forecast <-  predict(m, future)
+    
+   time_series <- forecast
+   
+   time_series
     
     
   })
+  
+  
 
   
 
@@ -234,20 +255,48 @@ shinyServer(function(input, output) {
   
   #forecast
   output$fcast <- renderPlotly({
+
+    b_data <- tq_get(input$variable_1, get = "economic.data",
+                     from = input$daterange_1[1],
+                     to = input$daterange_1[2]
+    ) %>%
+      select(date, price) %>%
+      rename(ds=date, y=price) %>% 
+      na.locf() 
+    #
+     m <- prophet(b_data)
     
-    
-    ggplotly(
-      time_series()%>%
-        ggplot(aes(x = ds, y = y))+
+     ggplotly( 
+     plot(m,time_series() 
+          ),dynamicTicks = TRUE,
+     layerData = 2, originalData = FALSE) %>% 
+       rangeslider() %>% 
+       layout(hovermode = "x") 
+     
+     # %>% 
+     #   dynamicTicks = TRUE %>%
+     #   rangeslider() %>%
+     #   layout(hovermode = "x")
       
-        geom_point(color = "green", size = 2)+
-        geom_line(color = "blue", size = 1)+
-        labs(x = "Date", y = "Point",
-             title = paste0(input$variable_1))
-    )
     
     
-    
+    # b_data <-  tq_get(input$variable_1, get  = "economic.data",
+    #        from = input$daterange_1[1],
+    #        to   = input$daterange_2[2] %>%
+    #   tq_transmute(select     = price,
+    #                mutate_fun = periodReturn,
+    #                period     = "daily") %>%
+    #   rename(ds = date, y = daily.returns) %>%
+    #   na.locf()
+    # )
+    #  
+    # m <- prophet(b_data)
+    # 
+    #  #ggplotly(
+    #   
+    #   plot(m,time_series()
+    #        )
+      
     
   })
 

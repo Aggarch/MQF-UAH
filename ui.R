@@ -72,7 +72,7 @@ ui <- dashboardPage(
                                                       target="_blank"))),
       dashboardSidebar(width = 250,
                    sidebarMenu(
-                     menuItem("Home", tabName = "home", icon = icon("home")),
+                     menuItem("Presentation", tabName = "home", icon = icon("file-code")),
                      menuItem("DataFlow", tabName = "dflow", icon = icon("database")),
                      menuItem("FrameWork", tabName = "fwork", icon = icon("crop-alt")),
                      
@@ -212,22 +212,15 @@ ui <- dashboardPage(
                                   Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
                                   Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
                                   Proin leo tortor, pulvinar non massa commodo, tempus vulputate purusat ipsum luctus varius. 
-                                  Proin varius quam at congue posuere.",
-                                  
-                                  "ictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
-                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purusat ipsum luctus varius. 
-                                  Proin varius quam at congue posuere. 
-                                  Fusce fringilla tellus pretium, ege
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
-                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus."),
+                                  Proin varius quam at congue posuere purus."),
                          
                          pickerInput(
                            inputId = "variable",
                            label = "Variables",
-                           choices = market_list, multiple = TRUE
+                           choices = market_list,
+                           multiple = TRUE,
+                           selected = "SP500"
+                           
                          ),
                          textInput(inputId = "text", 
                                    label = "Stock Ticker", value = "Enter text..."),  ####
@@ -290,7 +283,8 @@ ui <- dashboardPage(
                          pickerInput(
                            inputId = "variable_1",
                            label = "Variables",
-                           choices = market_list, multiple = TRUE),
+                           selected = "SP500",
+                           choices = market_list, multiple = F),
                          textInput(inputId = "text", 
                                    label = "Stock Ticker", value = "Enter text..."),  ####
                          
@@ -348,7 +342,9 @@ ui <- dashboardPage(
                          pickerInput(
                            inputId = "variable_2",
                            label = "Variables",
-                           choices = market_list, multiple = TRUE
+                           choices = market_list, 
+                           selected = "SP500",
+                           multiple = TRUE
                          ),
                          textInput(inputId = "text", 
                                    label = "Stock Ticker", value = "Enter text..."),  ####
