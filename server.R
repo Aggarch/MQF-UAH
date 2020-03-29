@@ -5,6 +5,7 @@
 shinyServer(function(input, output) {
   
   
+
    # A) Reactive Expressions ####
   
   #description
@@ -129,10 +130,28 @@ shinyServer(function(input, output) {
     
   })
   
+  
+  Sys.sleep(3)
+  
+  #prediction
+  time_series <- eventReactive(input$observe_1,{
+    
+    b_data <- tq_get(input$variable_1, get = "economic.data",
+                            from = input$daterange_1[1],
+                            to = input$daterange_1[2]
+    )
+    
+    time_series <- b_data %>% 
+      select(date, price) %>% 
+      rename(ds = date, y = price)
+    
+    
+  })
 
   
 
    # B) Outputs ####
+  
 
   #description :::
   
@@ -213,6 +232,24 @@ shinyServer(function(input, output) {
 
   #prediction ::: 
   
+  #forecast
+  output$fcast <- renderPlotly({
+    
+    
+    ggplotly(
+      time_series()%>%
+        ggplot(aes(x = ds, y = y))+
+      
+        geom_point(color = "green", size = 2)+
+        geom_line(color = "blue", size = 1)+
+        labs(x = "Date", y = "Point",
+             title = paste0(input$variable_1))
+    )
+    
+    
+    
+    
+  })
 
 
   

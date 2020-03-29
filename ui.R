@@ -73,6 +73,9 @@ ui <- dashboardPage(
       dashboardSidebar(width = 250,
                    sidebarMenu(
                      menuItem("Home", tabName = "home", icon = icon("home")),
+                     menuItem("DataFlow", tabName = "dflow", icon = icon("database")),
+                     menuItem("FrameWork", tabName = "fwork", icon = icon("crop-alt")),
+                     
                      menuItem("Description", tabName = "description", icon = icon("poll")
                               # menuSubItem('Macroeconomics', tabName = 'macroeconomics', icon = icon("circle-notch")),
                               # menuSubItem('Indexes', tabName = 'indexes',  icon = icon("circle-notch")),
@@ -153,6 +156,44 @@ ui <- dashboardPage(
                              )
                          )
                       ),
+      
+      tabItem("dflow",
+              fluidPage(
+                column(12,
+                       wellPanel(
+                         h3("DataFlow"), 
+                         tags$a(href="https://es.wikipedia.org/wiki/Cross_Industry_Standard_Process_for_Data_Mining" ,"CRISP-DM",
+                                style = "padding-left:7px"),
+                         
+                         hr(),
+                         h4(
+                           helpText("",
+                                    
+                                    tags$img(src= "data_flow.png", style ="width:900px;height:600px;display:block;margin:auto"))
+                           )
+                        )
+                    )
+               )
+          ),
+      tabItem("fwork",
+              fluidPage(
+                column(12,
+                       wellPanel(
+                         h3("Analytics Framework"), 
+                         tags$a(href="https://www.gurobi.com/company/about-gurobi/prescriptive-analytics/" ,"Analytics",
+                                style = "padding-left:7px"),
+                         
+                         hr(),
+                         h4(
+                           helpText("",
+                                    
+                                    tags$img(src= "analytics.png", style ="width:900px;height:500px;display:block;margin:auto"))
+                         )
+                       )
+                )
+              )
+      ),
+      
       
 
 
@@ -247,20 +288,20 @@ ui <- dashboardPage(
                                   Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
                                   Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus."),
                          pickerInput(
-                           inputId = "variable",
+                           inputId = "variable_1",
                            label = "Variables",
                            choices = market_list, multiple = TRUE),
                          textInput(inputId = "text", 
                                    label = "Stock Ticker", value = "Enter text..."),  ####
                          
-                         dateRangeInput ("daterange" , "Intervalo de fechas:" ,
+                         dateRangeInput ("daterange_1" , "Intervalo de fechas:" ,
                                          start   =  today()-365,
                                          end     =  today(),
                                          min     =  "2008-01-01",
                                          max     =  today()+ 365,
                                          separator = " - " ,
                                          startview = "year"),
-                         actionButton(inputId = "observe", label = "Observe")
+                         actionButton(inputId = "observe_1", label = "Observe")
                        )
                 ),
                 column(8,
@@ -275,6 +316,7 @@ ui <- dashboardPage(
 
                              tabPanel("Ts Changepoints", withSpinner(plotlyOutput("changep"),
                                                                      color="#0dc5c1"))
+                   
                              
                        
                            )
@@ -304,21 +346,21 @@ ui <- dashboardPage(
                                   Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
                                   Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus."),
                          pickerInput(
-                           inputId = "variable",
+                           inputId = "variable_2",
                            label = "Variables",
                            choices = market_list, multiple = TRUE
                          ),
                          textInput(inputId = "text", 
                                    label = "Stock Ticker", value = "Enter text..."),  ####
                          
-                         dateRangeInput ("daterange" , "Intervalo de fechas:" ,
+                         dateRangeInput ("daterange_2" , "Intervalo de fechas:" ,
                                          start   =  today()-365,
                                          end     =  today(),
                                          min     =  "2008-01-01",
                                          max     =  today()+ 365,
                                          separator = " - " ,
                                          startview = "year"),
-                         actionButton(inputId = "observe", label = "Observe")
+                         actionButton(inputId = "observe_2", label = "Observe")
                        )
                 ),
                 column(8,
