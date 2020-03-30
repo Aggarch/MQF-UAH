@@ -304,6 +304,9 @@ ui <- dashboardPage(
                            tabsetPanel(
                              tabPanel("Time Series", withSpinner(plotlyOutput("fcast"),
                                                                         color="#0dc5c1")),
+                             
+                             tabPanel("TS Returns", withSpinner(plotlyOutput("tsr"),
+                                                                         color="#0dc5c1")),
 
                              tabPanel("Trend Decomposition", withSpinner(plotlyOutput("trend"),
                                                                          color="#0dc5c1")),

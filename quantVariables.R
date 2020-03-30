@@ -1442,10 +1442,9 @@ sp500 %>%
 
 
 
-# 11) Financial Maths ####
-# .......####
+#Financial Maths ####
+#Modelling a cash flow ####
 
-# 11.1) Modelling a cash flow ####
 #https://bookdown.org/wfoote01/faur/r-warm-ups-in-finance.html
 
 rates <- c(0.06, 0.07, 0.05, 0.09, 0.09, 
@@ -1454,6 +1453,180 @@ t <- seq(1, 8)
 
 (pv.1 <- sum(1/(1 + rates)^t))
 
+
+#Twitter info  scrapping ########
+library(rtweet)
+#trends
+trends <- get_trends()
+
+#make a tweet 
+post_tweet("my first rtweet #rstats")
+
+
+#Basic search 
+search_tweets("economy", 10,  include_rts = FALSE)
+#where q = subject; n = quantity
+
+
+#More specific Search
+q <- "economic crisis"
+n <- 10000
+#since <- "2016-12-01"
+since <- today()-1500
+until <- today()
+rt <- search_tweets(
+  q = q, n = n, type = "recent", 
+  since = since, until = until)
+
+## preview users data
+users_data(rt)
+
+## plot time series (if ggplot2 is installed)
+ts_plot(rt)
+
+## plot time series of tweets
+ts_plot(rt, "3 hours") +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(face = "bold")) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = "Frequency about #economic crises Twitter statuses from past 9 days",
+    subtitle = "Twitter status (tweet) counts aggregated using three-hour intervals",
+    caption = "\nSource: Data collected from Twitter's REST API via rtweet"
+  )
+
+## search for 10,000 tweets sent from the US
+rt <- search_tweets(
+  "lang:en", geocode = lookup_coords("usa"), n = 10000
+)
+
+
+## search for 250,000 tweets containing the word data
+# to request more than rate limits:::
+rt <- search_tweets(
+  "data", n = 250000, retryonratelimit = TRUE
+)
+
+## get user IDs of accounts followed by CNN
+tmls <- get_timelines(c("cnn", "BBCWorld", "foxnews"), n = 3200)
+
+## plot the frequency of tweets for each user over time
+tmls %>%
+  dplyr::filter(created_at > "2017-10-29") %>%
+  dplyr::group_by(screen_name) %>%
+  ts_plot("days", trim = 1L) +
+  ggplot2::geom_point() +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(
+    legend.title = ggplot2::element_blank(),
+    legend.position = "bottom",
+    plot.title = ggplot2::element_text(face = "bold")) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = "Frequency of Twitter statuses posted by news organization",
+    subtitle = "Twitter status (tweet) counts aggregated by day from October/November 2017",
+    caption = "\nSource: Data collected from Twitter's REST API via rtweet"
+  )
+
+## lookup users by screen_name or user_id
+users <- c("business", "markets", "businessinsider","FT", "YahooFinance",
+           "wef", "WSJmarkets","economics","CNBC","AndgTrader")
+tweeters <- lookup_users(users)
+
+
+
+# tw 4 QuantApp ####
+
+
+
+#Make query of specific content:
+#recession:::
+
+#Main Funciton ::: 
+
+#user need to use accents:
+tt <- function(ttt){
+  rst <- search_tweets(q = ttt, n = 100, include_rts = FALSE)
+  return(rst)
+}
+
+#user just need to type:
+tt <- function(ttt){
+  rst= search_tweets(q = paste0(",ttt,"), n = 100, include_rts = FALSE)
+  return(rst)
+}
+
+recession_rt <- search_tweets(
+  "#recession", n = 10000, include_rts = FALSE
+)
+#}
+
+bullish_rt <- search_tweets(
+  "#bullish", n = 10000, include_rts = FALSE
+)
+
+bearish_rt <- search_tweets(
+  "#bearish", n = 10000, include_rts = FALSE
+)
+
+
+
+# read text in datatable
+
+recession_rt <- search_tweets(
+  "#recession", n = 10000, include_rts = FALSE
+) %>% group_by(screen_name) %>% 
+  filter(created_at == max(created_at)) %>% 
+  select(screen_name, text)%>% 
+  rename(Accounts=screen_name,Tweets = text) %>% 
+  datatable(style = 'default', rownames = F)
+
+
+#bullish
+bullish_rt <- search_tweets(
+  "#bullish", n = 10000, include_rts = FALSE
+) %>% group_by(screen_name) %>% 
+  filter(created_at == max(created_at)) %>% 
+  select(screen_name, text) %>% 
+  rename(Accounts=screen_name,Tweets = text) %>% 
+  datatable(style = 'default', rownames = F)
+
+
+#bullish
+bearish_rt <- search_tweets(
+  "#bullish", n = 10000, include_rts = FALSE
+) %>% group_by(screen_name) %>% 
+  filter(created_at == max(created_at)) %>% 
+  select(screen_name, text) %>% 
+  rename(Accounts=screen_name,Tweets = text) %>% 
+  datatable(style = 'default', rownames = F)
+
+
+
+#visualize freq
+recession_tw_freq <- 
+  ts_plot(recession_rt, "5 hours") +
+  ggplot2::theme_minimal() +
+  ggplot2::geom_line(color='#1da1f2', size=1.5)+
+  ggplot2::geom_point(color="#D16082", size=4)+
+  ggplot2::geom_smooth(color="green")+
+  ggplot2::theme(plot.title = ggplot2::element_text(face = "bold")) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = "Frequency of #recession Twitter statuses from past 7 days",
+    subtitle = "Twitter status (tweet) counts aggregated using three-hour intervals",
+    caption = "\nSource: Data collected from Twitter's REST API via rtweet"
+  )
+
+## lookup expert users opinion by screen_name or user_id
+users <- c("business", "markets", "businessinsider","FT", "YahooFinance",
+           "wef", "WSJmarkets","economics","AndgTrader")
+
+vip_tweeters <- lookup_users(users) %>% 
+  select(screen_name, text) %>% 
+  rename(ACCOUNT = screen_name,
+         TWEET = text) %>% head(30) %>%
+  gt()
 
 
 

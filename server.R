@@ -17,36 +17,7 @@ shinyServer(function(input, output) {
                             to = input$daterange[2]
     )
     
-    {
-      #   behavior_data %>%
-      #
-      #   Macroeconomics = c("Global GDP"          = "NYGDPPCAPKDWLD",
-      #                      "Economic Policy Risk"         = "USEPUINDXD",
-      #                      "Global Economic Uncertainty"  = "GEPUPPP",
-      #                      "Trade Policy Risk"            = "CHNMAINLANDTPU",
-      #                      "Houses Month supply"          = "MSACSR",
-      #                      "CPI"                          = "CPIAUCSL",
-      #                      "Real GDP"                     = "A191RL1Q225SBEA",
-      #                      "IPI"                          = "INDPRO",
-      #                      "Non Farm Payrolls"            = "PAYEMS",
-      #                      "Unemployment Rate"            = "UNRATE",
-      #                      "Treasury 10y"                 = "DGS10",
-      #                      "Treasury 2y"                  = "GS2",
-      #                      "FED Interest Rate"            = "FEDFUNDS"),
-      #   Indexes = c("Standard & Poors 500" = "SP500",
-      #               "Dow Jones"            = "DJIA",
-      #               "Nasdaq Composite"     = "NASDAQCOM",
-      #               "Nikkei"               = "NIKKEI225",
-      #               "VIX"                  = "VIXCLS"),
-      #   Commodities = c("WTI"              = "WTISPLC",
-      #                   "Brent"            = "POILBREUSDM",
-      #                   "Gold"             = "GOLDAMGBD228NLBM",
-      #                   "Aluminium"        = "PALUMUSDM",
-      #                   "Corn"             = "PMAIZMTUSDM",
-      #                   "Soy"              = "PSOYBUSDQ")
-      # ),
-    }  # Use case_when to resolve names look. 
-    
+
     index_cor <- behavior_data %>%
       pivot_wider(names_from = symbol, values_from = price) %>%
       select(-date) %>%
@@ -141,34 +112,24 @@ shinyServer(function(input, output) {
                             to = input$daterange_1[2]
     ) %>%
       select(date, price) %>%
-      rename(ds=date, y=price) %>% 
-      na.locf() 
-    
-    
-    # b_data <-  tq_get(input$variable_1, get  = "economic.data",
-    #                   from = input$daterange_1[1],
-    #                   to   = input$daterange_2[2] %>%
-    #                     tq_transmute(select     = price,
-    #                                  mutate_fun = periodReturn,
-    #                                  period     = "daily") %>%
-    #                     rename(ds = date, y = daily.returns) %>%
-    #                     na.locf()
-    # )
+      rename(ds=date, y=price) %>%
+      na.locf()
+
 
 
    m <- prophet(b_data)
    future   <- make_future_dataframe(m,periods = 60)
    forecast <-  predict(m, future)
-    
+
    time_series <- forecast
-   
+
    time_series
     
     
   })
   
-  
 
+  
   
 
    # B) Outputs ####
@@ -254,32 +215,32 @@ shinyServer(function(input, output) {
   #prediction ::: 
   
   #forecast
-  output$fcast <- renderPlotly({
+   output$fcast <- renderPlotly({
 
     b_data <- tq_get(input$variable_1, get = "economic.data",
                      from = input$daterange_1[1],
                      to = input$daterange_1[2]
     ) %>%
       select(date, price) %>%
-      rename(ds=date, y=price) %>% 
-      na.locf() 
+      rename(ds=date, y=price) %>%
+      na.locf()
     #
      m <- prophet(b_data)
-    
-     ggplotly( 
-     plot(m,time_series() 
+
+     ggplotly(
+     plot(m,time_series()
           ),dynamicTicks = TRUE,
-     layerData = 2, originalData = FALSE) %>% 
-       rangeslider() %>% 
-       layout(hovermode = "x") 
-     
-     # %>% 
+     layerData = 2, originalData = FALSE) %>%
+       rangeslider() %>%
+       layout(hovermode = "x")
+
+     # %>%
      #   dynamicTicks = TRUE %>%
      #   rangeslider() %>%
      #   layout(hovermode = "x")
-      
-    
-    
+
+
+
     # b_data <-  tq_get(input$variable_1, get  = "economic.data",
     #        from = input$daterange_1[1],
     #        to   = input$daterange_2[2] %>%
@@ -289,16 +250,17 @@ shinyServer(function(input, output) {
     #   rename(ds = date, y = daily.returns) %>%
     #   na.locf()
     # )
-    #  
+    #
     # m <- prophet(b_data)
-    # 
+    #
     #  #ggplotly(
-    #   
+    #
     #   plot(m,time_series()
     #        )
-      
-    
-  })
+
+  #   
+   })
+
 
 
   
