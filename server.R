@@ -104,7 +104,9 @@ shinyServer(function(input, output) {
   
   Sys.sleep(3)
   
-  #prediction
+  #prediction ::
+  
+  #time_series
   time_series <- eventReactive(input$observe_1,{
     
     b_data <- tq_get(input$variable_1, get = "economic.data",
@@ -115,10 +117,9 @@ shinyServer(function(input, output) {
       rename(ds=date, y=price) %>%
       na.locf()
 
-
-
+    
    m <- prophet(b_data)
-   future   <- make_future_dataframe(m,periods = 60)
+   future   <- make_future_dataframe(m,periods = 90)
    forecast <-  predict(m, future)
 
    time_series <- forecast
@@ -128,8 +129,78 @@ shinyServer(function(input, output) {
     
   })
   
+  #time_series_return
+  time_series_rt <- eventReactive(input$observe_1,{
+    
+      b_data_rt <-  tq_get(input$variable_1, get  = "economic.data",
+                        from = input$daterange_1[1],
+                        to   = input$daterange_2[2]) %>%
+                          tq_transmute(select     = price,
+                                       mutate_fun = periodReturn,
+                                       period     = "daily") %>%
+                          rename(ds = date, y = daily.returns) %>%
+                          na.locf()
+      
 
+    m_rt <- prophet(b_data_rt)
+    future_rt   <- make_future_dataframe(m_rt,periods = 90)
+    forecast_rt <-  predict(m_rt, future_rt)
+
+    time_series_rt <- forecast_rt
+
+    time_series_rt
+
+  })
   
+  #ts_decomp
+  time_series_decom <- eventReactive(input$observe_1,{
+    
+    b_data_decom <- tq_get(input$variable_1, get = "economic.data",
+                     from = input$daterange_1[1],
+                     to = input$daterange_1[2]
+    ) %>%
+      select(date, price) %>%
+      rename(ds=date, y=price) %>%
+      na.locf()
+    
+    
+    
+    m_decom <- prophet(b_data_decom)
+    future_decom   <- make_future_dataframe(m_decom,periods = 90)
+    forecast_decom <-  predict(m_decom, future_decom)
+    
+    time_series_decom <- forecast_decom
+    
+    time_series_decom
+    
+    
+  })
+  
+  #time_series_change_point
+   time_series_changep <- eventReactive(input$observe_1,{
+     
+     b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
+                      from = input$daterange_1[1],
+                      to = input$daterange_1[2]
+     ) %>%
+       select(date, price) %>%
+       rename(ds=date, y=price) %>%
+       na.locf()
+     
+     
+     
+     m_tbl <- prophet(b_data_tbl)
+     future_tbl   <- make_future_dataframe(m_tbl,periods = 90)
+     forecast_tbl <-  predict(m_tbl, future_tbl)
+   
+     time_series_changep <- forecast_tbl
+     
+     time_series_changep
+     
+   })
+  
+    
+ # })
   
 
    # B) Outputs ####
@@ -229,49 +300,156 @@ shinyServer(function(input, output) {
 
      ggplotly(
      plot(m,time_series()
-          ),dynamicTicks = TRUE,
+          )+ add_changepoints_to_plot(m),dynamicTicks = TRUE,
      layerData = 2, originalData = FALSE) %>%
        rangeslider() %>%
        layout(hovermode = "x")
 
-     # %>%
-     #   dynamicTicks = TRUE %>%
-     #   rangeslider() %>%
-     #   layout(hovermode = "x")
-
-
-
-    # b_data <-  tq_get(input$variable_1, get  = "economic.data",
-    #        from = input$daterange_1[1],
-    #        to   = input$daterange_2[2] %>%
-    #   tq_transmute(select     = price,
-    #                mutate_fun = periodReturn,
-    #                period     = "daily") %>%
-    #   rename(ds = date, y = daily.returns) %>%
-    #   na.locf()
-    # )
-    #
-    # m <- prophet(b_data)
-    #
-    #  #ggplotly(
-    #
-    #   plot(m,time_series()
-    #        )
-
   #   
    })
+   
+  #tsr forecast 
+   output$tsr <- renderPlotly({
+
+   b_data_rt <-  tq_get(input$variable_1, get  = "economic.data",
+                        from = input$daterange_1[1],
+                        to   = input$daterange_2[2] )%>%
+                          tq_transmute(select     = price,
+                                       mutate_fun = periodReturn,
+                                       period     = "daily") %>%
+                          rename(ds = date, y = daily.returns) %>%
+                          na.locf()
+    
+
+   m_rt <- prophet(b_data_rt)
+    
+   # ggplotly( 
+   # plot(m_rt, time_series_rt())
+   # )
+   ggplotly(
+     plot(m_rt,time_series_rt()
+     ),dynamicTicks = TRUE,
+     layerData = 2, originalData = FALSE) %>%
+     rangeslider() %>%
+     layout(hovermode = "x")
 
 
-
+   })
+   
+  #tsr decom 
+   output$trend <- renderPlot({
+     
+     b_data_decom <- tq_get(input$variable_1, get = "economic.data",
+                            from = input$daterange_1[1],
+                            to = input$daterange_1[2]) %>%
+       select(date, price) %>%
+       rename(ds=date, y=price) %>%
+       na.locf()
+     
+     
+     
+     m_decom <- prophet(b_data_decom)
+     
+     prophet_plot_components(m_decom,time_series_decom())
+       
+    })
   
-  output$macroPrimes <- renderTable({
+  #ts_changepoint
+   output$changep <- renderDataTable({
+     
+     b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
+                      from = input$daterange_1[1],
+                      to = input$daterange_1[2]
+     ) %>%
+       select(date, price) %>%
+       rename(ds=date, y=price) %>%
+       na.locf()
+
+
+
+     m_tbl <- prophet(b_data_tbl)
+     future_tbl   <- make_future_dataframe(m_tbl,periods = 95)
+     forecast_tbl <-  predict(m_tbl, future_tbl)
+
+     options(DT.options = list(dom = 'bfrtip',
+                               ordering = F,
+                               initComplete = JS("function(settings, json) {",
+                                                 "$(this.api().table().header()).css({
+                                              'font-size': '20px',
+                                              'color': '#3b444b',
+                                              'text-align':'center',
+                                              'padding-left': '20px',
+                                              'padding-right': '20px',
+                                              'width': '150%'});",
+                                                 "}")))
+
+     
+     changep <- 
+       time_series_changep() %>% 
+       select(ds, yhat, yhat_lower, yhat_upper) %>%
+       as_tibble() %>% 
+       mutate(ds = as.Date(substr(ds,0,10))) %>% 
+       left_join(b_data_tbl, by="ds") %>%
+       filter(ds >= ymd(today()-7)) %>% 
+       mutate(y=ifelse(is.na(y),"Uncertain",y)) %>% 
+       rename(Date = ds, Price = y) %>%
+       select(Date, Price, everything()) %>% 
+     
+  
+       datatable(rownames = F,style ='bootstrap4',
+                 extensions = c('Buttons','Scroller'),
+                 options = list(
+                   dom = 'bfrtip',
+                   pageLength = 30,
+                   info = FALSE,
+                   scrollY = 350,
+                   autoWidth = TRUE,
+                   position = 'bottom',
+                   columnDefs = list(list(width = '200px', targets = c(2, 3)))
+                   )
+       )
+
+     
+   })
+
+   
+   changep <- reactive({
+     
+     b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
+                          from = input$daterange_1[1],
+                          to = input$daterange_1[2]
+     ) %>%
+       select(date, price) %>%
+       rename(ds=date, y=price) %>%
+       na.locf()
+     
+     changep <- 
+       time_series_changep() %>% 
+       select(ds, yhat, yhat_lower, yhat_upper) %>%
+       as_tibble() %>% 
+       mutate(ds = as.Date(substr(ds,0,10))) %>% 
+       left_join(b_data_tbl, by="ds") %>%
+       filter(ds >= ymd(today()-7)) %>% 
+       mutate(y=ifelse(is.na(y),"Uncertain",y)) %>% 
+       rename(Date = ds, Price = y ) %>% 
+       select(Date, Price, everything())
+
+     
+   })
+   
+   output$down <- downloadHandler(
+     filename = paste0(input$variable_1,"_forecast.xlsx"),
+     content = function(file){ 
+       openxlsx::write.xlsx(changep(), file)
+       
+     }
+   )
+
+   
+   output$macroPrimes <- renderTable({
     
     
   })
-  
-  
-  
-
   
   
   

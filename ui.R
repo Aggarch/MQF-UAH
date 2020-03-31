@@ -54,11 +54,11 @@ market_list <- list(
 ui <- dashboardPage(
       dashboardHeader(title = 'QuanTrader', titleWidth = 250, 
                       
-                      tags$li(class="dropdown",tags$a(href="https://github.com/Aggarch/MQF-UAH", 
+                      tags$li(class="dropdown",tags$a(href="https://github.com/Aggarch/", 
                                                       icon("github","fa-2x"), "",
                                                       style= "padding-left:27px,width:650px;height:40px",
                                                       target="_blank")),
-                      tags$li(class="dropdown",tags$a(href="https://www.teletrader.com/", 
+                      tags$li(class="dropdown",tags$a(href="https://www.teletrader.com/markets/world", 
                                                       icon("accusoft","fa-2x"), "",
                                                       style= "padding-left:27px,width:650px;height:40px",
                                                       target="_blank")),
@@ -66,7 +66,7 @@ ui <- dashboardPage(
                                                       icon("twitter","fa-2x"), "",
                                                       style= "padding-left:27px,width:650px;height:40px",
                                                       target="_blank")),
-                      tags$li(class="dropdown",tags$a(href="https://www.bloomberg.com/", 
+                      tags$li(class="dropdown",tags$a(href="https://www.bloomberg.com/live", 
                                                       icon("newspaper","fa-2x"), "",
                                                       style= "padding-left:27px,width:650px;height:40px",
                                                       target="_blank"))),
@@ -239,17 +239,17 @@ ui <- dashboardPage(
                        fluidPage(
                          wellPanel(
                            tabsetPanel(
-                             tabPanel("Price Evolution", withSpinner(plotlyOutput("evolution"),
-                                                                     color="#0dc5c1")),
+                             tabPanel("Price Evolution", withSpinner(plotlyOutput("evolution",height = "600px"),
+                                                                     color="#1da1f2")),
                              
-                             tabPanel("Price Returns", withSpinner(plotlyOutput("returns"),
-                                                                   color="#0dc5c1")),
+                             tabPanel("Price Returns", withSpinner(plotlyOutput("returns",height = "600px"),
+                                                                   color="#1da1f2")),
                              
-                             tabPanel("Rolling Correlation", withSpinner(plotlyOutput("rolling_cor"),
-                                                                         color="#0dc5c1")), 
+                             tabPanel("Rolling Correlation", withSpinner(plotlyOutput("rolling_cor",height = "600px"),
+                                                                         color="#1da1f2")), 
                              
-                             tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor"),
-                                                                        color="#0dc5c1"))
+                             tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor",height = "600px"),
+                                                                        color="#1da1f2"))
                             
 
                            )
@@ -289,8 +289,8 @@ ui <- dashboardPage(
                                    label = "Stock Ticker", value = "Enter text..."),  ####
                          
                          dateRangeInput ("daterange_1" , "Intervalo de fechas:" ,
-                                         start   =  today()-365,
-                                         end     =  today(),
+                                         start   =  today()-1500,
+                                         end     =  today()+95,
                                          min     =  "2008-01-01",
                                          max     =  today()+ 365,
                                          separator = " - " ,
@@ -302,25 +302,26 @@ ui <- dashboardPage(
                        fluidPage(
                          wellPanel(
                            tabsetPanel(
-                             tabPanel("Time Series", withSpinner(plotlyOutput("fcast"),
-                                                                        color="#0dc5c1")),
+                             tabPanel("Time Series", withSpinner(plotlyOutput("fcast",height = "600px"),
+                                                                        color="#1da1f2")),
                              
-                             tabPanel("TS Returns", withSpinner(plotlyOutput("tsr"),
-                                                                         color="#0dc5c1")),
+                             tabPanel("TS Returns", withSpinner(plotlyOutput("tsr",height = "600px"),
+                                                                         color="#1da1f2")),
 
-                             tabPanel("Trend Decomposition", withSpinner(plotlyOutput("trend"),
-                                                                         color="#0dc5c1")),
+                             tabPanel("Trend Decomposition", withSpinner(plotOutput("trend",height = "600px"),
+                                                                         color="#1da1f2")),
 
-                             tabPanel("Ts Changepoints", withSpinner(plotlyOutput("changep"),
-                                                                     color="#0dc5c1"))
+                             tabPanel("TS Daypoints", withSpinner(dataTableOutput("changep",height = "600px"),
+                                                                     color="#1da1f2"),
+                                      downloadButton("down", "Forecast"))
                    
                              
                        
                            )
                          )
                          
-                       )
-                       
+                      )
+                   
                 )
               )
               
@@ -366,17 +367,17 @@ ui <- dashboardPage(
                        fluidPage(
                          wellPanel(
                            tabsetPanel(
-                             tabPanel("Portfolios", withSpinner(plotOutput("portfolio"),
-                                                                        color="#0dc5c1")),
+                             tabPanel("Portfolios", withSpinner(plotOutput("portfolio",height = "600px"),
+                                                                        color="#1da1f2")),
 
-                             tabPanel("All Weather", withSpinner(plotlyOutput("all_weather"),
-                                                                         color="#0dc5c1")),
+                             tabPanel("All Weather", withSpinner(plotlyOutput("all_weather",height = "600px"),
+                                                                         color="#1da1f2")),
 
-                             tabPanel("Recomendations", withSpinner(plotlyOutput("recomendations"),
-                                                                     color="#0dc5c1")),
+                             tabPanel("Recomendations", withSpinner(plotlyOutput("recomendations",height = "600px"),
+                                                                     color="#1da1f2")),
 
-                             tabPanel("Mark to Market", withSpinner(plotlyOutput("m2m"),
-                                                                   color="#0dc5c1"))
+                             tabPanel("Mark to Market", withSpinner(plotlyOutput("m2m",height = "600px"),
+                                                                   color="#1da1f2"))
                           
                            )
                          )

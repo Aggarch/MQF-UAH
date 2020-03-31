@@ -576,6 +576,7 @@ Global_market_Corrplot
 
 library(prophet)
 library(tidyverse)
+library(tidyquant)
 library(lubridate)
 
 setwd("C:/Users/ANALITICA/Desktop")
