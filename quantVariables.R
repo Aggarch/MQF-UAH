@@ -1615,7 +1615,7 @@ recession_tw_freq <-
   ggplot2::labs(
     x = NULL, y = NULL,
     title = "Frequency of #recession Twitter statuses from past 7 days",
-    subtitle = "Twitter status (tweet) counts aggregated using three-hour intervals",
+    subtitle = "Twitter status (tweet) counts aggregated using Five-hour intervals",
     caption = "\nSource: Data collected from Twitter's REST API via rtweet"
   )
 

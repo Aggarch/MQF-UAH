@@ -72,28 +72,34 @@ ui <- dashboardPage(
                                                       target="_blank"))),
       dashboardSidebar(width = 250,
                    sidebarMenu(
-                     menuItem("Presentation", tabName = "home", icon = icon("file-code")),
-                     menuItem("DataFlow", tabName = "dflow", icon = icon("database")),
-                     menuItem("FrameWork", tabName = "fwork", icon = icon("crop-alt")),
+                     menuItem("Presentation", tabName = "home", icon = icon("file-code   ")),
+                     menuItem("DataFlow", tabName = "dflow", icon = icon("database"   )),
+                     menuItem("FrameWork", tabName = "fwork", icon = icon("crop-alt"   )),
                      
-                     menuItem("Description", tabName = "description", icon = icon("poll")
+                     menuItem("Sentiment", tabName = "sentiment", icon = icon("twitter   ")
+                              # menuSubItem('Portfolio', tabName = 'portfolio', icon = icon("circle-notch")),
+                              # menuSubItem('Notes', tabName = 'notes', icon = icon("circle-notch"))
+                     ),
+                     
+                     menuItem("Description", tabName = "description", icon = icon("poll   ")
                               # menuSubItem('Macroeconomics', tabName = 'macroeconomics', icon = icon("circle-notch")),
                               # menuSubItem('Indexes', tabName = 'indexes',  icon = icon("circle-notch")),
                               # menuSubItem('Comodities', tabName = 'comodities',  icon = icon("circle-notch")),
                               # menuSubItem('Currencies', tabName = 'comodities',  icon = icon("circle-notch"))
                      ),
-                     menuItem("Prediction", tabName = "prediction", icon = icon("project-diagram")
+                     menuItem("Prediction", tabName = "prediction", icon = icon("project-diagram    ")
                               # menuSubItem('FedMeeting Matrix', tabName = 'fedmeetings', icon = icon("circle-notch")),
                               # menuSubItem('Time series', tabName = 'timeseries', icon = icon("circle-notch")),
                               # menuSubItem('Montecarlo', tabName = 'montecarlo', icon = icon("circle-notch"))
                      ),
-                     menuItem("Prescription", tabName = "prescription", icon = icon("chart-line")
+                     menuItem("Prescription", tabName = "prescription", icon = icon("chart-line   ")
                               # menuSubItem('Portfolio', tabName = 'portfolio', icon = icon("circle-notch")),
                               # menuSubItem('Notes', tabName = 'notes', icon = icon("circle-notch"))
                      ),
+                    
                      br(), br(),br(),br(),br(),  br(), br(),br(),br(),br(),
                      br(), br(),br(),br(),br(),  br(), br(),br(),br(),br(),
-                     br(), br(),br(),
+                     br(), 
                      
                      div(
                      tags$a(href="https://cran.r-project.org/web/packages/tidyquant/index.html","Powered by",
@@ -388,6 +394,68 @@ ui <- dashboardPage(
               )
               
       ),
+
+tabItem("sentiment",
+        fluidPage(
+          column(3,
+                 wellPanel(
+                   h2("Market Sentiment"),
+                   
+                   helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit
+                                  sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
+                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
+                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
+                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purusat ipsum luctus varius. 
+                                  Proin varius quam at congue posuere purus."),
+                   
+                   # pickerInput(
+                   #   inputId = "variable",
+                   #   label = "Variables",
+                   #   choices = market_list,
+                   #   multiple = TRUE,
+                   #   selected = "SP500"
+                   #   
+                   # ),
+                   textInput(inputId ="hashtag", 
+                             label = h2("#Hashtag"), value = "#recession" ) ,  ####
+                   
+                 #   dateRangeInput ("daterange" , "Intervalo de fechas:" ,
+                 #                   start   =  today()-365,
+                 #                   end     =  today(),
+                 #                   min     =  "2008-01-01",
+                 #                   max     =  today()+ 365,
+                 #                   separator = " - " ,
+                 #                   startview = "year"),
+                    actionButton(inputId = "observe", label = "Observe")
+                  )
+          ),
+          column(9,
+                 fluidPage(
+                   wellPanel(
+                     tabsetPanel(
+                       tabPanel("Sentiment", withSpinner(dataTableOutput("hashtag",height = "600px"),
+                                                               color="#1da1f2")),
+                       
+                       tabPanel("Frequency Charts", withSpinner(plotlyOutput("freq",height = "600px"),
+                                                             color="#1da1f2")),
+                       
+                       tabPanel("Newspapers", withSpinner(dataTableOutput("news",height = "600px"),
+                                                                   color="#1da1f2"))
+
+                       # tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor",height = "600px"),
+                       #                                            color="#1da1f2"))
+                       
+                       
+                     )
+                   )
+                   
+                 )
+                 
+          )
+        )
+        
+),
       tabItem("comodities")
       
     )

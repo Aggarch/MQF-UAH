@@ -8,6 +8,69 @@ shinyServer(function(input, output) {
 
    # A) Reactive Expressions ####
   
+  #Market sentiment
+  #sentiment
+  sentiment <- eventReactive(input$observe, {
+    
+
+    get_token()
+    
+    tt <- function(ttt){
+      rst <- search_tweets(q = input$hashtag, n = 350, include_rts = FALSE)
+      return(rst)
+    }
+    
+    # read text in datatable
+    
+    
+    tweets <- tt(input$hashtag) %>%
+      group_by(screen_name) %>% 
+      filter(created_at == max(created_at)) %>% 
+      select(screen_name, text)%>% 
+      rename(Accounts=screen_name,
+             Tweets = text) %>%
+    
+
+    tweets
+    
+    
+    
+    })
+  
+  #news
+  newsp <- eventReactive(input$observe, {
+    
+    
+    get_token()
+    
+    users <- c("business", "markets", "businessinsider","FT", "YahooFinance",
+               "wef", "WSJmarkets","economics","AndgTrader")
+    
+    vip_tweeters <- lookup_users(users) %>% 
+      select(screen_name, text) %>% 
+      rename(ACCOUNT = screen_name,
+             TWEET = text) %>% head(30) 
+    
+  })
+  
+  #frecuency chrts
+  frequency_tw <- eventReactive(input$observe,{
+    
+    get_token()
+    
+    
+    tt <- function(ttt){
+      rst <- search_tweets(q = ttt, n = 350, include_rts = FALSE)
+      return(rst)
+    }
+  
+    tweets <- tt(input$hashtag)
+    
+    tweets
+   })
+    
+
+  
   #description
   # Correlation Matrix
   index_cor <- eventReactive(input$observe, {
@@ -205,6 +268,127 @@ shinyServer(function(input, output) {
 
    # B) Outputs ####
   
+   
+  #sentiment ::: 
+  output$hashtag <- renderDataTable({
+    
+    get_token()
+    
+    
+    tt <- function(ttt){
+      rst <- search_tweets(q = ttt, n = 1000, include_rts = FALSE)
+      return(rst)
+    }
+    
+    options(DT.options = list(dom = 'bfrtip',
+                              ordering = F,
+                              initComplete = JS("function(settings, json) {",
+                                                "$(this.api().table().header()).css({
+                                              'font-size': '20px',
+                                              'color': '#3b444b',
+                                              'text-align':'center',
+                                              'padding-left': '20px',
+                                              'padding-right': '20px',
+                                              'width': '150%'});",
+                                                "}")))
+    # read text in datatable
+    
+    tweets <- tt(input$hashtag) %>%
+      group_by(screen_name) %>% 
+      filter(created_at == max(created_at)) %>% 
+      select(screen_name, text)%>% 
+      rename(Accounts=screen_name,
+             Tweets = text) %>%
+      
+      datatable( rownames = F, style = 'bootstrap4',
+                 extensions = c('Buttons','Scroller'),
+                 options = list(
+                   dom = 'bfrtip',
+                   pageLength = 30,
+                   info = FALSE,
+                   scrollY = 350,
+                   autoWidth = TRUE
+                 ))
+    tweets
+      })
+  
+  #newspapers
+  output$news <- renderDataTable({
+    
+    get_token()
+    
+    
+    ## lookup expert users opinion by screen_name or user_id
+    users <- c("business", "markets", "businessinsider","FT", "YahooFinance",
+               "wef", "WSJmarkets","economics","AndgTrader")
+    
+    vip_tweeters <- lookup_users(users) %>% 
+      select(screen_name, text) %>% 
+      rename(ACCOUNT = screen_name,
+             TWEET = text) %>% head(30) 
+    
+    
+    options(DT.options = list(dom = 'bfrtip',
+                              ordering = F,
+                              initComplete = JS("function(settings, json) {",
+                                                "$(this.api().table().header()).css({
+                                              'font-size': '20px',
+                                              'color': '#3b444b',
+                                              'text-align':'center',
+                                              'padding-left': '20px',
+                                              'padding-right': '20px',
+                                              'width': '150%'});",
+                                                "}")))
+    # read text in datatable
+    
+    vip_tweets <- 
+     vip_tweeters %>%
+        datatable( rownames = F, style = 'bootstrap4',
+                 extensions = c('Buttons','Scroller'),
+                 options = list(
+                   dom = 'bfrtip',
+                   pageLength = 30,
+                   info = FALSE,
+                   scrollY = 350,
+                   autoWidth = TRUE
+                   
+                 ))
+    
+    vip_tweets
+    
+  })
+  
+  #frequency
+  output$freq <- renderPlotly({
+    
+    
+    get_token()
+    
+    
+    tt <- function(ttt){
+      rst <- search_tweets(q = ttt, n = 1000, include_rts = FALSE)
+      return(rst)
+    }
+    
+    tweets <- tt(input$hashtag)
+    
+    tweets
+    
+    ggplotly( 
+      ts_plot(tweets, "1 hours") +
+        ggplot2::theme_minimal() +
+        ggplot2::geom_line(color='#1da1f2', size=1.5)+
+        ggplot2::geom_point(color="#D16082", size=5)+
+        ggplot2::geom_smooth(color="green")+
+        ggplot2::theme(plot.title = ggplot2::element_text(face = "bold")) +
+        ggplot2::labs(
+          x = NULL, y = NULL,
+          title = paste0("Frequency of " ,input$hashtag,"Twitter statuses from past 7 days"),
+          subtitle = "Twitter status (tweet) counts aggregated using One-hour intervals",
+          caption = "\nSource: Data collected from Twitter's REST API via rtweet"
+        )
+    )
+  })
 
   #description :::
   
@@ -412,7 +596,7 @@ shinyServer(function(input, output) {
      
    })
 
-   
+  #downloable ::  
    changep <- reactive({
      
      b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
