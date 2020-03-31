@@ -193,7 +193,8 @@ ui <- dashboardPage(
                          h4(
                            helpText("",
                                     
-                                    tags$img(src= "analytics.png", style ="width:900px;height:500px;display:block;margin:auto"))
+                                    tags$img(src= "https://www.gurobi.com/wp-content/uploads/2018/12/analytic-types-chart.png",
+                                             style ="width:900px;height:500px;display:block;margin:auto"))
                          )
                        )
                 )
@@ -434,14 +435,15 @@ tabItem("sentiment",
                  fluidPage(
                    wellPanel(
                      tabsetPanel(
-                       tabPanel("Sentiment", withSpinner(dataTableOutput("hashtag",height = "600px"),
-                                                               color="#1da1f2")),
-                       
-                       tabPanel("Frequency Charts", withSpinner(plotlyOutput("freq",height = "600px"),
-                                                             color="#1da1f2")),
                        
                        tabPanel("Newspapers", withSpinner(dataTableOutput("news",height = "600px"),
-                                                                   color="#1da1f2"))
+                                                          color="#1da1f2")),
+                 
+                       tabPanel("Frequency Charts", withSpinner(plotlyOutput("freq",height = "600px"),
+                                                             color="#1da1f2")),
+                     
+                       tabPanel("Sentiment", withSpinner(dataTableOutput("hashtag",height = "600px"),
+                                                         color="#1da1f2"))
 
                        # tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor",height = "600px"),
                        #                                            color="#1da1f2"))

@@ -366,7 +366,7 @@ shinyServer(function(input, output) {
     
     
     tt <- function(ttt){
-      rst <- search_tweets(q = ttt, n = 1000, include_rts = FALSE)
+      rst <- search_tweets(q = ttt, n = 100, include_rts = FALSE)
       return(rst)
     }
     
@@ -639,3 +639,5 @@ shinyServer(function(input, output) {
   
   
   })
+
+save.image('environ.RData')
