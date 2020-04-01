@@ -383,7 +383,7 @@ shinyServer(function(input, output) {
         ggplot2::theme(plot.title = ggplot2::element_text(face = "bold")) +
         ggplot2::labs(
           x = NULL, y = NULL,
-          title = paste0("Frequency of " ,input$hashtag,"Twitter statuses from past 7 days"),
+          title = paste0("Frequency of " ,input$hashtag," Twitter statuses from past 12 hours"),
           subtitle = "Twitter status (tweet) counts aggregated using One-hour intervals",
           caption = "\nSource: Data collected from Twitter's REST API via rtweet"
         )

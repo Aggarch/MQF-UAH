@@ -42,11 +42,15 @@ market_list <- list(
                      "AUD USD"                      = "DEXUSAL",
                      "USD CHF"                      = "DEXSZUS",
                      "USD SEK"                      = "DEXSDUS"),
-  ETFs           = c("Vanguard"                     = "VLT")
+  ETFs           = c("Vanguard Total Stock"         = "VLT",
+                     "Blackrock Treasury 20y"       = "TLT",
+                     "Blackrock Treasury 7-10y"     = "IEF",
+                     "SPDR Gold Trust"              = "GLD",
+                     "Invesco DB Commodity"         = "DBC")
   
 )
 
-
+#("VTI", "TLT", "IEF", "GLD", "DBC")
 
 
 
@@ -239,7 +243,8 @@ ui <- dashboardPage(
                                           max     =  today()+ 365,
                                           separator = " - " ,
                                           startview = "year"),
-                         actionButton(inputId = "observe", label = "Observe")
+                         actionButton(inputId = "observe", label = "Describe",
+                                      icon = icon('chart-bar'))
                        )
                 ),
                 column(8,
@@ -302,7 +307,7 @@ ui <- dashboardPage(
                                          max     =  today()+ 365,
                                          separator = " - " ,
                                          startview = "year"),
-                         actionButton(inputId = "observe_1", label = "Observe")
+                         actionButton(inputId = "observe_1", label = "Forecast", icon = icon('money-bill-wave'))
                        )
                 ),
                 column(8,
@@ -356,7 +361,7 @@ ui <- dashboardPage(
                            choices = market_list, 
                            selected = "SP500",
                            multiple = TRUE
-                         ),
+                         ), 
                          textInput(inputId = "text", 
                                    label = "Stock Ticker", value = "Enter text..."),  ####
                          
@@ -367,7 +372,7 @@ ui <- dashboardPage(
                                          max     =  today()+ 365,
                                          separator = " - " ,
                                          startview = "year"),
-                         actionButton(inputId = "observe_2", label = "Observe")
+                         actionButton(inputId = "observe_2", label = "Diagnose", icon = icon("search-dollar"))
                        )
                 ),
                 column(8,
@@ -428,7 +433,7 @@ tabItem("sentiment",
                  #                   max     =  today()+ 365,
                  #                   separator = " - " ,
                  #                   startview = "year"),
-                    actionButton(inputId = "observe", label = "Observe")
+                    actionButton(inputId = "observe", label = "Feel", icon = icon('comments-dollar'))
                   )
           ),
           column(9,
