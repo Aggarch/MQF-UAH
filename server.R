@@ -8,7 +8,8 @@ shinyServer(function(input, output) {
 
    # A) Reactive Expressions ####
   
-  #Market sentiment
+  #Market sentiment ----
+  
   #sentiment
   sentiment <- eventReactive(input$observe, {
     
@@ -71,15 +72,27 @@ shinyServer(function(input, output) {
     
 
   
-  #description
+  #description ----
+  
   # Correlation Matrix
   index_cor <- eventReactive(input$observe, {
     
-    behavior_data <- tq_get(input$variable, get = "economic.data",
-                            from = input$daterange[1],
-                            to = input$daterange[2]
-    )
-    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>% 
+        rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
 
     index_cor <- behavior_data %>%
       pivot_wider(names_from = symbol, values_from = price) %>%
@@ -94,10 +107,26 @@ shinyServer(function(input, output) {
   # Rolling Correlation 
   rolling_cor <- eventReactive(input$observe, {
 
-  behavior_data <- tq_get(input$variable, get = "economic.data",
-                            from = input$daterange[1],
-                            to = input$daterange[2]
-    )
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      )
+    }else{
+
+
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>%
+        rename(price = adjusted) %>%
+        select(price, symbol, date)
+
+    }
+    
+    
+   # behavior_data <- behavior_data_1 %>% rbind(behavior_data_2)
+    
   
   price_return <- behavior_data %>%
     group_by(symbol) %>%
@@ -132,10 +161,22 @@ shinyServer(function(input, output) {
   # Price Returns 
   price_return <- eventReactive(input$observe, {
     
-    behavior_data <- tq_get(input$variable, get = "economic.data",
-                            from = input$daterange[1],
-                            to = input$daterange[2]
-    )
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>% 
+        rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
     
 
     price_return <- behavior_data %>%
@@ -152,10 +193,23 @@ shinyServer(function(input, output) {
   # Price Evolution 
   price_evolution <- eventReactive(input$observe, {
     
-    behavior_data <- tq_get(input$variable, get = "economic.data",
-                            from = input$daterange[1],
-                            to = input$daterange[2]
-    )
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>% 
+        rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
+    
     
     price_evolution <- behavior_data 
     
@@ -167,11 +221,36 @@ shinyServer(function(input, output) {
   
   Sys.sleep(3)
   
-  #prediction ::
+  #prediction ----
   
   #time_series
   time_series <- eventReactive(input$observe_1,{
     
+    
+    # if(!input$variable_1 %in% market_list$ETFs){ 
+    #   
+    #   b_data <- tq_get(input$variable_1, get = "economic.data",
+    #                    from = input$daterange[1],
+    #                    to = input$daterange[2]) %>% 
+    #     select(date, price) %>%
+    #     rename(ds=date, y=price) %>%
+    #     na.locf()
+    #   
+    #   
+    # }else{
+    #   
+    #   
+    #   b_data <- tq_get(input$variable_1, get = "stock.prices",
+    #                    from = input %>% selec$daterange[1],
+    #                    to = input$daterange[2]) %>% 
+    #     rename(price = adjusted) %>% 
+    #     select(date, price) %>%
+    #     rename(ds=date, y=price) %>%
+    #     na.locf()
+    #   
+    # }
+    
+
     b_data <- tq_get(input$variable_1, get = "economic.data",
                             from = input$daterange_1[1],
                             to = input$daterange_1[2]
@@ -266,9 +345,13 @@ shinyServer(function(input, output) {
  # })
   
 
+   
+   
+   
+   
    # B) Outputs ####
   
-   
+  #Market sentiment ---- 
   #sentiment ::: 
   output$hashtag <- renderDataTable({
     
@@ -390,7 +473,7 @@ shinyServer(function(input, output) {
     )
   })
 
-  #description :::
+  #description ----
   
   #corrmatrix
   output$index_cor   <- renderPlot({
@@ -467,7 +550,7 @@ shinyServer(function(input, output) {
   })
   
 
-  #prediction ::: 
+  #prediction ----
   
   #forecast
    output$fcast <- renderPlotly({

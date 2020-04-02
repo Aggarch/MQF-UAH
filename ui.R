@@ -7,54 +7,8 @@ if (skin == "")
   skin <- "black"
 
 
-# 1.) market_list ####
 
-market_list <- list(    
-  Macroeconomics = c("Global GDP"                   = "NYGDPPCAPKDWLD",
-                     "Economic Policy Risk"         = "USEPUINDXD",
-                     "Global Economic Uncertainty"  = "GEPUPPP",
-                     "Trade Policy Risk"            = "CHNMAINLANDTPU",
-                     "Houses Month supply"          = "MSACSR",
-                     "CPI"                          = "CPIAUCSL",
-                     "Real GDP"                     = "A191RL1Q225SBEA",
-                     "IPI"                          = "INDPRO",
-                     "Non Farm Payrolls"            = "PAYEMS",
-                     "Unemployment Rate"            = "UNRATE",
-                     "Treasury 10y"                 = "DGS10",
-                     "Treasury 2y"                  = "GS2",
-                     "FED Interest Rate"            = "FEDFUNDS"),
-  Indexes        = c("Standard & Poors 500"         = "SP500",
-                     "Dow Jones"                    = "DJIA",
-                     "Nasdaq Composite"             = "NASDAQCOM",
-                     "Nikkei"                       = "NIKKEI225",
-                     "VIX"                          = "VIXCLS"),
-  Commodities    = c("WTI"                          = "WTISPLC",
-                     "Brent"                        = "POILBREUSDM",
-                     "Gold"                         = "GOLDAMGBD228NLBM",
-                     "Aluminium"                    = "PALUMUSDM",
-                     "Corn"                         = "PMAIZMTUSDM",
-                     "Soy"                          = "PSOYBUSDQ"),
-  Currencies     = c("DXY CUR"                      = "DTWEXAFEGS",
-                     "EUR USD"                      = "DEXUSEU",
-                     "GBP USD"                      = "DEXUSUK",
-                     "USD JPY"                      = "DEXJPUS",
-                     "USD CAD"                      = "DEXCAUS",
-                     "AUD USD"                      = "DEXUSAL",
-                     "USD CHF"                      = "DEXSZUS",
-                     "USD SEK"                      = "DEXSDUS"),
-  ETFs           = c("Vanguard Total Stock"         = "VLT",
-                     "Blackrock Treasury 20y"       = "TLT",
-                     "Blackrock Treasury 7-10y"     = "IEF",
-                     "SPDR Gold Trust"              = "GLD",
-                     "Invesco DB Commodity"         = "DBC")
-  
-)
-
-#("VTI", "TLT", "IEF", "GLD", "DBC")
-
-
-
-# 2.) dashboardPage ####
+# 1.) dashboardPage ####
 ui <- dashboardPage(
       dashboardHeader(title = 'QuanTrader', titleWidth = 250, 
                       
@@ -229,8 +183,8 @@ ui <- dashboardPage(
                            inputId = "variable",
                            label = "Variables",
                            choices = market_list,
-                           multiple = TRUE,
-                           selected = "SP500"
+                           selected = "SP500",
+                           multiple = TRUE
                            
                          ),
                          textInput(inputId = "text", 
@@ -296,7 +250,9 @@ ui <- dashboardPage(
                            inputId = "variable_1",
                            label = "Variables",
                            selected = "SP500",
-                           choices = market_list, multiple = F),
+                           choices = market_list[1:4],
+                           multiple = F),
+
                          textInput(inputId = "text", 
                                    label = "Stock Ticker", value = "Enter text..."),  ####
                          
@@ -325,7 +281,7 @@ ui <- dashboardPage(
 
                              tabPanel("TS Daypoints", withSpinner(dataTableOutput("changep",height = "600px"),
                                                                      color="#1da1f2"),
-                                      downloadButton("down", "Forecast"))
+                                      boton_descarga("down", "Forecast"))
                    
                              
                        
