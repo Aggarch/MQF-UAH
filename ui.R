@@ -10,7 +10,7 @@ if (skin == "")
 
 # 1.) dashboardPage ####
 ui <- dashboardPage(
-      dashboardHeader(title = 'QuanTrader', titleWidth = 250, 
+      dashboardHeader(title = 'QuanTradeR', titleWidth = 250, 
                       
                       tags$li(class="dropdown",tags$a(href="https://github.com/Aggarch/", 
                                                       icon("github","fa-2x"), "",
