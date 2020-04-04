@@ -25,7 +25,6 @@ library(rtweet)
 library(gargle)
 library(openxlsx)
 
-# symbols <- c("VTI", "TLT", "IEF", "GLD", "DBC")
 
 source("funciones/boton_descarga.R")
 
@@ -71,6 +70,9 @@ market_list <- list(
                      "Invesco DB Commodity"         = "DBC")
   
 )
+
+
+
 
 
 
