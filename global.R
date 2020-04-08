@@ -67,7 +67,8 @@ market_list <- list(
                      "Blackrock Treasury 20y"       = "TLT",
                      "Blackrock Treasury 7-10y"     = "IEF",
                      "SPDR Gold Trust"              = "GLD",
-                     "Invesco DB Commodity"         = "DBC")
+                     "Invesco DB Commodity"         = "DBC",
+                     "Technology SPDR Fund"         = "XLK")
   
 )
 

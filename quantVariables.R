@@ -572,6 +572,60 @@ Global_market_Corrplot
 
 # 9) PORTFOLIO ####
 
+# Risk indicator:::####
+
+EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-90)
+
+#triggers if delta increase 10 % or more OR index equals or its above mean
+EPU_alt <- EPU_index %>% 
+  select(-symbol) %>% 
+  mutate(delta = (EPU_index$price)/lag(EPU_index$price)-1)%>% 
+  mutate(delta_trigger = ifelse(delta >= 0.10 | EPU_index$price >= mean(EPU_index$price+100),1L, 0L)) %>% 
+  slice(-1) %>% 
+  arrange(desc(date)) %>% 
+  rename(index = price,
+         Risk = delta_trigger) %>% 
+  mutate(delta = scales::percent(delta),
+         Risk = ifelse(Risk == 1, "OFF", "ON"))
+  
+# Summary of Risk ON|OFF
+
+EPU_abst <- 
+  EPU_alt %>%
+  group_by(Risk) %>% summarise(n = n()) %>% 
+  rename( Days = n)
+
+
+# To track FED rate odds
+browseURL("https://www.economics-finance.org/jefe/fin/KeaslerGoffpaper.pdf")
+browseURL("https://www.cmegroup.com/trading/interest-rates/stir/30-day-federal-fund_quotes_settlements_futures.html")
+
+
+#Import data 
+# FED Funds Targets (Upper{fftu} & Lower{fftl}) & Fed Funds Futures:::
+fftu <- tq_get("DFEDTARU", "economic.data", from=today()-60)
+fftl <- tq_get("DFEDTARL", "economic.data", from=today()-60)
+effr <- tq_get("DFF", "economic.data", from=today()-60)
+fff  <- tq_get("ZQ=F", "stock.prices", from=today()-60)
+
+# fed funds futures contract
+# use fed funds futures contract prices to examine the market’s expectations
+# relating to future interest rates 
+
+# If market participants anticipate a rate change by the Fed, the market price of fed funds futures contracts
+# will adjust to reflect the anticipated rate change. 
+# The fed funds rated implied by futures contracts will
+# indicate the magnitude and direction of the anticipated change. 
+
+# Beispiel 
+
+
+implied <- fff %>% filter(date == max(date)) %>% pull(adjusted)
+target <- fftu %>% filter(date == max(date)) %>% pull(price)
+market_expect <- 100-implied 
+(target-market_expect)*100
+
+
 #### time Series ####
 
 library(prophet)
@@ -622,8 +676,8 @@ plot(m, forecast)
 
 stock_returns_monthly <- c("AAPL", "GOOG", "NFLX") %>%
   tq_get(get  = "stock.prices",
-         from = "2010-01-01",
-         to   = "2015-12-31") %>%
+         from = today()-1500,
+         to   = today()) %>%
   group_by(symbol) %>%
   tq_transmute(select     = adjusted, 
                mutate_fun = periodReturn, 
@@ -633,8 +687,8 @@ stock_returns_monthly
 
 baseline_returns_monthly <- "XLK" %>%
   tq_get(get  = "stock.prices",
-         from = "2010-01-01",
-         to   = "2015-12-31") %>%
+         from = today()-1500,
+         to   = today()) %>%
   tq_transmute(select     = adjusted, 
                mutate_fun = periodReturn, 
                period     = "monthly", 
