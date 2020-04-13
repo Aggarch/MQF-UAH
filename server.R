@@ -10,8 +10,19 @@ shinyServer(function(input, output) {
   
   #Market sentiment ----
   
+  
+  observeEvent(input$observer, {
+    # Show a modal when the button is pressed
+    shinyalert(" Notification! ", "Information it's being process in real time,
+               remember to click on the -Feel- button every time introduce a new search value",
+               type = "success",showConfirmButton = T,
+               showCancelButton = FALSE,  timer = 40000, animation = TRUE,
+               closeOnEsc = T,
+               closeOnClickOutside = T,)
+  })
+  
   #sentiment
-  sentiment <- eventReactive(input$observe, {
+  sentiment <- eventReactive(input$observer, {
     
 
     get_token()
@@ -39,7 +50,7 @@ shinyServer(function(input, output) {
     })
   
   #news
-  newsp <- eventReactive(input$observe, {
+  newsp <- eventReactive(input$observer, {
     
     
     get_token()
@@ -55,7 +66,7 @@ shinyServer(function(input, output) {
   })
   
   #frecuency chrts
-  frequency_tw <- eventReactive(input$observe,{
+  frequency_tw <- eventReactive(input$observer,{
     
     get_token()
     
@@ -74,8 +85,19 @@ shinyServer(function(input, output) {
   
   #description ----
   
+  observeEvent(input$observe, {
+    # Show a modal when the button is pressed
+    shinyalert(" Notification! ", "Information it's being process in real time,
+               remember to click on the -Describe- button every time you change variables",
+               type = "success",showConfirmButton = T,
+               showCancelButton = FALSE,  timer = 40000, animation = TRUE,
+               closeOnEsc = T,
+               closeOnClickOutside = T,)
+  })
+  
   # Correlation Matrix
   index_cor <- eventReactive(input$observe, {
+    
     
     if(!input$variable %in% market_list$ETFs){ 
       
@@ -101,6 +123,7 @@ shinyServer(function(input, output) {
       cor()
     
     index_cor
+    
     
   })
   
@@ -222,6 +245,17 @@ shinyServer(function(input, output) {
   Sys.sleep(3)
   
   #prediction ----
+  
+  observeEvent(input$observe_1, {
+    # Show a modal when the button is pressed
+    shinyalert("Notification!", "Information it's being process in real time,
+               remember to click on the -Forecast- button every time you change variables",
+               type = "success",showConfirmButton = T,
+               showCancelButton = FALSE,  timer = 40000, animation = TRUE,
+               closeOnEsc = T,
+               closeOnClickOutside = T,)
+  })
+  
   
   #time_series
   time_series <- eventReactive(input$observe_1,{

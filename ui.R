@@ -89,7 +89,7 @@ ui <- dashboardPage(
     tabItems(
       tabItem("home",
                      fluidPage(
-                        column(12,
+                           column(12,
                                wellPanel(
                                  h1("Quantitative Market Analytics"), 
                                  # tags$a(href="https://github.com/Aggarch/MQF-UAH" ,"GitHub",
@@ -167,6 +167,7 @@ ui <- dashboardPage(
 
       tabItem("description",
               fluidPage(
+                useShinyalert(),
                 column(4,
                        wellPanel(
                          h2("Descriptive Market Analytics"),
@@ -237,7 +238,8 @@ ui <- dashboardPage(
 #prediction
       tabItem("prediction",
               fluidPage(
-                column(4,
+                useShinyalert(),
+                    column(4,
                        wellPanel(
                          h2("Predictive Market Analytics"),
                          helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
@@ -359,7 +361,8 @@ ui <- dashboardPage(
 
 tabItem("sentiment",
         fluidPage(
-          column(3,
+          useShinyalert(),
+            column(3,
                  wellPanel(
                    h2("Market Sentiment"),
                    
@@ -389,7 +392,7 @@ tabItem("sentiment",
                  #                   max     =  today()+ 365,
                  #                   separator = " - " ,
                  #                   startview = "year"),
-                    actionButton(inputId = "observe", label = "Feel", icon = icon('comments-dollar'))
+                    actionButton(inputId = "observer", label = "Feel", icon = icon('comments-dollar'))
                   )
           ),
           column(9,

@@ -24,6 +24,7 @@ library(gt)
 library(rtweet)
 library(gargle)
 library(openxlsx)
+library(shinyalert)
 
 
 source("funciones/boton_descarga.R")
