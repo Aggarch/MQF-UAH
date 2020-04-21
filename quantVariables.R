@@ -580,7 +580,9 @@ EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-90)
 EPU_alt <- EPU_index %>% 
   select(-symbol) %>% 
   mutate(delta = (EPU_index$price)/lag(EPU_index$price)-1)%>% 
-  mutate(delta_trigger = ifelse(delta >= 0.10 | EPU_index$price >= mean(EPU_index$price+100),1L, 0L)) %>% 
+  mutate(delta_trigger = ifelse(delta >= 0.10 |
+         EPU_index$price >= mean(EPU_index$price + 
+                  sd(EPU_index$price)),1L, 0L)) %>% 
   slice(-1) %>% 
   arrange(desc(date)) %>% 
   rename(index = price,
@@ -621,7 +623,8 @@ fff  <- tq_get("ZQ=F", "stock.prices", from=today()-60)
 
 
 implied <- fff %>% filter(date == max(date)) %>% pull(adjusted)
-target <- fftu %>% filter(date == max(date)) %>% pull(price)
+target_up <- fftu %>% filter(date == max(date)) %>% pull(price)
+target_lw <- fftu %>% filter(date == max(date)) %>% pull(price)
 market_expect <- 100-implied 
 (target-market_expect)*100
 
@@ -1309,8 +1312,39 @@ wts_map <- tibble(
 wts_map
 
 
-# 10) Alternative Data Source #### 
 #........####
+
+# 10) Alternative Data Source #### 
+
+# Web Scrapping ####
+library(rvest)
+
+eco_cal <- "https://tradingeconomics.com/calendar"
+read_html(eco_cal)
+agenda <- read_html(eco_cal)
+str(agenda)
+
+body_nodes <- agenda %>% 
+  html_node("body") %>% 
+  html_children()
+body_nodes
+
+body_nodes %>% 
+  html_children()
+
+times <- agenda %>% 
+  rvest::html_nodes('body') %>% 
+  xml2::xml_find_all("//tr[contains(@width, '100')]") %>% 
+  rvest::html_text()
+
+str_remove_all(times, "[\r\n]") %>% str_trim()   -> xx
+
+
+
+#Bureau of Economic Analisys
+bea_key <- "E04E3BF7-96B7-4057-B376-DFA2B1F9B251"
+
+beaSets( "E04E3BF7-96B7-4057-B376-DFA2B1F9B251")
 
 # Alpha Vantage Data: ####
 # To get Market data in Alpha: 
