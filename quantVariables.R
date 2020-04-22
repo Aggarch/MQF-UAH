@@ -626,6 +626,7 @@ fff  <- tq_get("ZQ=F",    "stock.prices" , from=today()-30) # Fed Funds Futures
 
 # Beispiel 
 
+
 interest_rate <- 
 
 tibble( 
@@ -634,9 +635,9 @@ FFF   = fff %>% filter(date == max(date)) %>% pull(adjusted),       # current pr
 target_up = fftu %>% filter(date == max(date)) %>% pull(price),     # Upper Target
 target_low = fftl %>% filter(date == max(date)) %>% pull(price),    # Lower Target
 EFFR   = effr %>% filter(date == max(date)) %>% pull(price),        # current Effective FedFunds
-market_expectation = (100-implied), # fed funds futures rate implied 
+market_expectation = (100-FFF), # fed funds futures rate implied 
 # Market participants expect that the average fed funds rate for current month will be +0.07%
-fed_action = market_expect-EFFR # The difference between current expectations and current prices.
+fed_action = market_expectation-EFFR # The difference between current expectations and current prices.
 #                It's important to keep in mind that the difference must be equal or above +- 0.25 bp (basic points)
 #                fed_action result it's the probable move o Fed eather positive r negative 
 
@@ -647,16 +648,25 @@ fed_action = market_expect-EFFR # The difference between current expectations an
          direction = if(fed_action > 0.25 & strengh == "High")
          {direction = "Rate High"}
          else if(fed_action < -0.25 & strengh == "High")
-         {direction = "Rate Cut"} else{direction = "Constant"}) %>% 
-         select(target_range, FFF, EFFR, market_expectation, fed_action, strengh,scenario, direction)
-          
-# Fed Rate Move Odds ####
+         {direction = "Rate Cut"} else{direction = "Constant"},
+         ) %>% 
+         select(target_range, FFF, EFFR, market_expectation, fed_action, strengh,scenario, direction) %>% 
 
-# Google Recession searches #### 
+  # Google Recession searches #### 
 
 google.trends = gtrends(c("Recession"), gprop = "web", time = "all")[[1]]
-google.trends = dcast(google.trends, date ~ keyword + geo, value.var = "hits")
-  
+google.trends = dcast(google.trends, date ~ keyword + geo, value.var = "hits") 
+
+value <- google.trends %>% 
+  as_tibble() %>% mutate(date = as.Date(date)) %>% 
+  filter(date == max(date)) %>% 
+  pull(Recession_world)
+
+interest_rate <- interest_rate %>%  mutate(Recession_World = value)
+
+# Fed Rate Move Odds ####
+
+#####
 
 #### time Series ####
 
