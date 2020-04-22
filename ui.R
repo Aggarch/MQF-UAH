@@ -191,7 +191,7 @@ ui <- dashboardPage(
                          textInput(inputId = "text", 
                                    label = "Stock Ticker", value = "Enter text..."),  ####
                          
-                         dateRangeInput ("daterange" , "Intervalo de fechas:" ,
+                         dateRangeInput ("daterange" , "Date Interval:" ,
                                           start   =  today()-365,
                                           end     =  today(),
                                           min     =  "2008-01-01",
@@ -258,7 +258,7 @@ ui <- dashboardPage(
                          textInput(inputId = "text", 
                                    label = "Stock Ticker", value = "Enter text..."),  ####
                          
-                         dateRangeInput ("daterange_1" , "Intervalo de fechas:" ,
+                         dateRangeInput ("daterange_1" , "Date Interval:" ,
                                          start   =  today()-1500,
                                          end     =  today()+95,
                                          min     =  "2008-01-01",
@@ -323,7 +323,7 @@ ui <- dashboardPage(
                          textInput(inputId = "text", 
                                    label = "Stock Ticker", value = "Enter text..."),  ####
                          
-                         dateRangeInput ("daterange_2" , "Intervalo de fechas:" ,
+                         dateRangeInput ("daterange_2" , "Date Interval:" ,
                                          start   =  today()-365,
                                          end     =  today(),
                                          min     =  "2008-01-01",
@@ -383,9 +383,9 @@ tabItem("sentiment",
                    #   
                    # ),
                    textInput(inputId ="hashtag", 
-                             label = h2("#Hashtag"), value = "#recession" ) ,  ####
+                             label = h2("#Hashtag"), value = "recession" ) ,  ####
                    
-                 #   dateRangeInput ("daterange" , "Intervalo de fechas:" ,
+                 #   dateRangeInput ("daterange" , "Date Interval:" ,
                  #                   start   =  today()-365,
                  #                   end     =  today(),
                  #                   min     =  "2008-01-01",
@@ -400,6 +400,9 @@ tabItem("sentiment",
                    wellPanel(
                      tabsetPanel(
                        
+                       tabPanel("Google Trends", withSpinner(plotlyOutput("google_trends",height = "600px"),
+                                                             color="#1da1f2")),
+                       
                        tabPanel("Newspapers", withSpinner(dataTableOutput("news",height = "600px"),
                                                           color="#1da1f2")),
                  
@@ -408,6 +411,8 @@ tabItem("sentiment",
                      
                        tabPanel("Sentiment", withSpinner(dataTableOutput("hashtag",height = "600px"),
                                                          color="#1da1f2"))
+                       
+                      
 
                        # tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor",height = "600px"),
                        #                                            color="#1da1f2"))

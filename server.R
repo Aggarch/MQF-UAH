@@ -49,6 +49,31 @@ shinyServer(function(input, output) {
     
     })
   
+  
+  google_trends <- eventReactive(input$observer, {
+    
+    ggtrend <- function(arg){ 
+      
+      arg = input$hashtag
+      
+      google.trends = gtrends(c(arg), gprop = "web", time = "all")[[1]]
+      google.trends = dcast(google.trends, date ~ keyword + geo, value.var = "hits")
+      
+      google.trends = google.trends %>% 
+        as_tibble() %>% 
+        rename(value = paste0(arg,"_world"))
+      
+      return(google.trends)
+      
+    }
+    
+    arg = input$hashtag
+    gTrend <- ggtrend(arg)
+    
+    gTrend
+    
+  })
+  
   #news
   newsp <- eventReactive(input$observer, {
     
@@ -384,7 +409,11 @@ shinyServer(function(input, output) {
    
    
    
+   
+   
    #-----
+   
+   
    
    
    # B) Outputs ####
@@ -509,6 +538,46 @@ shinyServer(function(input, output) {
           caption = "\nSource: Data collected from Twitter's REST API via rtweet"
         )
     )
+  })
+  
+  
+  #frequency
+  output$google_trends <- renderPlotly({
+    
+    
+    ggtrend <- function(arg){ 
+      
+      arg = input$hashtag
+      
+      google.trends = gtrends(c(arg), gprop = "web", time = "all")[[1]]
+      google.trends = dcast(google.trends, date ~ keyword + geo, value.var = "hits")
+      
+      google.trends = google.trends %>% 
+        as_tibble() %>% 
+        rename(value = paste0(arg,"_world"))
+      
+      return(google.trends)
+
+    }
+    
+    
+    arg = input$hashtag
+    gTrend <- ggtrend(arg)
+     
+     gTrend
+    
+     gTrend <- 
+      ggplotly(
+      gTrend %>%  ggplot(aes(x=date, y = value))+
+        geom_line(color = "blue")+
+        geom_point( color = "blue")+
+        geom_smooth(color = "pink")+
+        theme_classic()+
+        labs(x = "Date", y = " Ressecion Search" , 
+          title = paste("Searches of" ,arg," at Google Trends"),
+          subtitle = "information collected Since 2004"
+       )
+     ) 
   })
 
   #description ----

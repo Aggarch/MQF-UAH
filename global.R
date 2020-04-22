@@ -25,6 +25,8 @@ library(rtweet)
 library(gargle)
 library(openxlsx)
 library(shinyalert)
+library(gtrendsR)
+library(reshape2)
 
 
 source("funciones/boton_descarga.R")

@@ -572,43 +572,42 @@ Global_market_Corrplot
 
 # 9) PORTFOLIO ####
 
-# Risk indicator:::####
+# Risk Switch :::####
 
 EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-90)
 
-#triggers if delta increase 10 % or more OR index equals or its above mean
-EPU_alt <- EPU_index %>% 
-  select(-symbol) %>% 
+#triggers if delta increase 10 % or more OR index equals or its above 90 days mean
+
+EPU_alt <- EPU_index %>%  select(-symbol) %>% 
   mutate(delta = (EPU_index$price)/lag(EPU_index$price)-1)%>% 
   mutate(delta_trigger = ifelse(delta >= 0.10 |
          EPU_index$price >= mean(EPU_index$price + 
                   sd(EPU_index$price)),1L, 0L)) %>% 
   slice(-1) %>% 
   arrange(desc(date)) %>% 
-  rename(index = price,
-         Risk = delta_trigger) %>% 
-  mutate(delta = scales::percent(delta),
-         Risk = ifelse(Risk == 1, "OFF", "ON"))
+  rename(index = price, Risk = delta_trigger) %>% 
+  mutate(delta = scales::percent(delta), Risk = ifelse(Risk == 1, "OFF", "ON"))
   
 # Summary of Risk ON|OFF
 
-EPU_abst <- 
-  EPU_alt %>%
+EPU_abst <-   EPU_alt %>%
   group_by(Risk) %>% summarise(n = n()) %>% 
-  rename( Days = n)
+  rename( Days = n) %>% 
+  mutate("%" = scales::percent( Days/sum(Days))
+         )
 
 
-#FED rate odds #####
+#FED rate Expectations #####
 browseURL("https://www.economics-finance.org/jefe/fin/KeaslerGoffpaper.pdf")
 browseURL("https://www.cmegroup.com/trading/interest-rates/stir/30-day-federal-fund_quotes_settlements_futures.html")
-
+browseURL("https://www.danielstrading.com/education/markets/interest-rates-financials/30-day-federal-funds")
 
 #Import data 
 # FED Funds Targets (Upper{fftu} & Lower{fftl}) & Fed Funds Futures:::
-fftu <- tq_get("DFEDTARU", "economic.data", from=today()-60)
-fftl <- tq_get("DFEDTARL", "economic.data", from=today()-60)
-effr <- tq_get("DFF", "economic.data", from=today()-60)
-fff  <- tq_get("ZQ=F", "stock.prices", from=today()-60)
+fftu <- tq_get("DFEDTARU","economic.data", from=today()-60) # Fed Funds Target Upper 
+fftl <- tq_get("DFEDTARL","economic.data", from=today()-60) # Fed Funds Target Lower
+effr <- tq_get("DFF",     "economic.data", from=today()-30) # Effective Fed Funds Rate Dayly; monthly == FEDFUNDS
+fff  <- tq_get("ZQ=F",    "stock.prices" , from=today()-30) # Fed Funds Futures
 
 # fed funds futures contract
 # use fed funds futures contract prices to examine the market’s expectations
@@ -619,15 +618,45 @@ fff  <- tq_get("ZQ=F", "stock.prices", from=today()-60)
 # The fed funds rated implied by futures contracts will
 # indicate the magnitude and direction of the anticipated change. 
 
+# Federal Fund futures contracts indicate the average daily federal funds effective rate in a particular month.
+# Investors consider Federal Funds to be a satisfactory means for tracking market expectations on federal monetary actions.
+# Further, Fed Funds are useful tools for traders that want to manage risk
+# and speculate on or hedge against short-term interest rate changes due to changes in monetary policy.
+
+
 # Beispiel 
 
+interest_rate <- 
 
-implied <- fff %>% filter(date == max(date)) %>% pull(adjusted)
-target_up <- fftu %>% filter(date == max(date)) %>% pull(price)
-target_lw <- fftu %>% filter(date == max(date)) %>% pull(price)
-market_expect <- 100-implied 
-(target-market_expect)*100
+tibble( 
 
+FFF   = fff %>% filter(date == max(date)) %>% pull(adjusted),       # current price for Month fed funds futures. 
+target_up = fftu %>% filter(date == max(date)) %>% pull(price),     # Upper Target
+target_low = fftl %>% filter(date == max(date)) %>% pull(price),    # Lower Target
+EFFR   = effr %>% filter(date == max(date)) %>% pull(price),        # current Effective FedFunds
+market_expectation = (100-implied), # fed funds futures rate implied 
+# Market participants expect that the average fed funds rate for current month will be +0.07%
+fed_action = market_expect-EFFR # The difference between current expectations and current prices.
+#                It's important to keep in mind that the difference must be equal or above +- 0.25 bp (basic points)
+#                fed_action result it's the probable move o Fed eather positive r negative 
+
+) %>% 
+  mutate(target_range = str_flatten(c(target_low, target_up), collapse = " - "),
+         strengh = ifelse(fed_action >= 0.25 | fed_action <= -0.25, "High", "Low"),
+         scenario= ifelse(fed_action >= 0.25 | fed_action <= -0.25, "Action", "No Action"),
+         direction = if(fed_action > 0.25 & strengh == "High")
+         {direction = "Rate High"}
+         else if(fed_action < -0.25 & strengh == "High")
+         {direction = "Rate Cut"} else{direction = "Constant"}) %>% 
+         select(target_range, FFF, EFFR, market_expectation, fed_action, strengh,scenario, direction)
+          
+# Fed Rate Move Odds ####
+
+# Google Recession searches #### 
+
+google.trends = gtrends(c("Recession"), gprop = "web", time = "all")[[1]]
+google.trends = dcast(google.trends, date ~ keyword + geo, value.var = "hits")
+  
 
 #### time Series ####
 
@@ -1718,6 +1747,25 @@ vip_tweeters <- lookup_users(users) %>%
   gt()
 
 
+
+# Google Trends ####
+# add 2 Sentiment Analisys
+
+library(gtrendsR)
+library(reshape2)
+
+google.trends = gtrends(c("Recession"), gprop = "web", time = "all")[[1]]
+google.trends = dcast(google.trends, date ~ keyword + geo, value.var = "hits")
+
+ggplotly(
+  google.trends %>% as_tibble() %>% ggplot(aes(x=date, y = Recession_world))+
+    geom_line(color = "blue")+
+    geom_point( color = "blue")+
+    geom_smooth(color = "pink")+
+    theme_classic()+
+    labs(x = "Date", y = " Ressecion Search" , 
+         title = "Google Trends")
+)
 
 
 
