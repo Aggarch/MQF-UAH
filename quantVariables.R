@@ -1777,8 +1777,123 @@ ggplotly(
          title = "Google Trends")
 )
 
+#h2o Ensemble Prediction Model ####
+
+library(tidyverse)
+library(readxl)
+library(h2o)
+
+# ReaData
+path = "data.xlsx"
+sheets <- excel_sheets(path)
 
 
+# Index Match
+data_joined_tbl <- sheets[4:7] %>% 
+  map(~read_excel(path = path, sheet = .)) %>% 
+  reduce(left_join) 
+
+data_joined_tbl # TERM_DEPOSIT it's the value to predict
+
+
+# Start Cluster ----
+h2o.init()
+
+# Convert string columns to factors (aka "enum") type for algo interpretation
+data_joined_tbl <- data_joined_tbl %>% 
+  mutate_if(is.character, as.factor)
+
+
+# split-data ----
+# to split data if we already have the info into an object
+# Speed up:    options("h2o.use.data.table = TRUE") # 4Real bigdata
+train <- as.h2o(data_joined_tbl)
+
+# Take a look at the training set 
+h2o.describe(train) 
+# observe missing values, Labels & Cardenality in case of values
+# with very high carnality we can exclude them or range them.
+# Labels == Features
+
+# Identify response column 
+y <- "TERM_DEPOSIT"
+
+# If our binary response column was encoded as 0/1 then we have to convert it
+# to factor in order to tell H2O to perform classification instead of regression.
+# Since our response is already a fector/enum <- cathegorical type, but if not:
+#train[,y] <- as.factor(train[,y])
+
+# Identify the predictor columns (remove response and ID column)
+x <- setdiff(names(train),c("Y","ID")) # Predictors
+
+# Training AutoML ----
+
+aml <- h2o.automl( 
+  y = y,
+  x = x,
+  training_frame = train,
+  project_name = "term_deposit",
+  max_models = 10,
+  seed = 1 )
+
+
+# LeaderBoard ----
+# Next, let's observe the AutoML Leaderboard. Since we did not specify a 
+# 'leaderboard_frame', scoring & ranking uses cross-validation metrics
+
+# A default performance metric for each machine learning task (binary classification,
+# multiclass regression) is specified internally and the leaderboard will be sorted.
+# In the classification, the default ranking metric is Area Under ROC Curve (AUC).
+
+# The leader model is stored at 'aml@leader' & the leaderboard it's in 'aml@leaderboard'.
+lb <- aml@leaderboard
+
+
+# Let's see a snapshot of the top models . Here we should see the two Stacked Ensembles
+# at or near the top of the leaderboard. Stacked Ensembles can almost always outperform
+print(lb) # we got model_id, metrics represents cross validated performance 4 each.
+
+#Entire Leaderboard, specify the 'n' arguments
+#priint(lb, n = nrow(lb))
+
+#Ensemble Exploration ----
+
+# To understand how ensemble works, let's take a peek inside the Stacked Ensemble.
+# "All Models" ensemble is an ensemble of all individual models in the AutoML run.
+# This is often the top performing model on the leaderboard.
+
+# Get model ids for all models in the AutoML Leaderboard.
+model_ids <- as.data.frame(aml@leaderboard$model_id)[,1]
+# Get the "All Models" Stacked Ensemble Model 
+se <- h2o.getModel(grep("StackedEnsemble_AllModels",model_ids, value=TRUE)[1])
+# Get the Stacked Ensemble model 
+metalearner <- h2o.getModel(se@model$metalearner$name)
+
+# Examine the variable importance of the metalearner (combiner) algorithm in the ensemble.
+# This shows ushow much each base learner is contributing to the ensemble. The AutoML Stacked
+# use the defaul metalearner algorithm (GLM with non-negative weights), so the variable importance
+# metalearner is actually the standardized coefficient magnitudes of the GLM.
+# Tbl ----
+h2o.varimp(metalearner)
+# How important each of the base learners is 2 the ensemble
+# XGBoost and XRT(extremely randomized trees), DRF(distributed random forest),GBM,GML
+# observe coefficients column
+
+# We can also plot the base learner contributions to the ensemble. 
+# Plot ----
+h2o.varimp_plot(metalearner)
+
+# VImportance ----
+# Let's see the variable importance on the training set using the top
+# (Stacked ensembles don't have variable importance yet)
+# grab ----
+xgb <- h2o.getModel(grep("XGBoost", model_ids, value = TRUE)[1])
+
+# Variable Importance of the top XGBoost Model
+h2o.varimp(xgb)
+
+# Plot the base learner contribution to the ensemble.
+h2o.varimp_plot(xgb)
 
 
 # . ----
