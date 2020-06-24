@@ -5,7 +5,7 @@
 # Infrastructure :  tidyquant {timetk, xts, zoo, Qunatmod, TTR, PerformanceAnalytics}
 # Data Sources :::  FRED, Bloomberg, Quandl, Morningstar, Yahoo Finance
 # Data Since   :::  2010-01-01 {After Sub-prime cicle, to reduce RV}
-
+# Mark to Market ::: https://www.cmegroup.com/education/courses/introduction-to-futures/mark-to-market.html
 
 # Vignettes :::
 
@@ -574,40 +574,39 @@ Global_market_Corrplot
 
 # Risk Switch :::####
 
-EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-90)
+EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
 
-#triggers if delta increase 10 % or more OR index equals or its above 90 days mean
-
+# triggers if delta increase 10 % or more OR index equals or its above 90 days mean
 EPU_alt <- EPU_index %>%  select(-symbol) %>% 
   mutate(delta = (EPU_index$price)/lag(EPU_index$price)-1)%>% 
   mutate(delta_trigger = ifelse(delta >= 0.10 |
          EPU_index$price >= mean(EPU_index$price + 
-                  sd(EPU_index$price)),1L, 0L)) %>% 
+                  sd(EPU_index$price)*2.3),1L, 0L)) %>% 
   slice(-1) %>% 
   arrange(desc(date)) %>% 
   rename(index = price, Risk = delta_trigger) %>% 
-  mutate(delta = scales::percent(delta), Risk = ifelse(Risk == 1, "OFF", "ON"))
+  mutate(Risk = ifelse(Risk == 1, "OFF", "ON"))
   
-# Summary of Risk ON|OFF
 
-EPU_abst <-   EPU_alt %>%
-  group_by(Risk) %>% summarise(n = n()) %>% 
+# Summary of Risk ON|OFF, current year. 
+EPU_abst <-   EPU_alt %>% filter(year(date) >= year(today())) %>% 
+  group_by(Risk) %>% summarise(n = n(), .groups = "drop_last") %>% 
   rename( Days = n) %>% 
   mutate("%" = scales::percent( Days/sum(Days))
          )
 
 
-#FED rate Expectations #####
+# FED rate Expectations #####
 browseURL("https://www.economics-finance.org/jefe/fin/KeaslerGoffpaper.pdf")
 browseURL("https://www.cmegroup.com/trading/interest-rates/stir/30-day-federal-fund_quotes_settlements_futures.html")
 browseURL("https://www.danielstrading.com/education/markets/interest-rates-financials/30-day-federal-funds")
 
 #Import data 
 # FED Funds Targets (Upper{fftu} & Lower{fftl}) & Fed Funds Futures:::
-fftu <- tq_get("DFEDTARU","economic.data", from=today()-60) # Fed Funds Target Upper 
-fftl <- tq_get("DFEDTARL","economic.data", from=today()-60) # Fed Funds Target Lower
-effr <- tq_get("DFF",     "economic.data", from=today()-30) # Effective Fed Funds Rate Dayly; monthly == FEDFUNDS
-fff  <- tq_get("ZQ=F",    "stock.prices" , from=today()-30) # Fed Funds Futures
+fftu <- tq_get("DFEDTARU","economic.data", from=today()-2000) # Fed Funds Target Upper 
+fftl <- tq_get("DFEDTARL","economic.data", from=today()-2000) # Fed Funds Target Lower
+effr <- tq_get("DFF",     "economic.data", from=today()-2000) # Effective Fed Funds Rate Dayly; monthly == FEDFUNDS
+fff  <- tq_get("ZQ=F",    "stock.prices" , from=today()-2000) # Fed Funds Futures
 
 # fed funds futures contract
 # use fed funds futures contract prices to examine the market’s expectations
@@ -624,24 +623,37 @@ fff  <- tq_get("ZQ=F",    "stock.prices" , from=today()-30) # Fed Funds Futures
 # and speculate on or hedge against short-term interest rate changes due to changes in monetary policy.
 
 
-# Beispiel 
+# FedFunds Interest Rates jointed panorama: 
+
+FED_Interest_Rate <- 
+fftu %>% rename("FedFunds Target Upper" = price) %>% 
+  select(-symbol) %>% left_join(fftl, by = "date") %>% 
+  rename("FedFunds Target Lower" = price) %>% 
+  select(-symbol) %>% 
+  left_join(effr, by = "date") %>% 
+  rename("Effective FedFunds Rate" = price) %>% 
+  select(-symbol) %>% 
+  left_join(fff, by="date") %>% 
+  rename("Fed Funds Futures" = symbol) %>% na.locf()
 
 
-interest_rate <- 
+# Beispiel of market Expectations. 
+browseURL("https://www.cmegroup.com/trading/interest-rates/stir/30-day-federal-fund_contractSpecs_futures.html")
 
-tibble( 
 
-FFF   = fff %>% filter(date == max(date)) %>% pull(adjusted),       # current price for Month fed funds futures. 
+interest_rate_current <- tibble(
+Date  = fff %>% select(date) %>% filter(date == max(date)) %>% pull(), 
+FFF   = fff %>% filter(date == max(date)) %>% pull(adjusted),       # current price for Month fed funds futures.
 target_up = fftu %>% filter(date == max(date)) %>% pull(price),     # Upper Target
 target_low = fftl %>% filter(date == max(date)) %>% pull(price),    # Lower Target
 EFFR   = effr %>% filter(date == max(date)) %>% pull(price),        # current Effective FedFunds
-market_expectation = (100-FFF), # fed funds futures rate implied 
+market_expectation = (100-FFF), # fed funds futures rate implied
 # Market participants expect that the average fed funds rate for current month will be +0.07%
 fed_action = market_expectation-EFFR # The difference between current expectations and current prices.
 #                It's important to keep in mind that the difference must be equal or above +- 0.25 bp (basic points)
-#                fed_action result it's the probable move o Fed eather positive r negative 
+#                fed_action result it's the probable move o Fed eather positive r negative
 
-) %>% 
+) %>%
   mutate(target_range = str_flatten(c(target_low, target_up), collapse = " - "),
          strengh = ifelse(fed_action >= 0.25 | fed_action <= -0.25, "High", "Low"),
          scenario= ifelse(fed_action >= 0.25 | fed_action <= -0.25, "Action", "No Action"),
@@ -650,9 +662,127 @@ fed_action = market_expectation-EFFR # The difference between current expectatio
          else if(fed_action < -0.25 & strengh == "High")
          {direction = "Rate Cut"} else{direction = "Constant"},
          ) %>% 
-         select(target_range, FFF, EFFR, market_expectation, fed_action, strengh,scenario, direction) %>% 
+         select(Date, target_range, FFF, EFFR, market_expectation, 
+                fed_action, strengh,scenario, direction) 
 
-  # Google Recession searches #### 
+
+
+# Data All for ML , {Interest_rate_all, EPU_alt, asset_selected}
+
+
+interest_rate_all <- 
+  fff %>%   select(date, FFF = adjusted) %>% 
+  left_join(fftu, by = "date") %>% 
+  rename(target_up = price) %>% 
+  select(-symbol) %>% left_join(fftl, by = "date") %>% 
+  rename(target_low = price) %>% select(-symbol) %>% 
+  left_join(effr, by = "date") %>% 
+  rename(EFFR = price) %>% select(-symbol) %>% 
+  mutate(market_expectation = 100-FFF,
+         fed_action = market_expectation-EFFR) %>% 
+  na.locf() %>% 
+  select(-target_low, -target_up, -FFF)
+# unite(target_range, c(target_low,target_up), sep = " - ") %>% 
+# relocate(.before = FFF, target_range)
+
+
+# Interest Rates graph
+
+ggplotly (
+interest_rate_all %>% ggplot(aes(date, EFFR))+
+  geom_col(color = "#b1d6f0", fill = "blue")+
+  geom_smooth(data = interest_rate_all, 
+              aes(x = date, y = market_expectation),
+              color = "#e03db7",
+              size = 1)+
+ geom_smooth(data = EPU_alt,
+        aes(x=date, index/250),
+        color = "red")+
+  theme_classic()+
+  labs(title = "Effective Fed Funds Rate vs EPU",
+       x_axis = "Date")
+)
+  
+
+# Asset Selected with TTR:: stats {SMA EMA DEMA ALMA } = Technical Indicators.
+asset <- tq_get("SP500", get = "economic.data") 
+
+asset <- asset %>% 
+  na.locf() %>% mutate(up = ifelse(price > lag(price), 1, 0)) %>% 
+  rename(asset = price) %>% 
+  select(-symbol) %>% 
+  mutate(sma = SMA(asset, 3),
+         ema = EMA(asset, 3),
+        dema = DEMA(asset, 3),
+        roc  = ROC(asset),
+        momentum = momentum(asset),
+        rsi = RSI(asset, 5),
+        strong_rsi = ifelse(rsi > 80, 1, 0),
+        weak_rsi   = ifelse(rsi < 20, 1, 0))
+  
+  
+data <-EPU_alt %>% 
+  mutate(Risk = ifelse(Risk == "ON", 1, 0),
+         delta= index/lag(index)-1) %>% 
+  left_join(interest_rate_all, by = "date") %>% 
+  na.locf() %>%
+  mutate(delta_h = ifelse(delta > .50, 1, 0),
+         delta_l = ifelse(delta < -.50, 1, 0),
+         d_1_2_p = ifelse(between(delta, .1,.2), 1,0),
+         d_1_2_n = ifelse(between(delta, -.2,-.1), 1,0),
+         d_3_5_p = ifelse(between(delta, .3, .5),1, 0),
+         d_3_5_n = ifelse(between(delta, -.5, -.3),1,0)) %>% 
+  relocate( .after = Risk, contains(c("delt", "d_"))) %>% 
+  relocate( .after = market_expectation, fed_action ) %>% 
+  mutate(fed_h = ifelse(market_expectation > 1.5, 1, 0 ),
+         fed_action_strong = ifelse(fed_action > .09, 1, 0)) %>% 
+  left_join(asset, by = "date") %>% na.locf()
+
+# Model Ml
+
+data$up <- factor(data$up)
+
+library(nnet)
+library(caret)
+library(ROCR)
+
+# partition 
+t.id <- createDataPartition(data$up, p= 0.7, list = F)
+
+# Modelo con variable target, class, en funcion del resto V como predictores.
+mod <- nnet(up ~ ., data = data[t.id,], 
+            size = 5, maxit = 100000, decay = .001, rang = 0.05,
+            na.action = na.omit, skip = T)
+
+
+# Prediccion sobre los datos del conjunto de opuesto al entrenamiento, 
+# con el modelo entrenado:
+pred <- predict(mod, newdata = data[-t.id,], type = "class")
+
+table(data[-t.id,]$up, pred,dnn = c("Actual", "Predichos"))
+
+# para calcular valores probabilisticos y evaluar desempeño: 
+pred2 <- predict(mod, newdata = data[-t.id,], type = "raw")
+
+perf <- performance(prediction(pred2, data[-t.id,"up"]), 
+                    "tpr", "fpr")
+
+plot(perf) # Perfect ROCR
+
+
+# Share::: 
+
+results_nnet <- data %>% 
+  select(date,index,Risk,asset,market_expectation,fed_action, up) %>% 
+  mutate(pred_up = predict(mod, newdata = data, type = "class"),
+         prob_up = predict(mod, newdata = data, type = "raw")[,1]) %>% 
+  mutate(prob_up = scales::percent(prob_up, accuracy = 40)) %>% 
+  head()
+
+
+
+
+# Google Recession searches --------------------------------------------------------------------
 
 google.trends = gtrends(c("Recession"), gprop = "web", time = "all")[[1]]
 google.trends = dcast(google.trends, date ~ keyword + geo, value.var = "hits") 
@@ -660,7 +790,7 @@ google.trends = dcast(google.trends, date ~ keyword + geo, value.var = "hits")
 value <- google.trends %>% 
   as_tibble() %>% mutate(date = as.Date(date)) %>% 
   filter(date == max(date)) %>% 
-  pull(Recession_world)
+  pull(Recession_world) 
 
 interest_rate <- interest_rate %>%  mutate(Recession_World = value)
 
@@ -677,13 +807,13 @@ library(lubridate)
 
 setwd("C:/Users/ANALITICA/Desktop")
 
-DXY_CUR <- tq_get("DTWEXM", get = "economic.data",from = "2017-01-01") %>% 
+sp <- tq_get("SP500", get = "economic.data",from = "2020-01-01") %>% 
   select(date, price) %>% 
   rename(ds = date, y = price)
 
-m <- prophet(DXY_CUR)
+m <- prophet(sp)
 
-future <- make_future_dataframe(m, periods = 95)
+future <- make_future_dataframe(m, periods = 8)
 tail(future)
 
 forecast <- predict(m, future)
@@ -718,7 +848,7 @@ plot(m, forecast)
 
 stock_returns_monthly <- c("AAPL", "GOOG", "NFLX") %>%
   tq_get(get  = "stock.prices",
-         from = today()-1500,
+         from = today()-2000,
          to   = today()) %>%
   group_by(symbol) %>%
   tq_transmute(select     = adjusted, 
@@ -729,7 +859,7 @@ stock_returns_monthly
 
 baseline_returns_monthly <- "XLK" %>%
   tq_get(get  = "stock.prices",
-         from = today()-1500,
+         from = today()-2000,
          to   = today()) %>%
   tq_transmute(select     = adjusted, 
                mutate_fun = periodReturn, 
@@ -1355,6 +1485,36 @@ wts_map
 
 # 10) Alternative Data Source #### 
 
+# Covid-19 ####
+
+# Coronavirus Data & package ; Integrate to Prescription::
+
+library(coronavirus)
+
+corona_data <- coronavirus::coronavirus %>% filter(type == "confirmed") %>% 
+  group_by(date) %>% summarise(cases = sum(cases), .groups = "drop_last")
+
+# GitHub about ::: 
+browseURL("https://github.com/RamiKrispin/coronavirus") 
+
+# Rank:
+conf_df <- coronavirus %>% 
+  filter(type == "confirmed") %>%
+  group_by(country) %>%
+  summarise(total_cases = sum(cases), .groups = "drop_last") %>%
+  arrange(-total_cases) %>%
+  mutate(parents = "Confirmed") %>%
+  ungroup() 
+
+plot_ly(data = conf_df,
+        type= "treemap",
+        values = ~total_cases,
+        labels= ~ country,
+        parents=  ~parents,
+        domain = list(column=0),
+        name = "Confirmed",
+        textinfo="label+value+percent parent")
+
 # Web Scrapping ####
 library(rvest)
 
@@ -1600,7 +1760,7 @@ search_tweets("economy", 10,  include_rts = FALSE)
 q <- "economic crisis"
 n <- 10000
 #since <- "2016-12-01"
-since <- today()-1500
+since <- today()-2000
 until <- today()
 rt <- search_tweets(
   q = q, n = n, type = "recent", 
@@ -1894,6 +2054,8 @@ h2o.varimp(xgb)
 
 # Plot the base learner contribution to the ensemble.
 h2o.varimp_plot(xgb)
+
+xgb@parameters
 
 
 # . ----

@@ -27,9 +27,16 @@ library(openxlsx)
 library(shinyalert)
 library(gtrendsR)
 library(reshape2)
+library(reactable)
+library(coronavirus)
+library(nnet)
+library(caret)
+library(ROCR)
+
 
 
 source("funciones/boton_descarga.R")
+
 
 # 1.) market_list ####
 
@@ -65,7 +72,9 @@ market_list <- list(
                      "USD CAD"                      = "DEXCAUS",
                      "AUD USD"                      = "DEXUSAL",
                      "USD CHF"                      = "DEXSZUS",
-                     "USD SEK"                      = "DEXSDUS"),
+                     "USD SEK"                      = "DEXSDUS",
+                     "BTC USD"                      = "CBBTCUSD",
+                     "ETH USD"                      = "CBETHUSD"),
   ETFs           = c("Vanguard Total Stock"         = "VTI",
                      "Blackrock Treasury 20y"       = "TLT",
                      "Blackrock Treasury 7-10y"     = "IEF",

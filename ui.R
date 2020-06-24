@@ -7,11 +7,18 @@ if (skin == "")
   skin <- "black"
 
 
-
+t <- "QuanTradeR"
+  # tags$span(style="color:white", "QuanTradeR",
+  # tags$a(href='',
+  #               icon("fort-awesome"))
+  # )
+                
+  
 # 1.) dashboardPage ####
 ui <- dashboardPage(
-      dashboardHeader(title = 'QuanTradeR', titleWidth = 250, 
-                      
+      dashboardHeader(title = t, titleWidth = 250, 
+  # dashboardHeader(title = span(tagList(icon("calendar"), "Example"))),
+  
                       tags$li(class="dropdown",tags$a(href="https://github.com/Aggarch/", 
                                                       icon("github","fa-2x"), "",
                                                       style= "padding-left:27px,width:650px;height:40px",
@@ -31,6 +38,7 @@ ui <- dashboardPage(
       dashboardSidebar(width = 250,
                    sidebarMenu(
                      menuItem("Presentation", tabName = "home", icon = icon("file-code   ")),
+                     menuItem("Paradigm", tabName = "paradigm", icon = icon("info-circle"   )),
                      menuItem("DataFlow", tabName = "dflow", icon = icon("database"   )),
                      menuItem("FrameWork", tabName = "fwork", icon = icon("crop-alt"   )),
                      
@@ -50,8 +58,8 @@ ui <- dashboardPage(
                               # menuSubItem('Time series', tabName = 'timeseries', icon = icon("circle-notch")),
                               # menuSubItem('Montecarlo', tabName = 'montecarlo', icon = icon("circle-notch"))
                      ),
-                     menuItem("Prescription", tabName = "prescription", icon = icon("chart-line   ")
-                              # menuSubItem('Portfolio', tabName = 'portfolio', icon = icon("circle-notch")),
+                     menuItem("Prescription", tabName = "prescription", icon = icon("chart-line  ")
+                              # menuSubItem('Risk & Rates', tabName = 'scenario', icon = icon("circle-notch"))
                               # menuSubItem('Notes', tabName = 'notes', icon = icon("circle-notch"))
                      ),
                     
@@ -120,12 +128,30 @@ ui <- dashboardPage(
                              )
                          )
                       ),
+      tabItem("paradigm",
+              fluidPage(
+                column(12,
+                       wellPanel(
+                         h3("Decision Intelligence"), 
+                         tags$a(href="https://en.wikipedia.org/wiki/Decision_intelligence" ,"The Discipline of Decision Intelligence",
+                                style = "padding-left:7px"),
+                         
+                         hr(),
+                         h4(
+                           helpText("",
+                                    
+                                    tags$img(src= "decision_intelligence.png", style ="width:800px;height:450px;display:block;margin:auto"))
+                         )
+                       )
+                )
+              )
+      ),
       
       tabItem("dflow",
               fluidPage(
                 column(12,
                        wellPanel(
-                         h3("DataFlow"), 
+                         h3("Business & DataFlow"), 
                          tags$a(href="https://es.wikipedia.org/wiki/Cross_Industry_Standard_Process_for_Data_Mining" ,"CRISP-DM",
                                 style = "padding-left:7px"),
                          
@@ -133,7 +159,7 @@ ui <- dashboardPage(
                          h4(
                            helpText("",
                                     
-                                    tags$img(src= "data_flow.png", style ="width:900px;height:600px;display:block;margin:auto"))
+                                    tags$img(src= "crisp.png", style ="width:550px;height:550px;display:block;margin:auto"))
                            )
                         )
                     )
@@ -144,7 +170,7 @@ ui <- dashboardPage(
                 column(12,
                        wellPanel(
                          h3("Analytics Framework"), 
-                         tags$a(href="https://www.gurobi.com/company/about-gurobi/prescriptive-analytics/" ,"Analytics",
+                         tags$a(href="https://pubsonline.informs.org/doi/pdf/10.1287/opre.38.1.7" ,"Analytics",
                                 style = "padding-left:7px"),
                          
                          hr(),
@@ -188,8 +214,8 @@ ui <- dashboardPage(
                            multiple = TRUE
                            
                          ),
-                         textInput(inputId = "text", 
-                                   label = "Stock Ticker", value = "Enter text..."),  ####
+                         # textInput(inputId = "text", 
+                         #           label = "Stock Ticker", value = "Enter text..."),  ####
                          
                          dateRangeInput ("daterange" , "Date Interval:" ,
                                           start   =  today()-365,
@@ -199,7 +225,8 @@ ui <- dashboardPage(
                                           separator = " - " ,
                                           startview = "year"),
                          actionButton(inputId = "observe", label = "Describe",
-                                      icon = icon('chart-bar'))
+                                      icon = icon('chart-bar'),
+                                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                        )
                 ),
                 column(8,
@@ -212,11 +239,11 @@ ui <- dashboardPage(
                              tabPanel("Price Returns", withSpinner(plotlyOutput("returns",height = "600px"),
                                                                    color="#1da1f2")),
                              
-                             tabPanel("Rolling Correlation", withSpinner(plotlyOutput("rolling_cor",height = "600px"),
-                                                                         color="#1da1f2")), 
-                             
                              tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor",height = "600px"),
-                                                                        color="#1da1f2"))
+                                                                        color="#1da1f2")),
+                             
+                             tabPanel("Rolling Correlation", withSpinner(plotlyOutput("rolling_cor",height = "600px"),
+                                                                         color="#1da1f2")) 
                             
 
                            )
@@ -232,7 +259,7 @@ ui <- dashboardPage(
 
 #prediction
 
-# 5.) prescription ####
+# 5.) prediction ####
 
 
 #prediction
@@ -252,11 +279,11 @@ ui <- dashboardPage(
                            inputId = "variable_1",
                            label = "Variables",
                            selected = "SP500",
-                           choices = market_list[1:4],
+                           choices = market_list[2:4],
                            multiple = F),
 
-                         textInput(inputId = "text", 
-                                   label = "Stock Ticker", value = "Enter text..."),  ####
+                         # textInput(inputId = "text", 
+                         #           label = "Stock Ticker", value = "Enter text..."),  ####
                          
                          dateRangeInput ("daterange_1" , "Date Interval:" ,
                                          start   =  today()-1500,
@@ -265,7 +292,10 @@ ui <- dashboardPage(
                                          max     =  today()+ 365,
                                          separator = " - " ,
                                          startview = "year"),
-                         actionButton(inputId = "observe_1", label = "Forecast", icon = icon('money-bill-wave'))
+                
+                         actionButton(inputId = "observe_1", label = "Forecast",
+                                      icon = icon('money-bill-wave'),
+                                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                        )
                 ),
                 column(8,
@@ -320,8 +350,8 @@ ui <- dashboardPage(
                            selected = "SP500",
                            multiple = TRUE
                          ), 
-                         textInput(inputId = "text", 
-                                   label = "Stock Ticker", value = "Enter text..."),  ####
+                         # textInput(inputId = "text", 
+                         #           label = "Stock Ticker", value = "Enter text..."),  ####
                          
                          dateRangeInput ("daterange_2" , "Date Interval:" ,
                                          start   =  today()-365,
@@ -330,27 +360,38 @@ ui <- dashboardPage(
                                          max     =  today()+ 365,
                                          separator = " - " ,
                                          startview = "year"),
-                         actionButton(inputId = "observe_2", label = "Diagnose", icon = icon("search-dollar"))
+                         actionButton(inputId = "observe_2", label = "Diagnose", 
+                                      icon = icon("search-dollar"),
+                                      style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                        )
                 ),
                 column(8,
+                       
+                       wellPanel(
                        fluidPage(
-                         wellPanel(
                            tabsetPanel(
-                             tabPanel("Portfolios", withSpinner(plotOutput("portfolio",height = "600px"),
-                                                                        color="#1da1f2")),
-
-                             tabPanel("All Weather", withSpinner(plotlyOutput("all_weather",height = "600px"),
-                                                                         color="#1da1f2")),
-
-                             tabPanel("Recomendations", withSpinner(plotlyOutput("recomendations",height = "600px"),
-                                                                     color="#1da1f2")),
-
+                             
+                             tabPanel("Scenario", br(), br(), 
+                             
+                             tabBox( side = "left", width = 13,
+                             tabPanel("FED Rates vs Risk", withSpinner( plotlyOutput("rates_risk",height = "500px"), color = "#1da1f2" )),         
+                             tabPanel("EPU Current year summary", withSpinner( plotlyOutput("epu_abst", height = "500px"), color="#1da1f2")),
+                             tabPanel("EPU detailed table", withSpinner( reactableOutput("epu_data"), color="#1da1f2"))
+                             
+                             
+                             )
+                             ),
+                         
+                             tabPanel("Recomendations", withSpinner( reactableOutput("ts_nnet_pred"),
+                                                                    color="#1da1f2")),
+                             
                              tabPanel("Mark to Market", withSpinner(plotlyOutput("m2m",height = "600px"),
-                                                                   color="#1da1f2"))
+                                                                    color="#1da1f2"))
+                             
                           
                            )
                          )
+                         
                          
                        )
                        
@@ -392,7 +433,10 @@ tabItem("sentiment",
                  #                   max     =  today()+ 365,
                  #                   separator = " - " ,
                  #                   startview = "year"),
-                    actionButton(inputId = "observer", label = "Feel", icon = icon('comments-dollar'))
+                    actionButton(inputId = "observer",
+                                 label = "Feel", 
+                                 icon = icon('comments-dollar'),
+                                 style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                   )
           ),
           column(9,
@@ -412,8 +456,6 @@ tabItem("sentiment",
                        tabPanel("Sentiment", withSpinner(dataTableOutput("hashtag",height = "600px"),
                                                          color="#1da1f2"))
                        
-                      
-
                        # tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor",height = "600px"),
                        #                                            color="#1da1f2"))
                        

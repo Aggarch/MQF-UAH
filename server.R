@@ -8,7 +8,7 @@ shinyServer(function(input, output) {
 
    # A) Reactive Expressions ####
   
-  #Market sentiment ----
+  # Market sentiment ----
   
   
   observeEvent(input$observer, {
@@ -108,7 +108,7 @@ shinyServer(function(input, output) {
     
 
   
-  #description ----
+  # description ----
   
   observeEvent(input$observe, {
     # Show a modal when the button is pressed
@@ -128,14 +128,14 @@ shinyServer(function(input, output) {
       
       behavior_data <- tq_get(input$variable, get = "economic.data",
                               from = input$daterange[1],
-                              to = input$daterange[2]
+                              to   = input$daterange[2]
       )
     }else{
       
       
       behavior_data <- tq_get(input$variable, get = "stock.prices",
                               from = input$daterange[1],
-                              to = input$daterange[2]) %>% 
+                              to   = input$daterange[2]) %>% 
         rename(price = adjusted) %>% 
         select(price, symbol, date)
       
@@ -269,7 +269,7 @@ shinyServer(function(input, output) {
   
   Sys.sleep(3)
   
-  #prediction ----
+  # prediction ----
   
   observeEvent(input$observe_1, {
     # Show a modal when the button is pressed
@@ -285,31 +285,6 @@ shinyServer(function(input, output) {
   #time_series
   time_series <- eventReactive(input$observe_1,{
     
-    
-    # if(!input$variable_1 %in% market_list$ETFs){ 
-    #   
-    #   b_data <- tq_get(input$variable_1, get = "economic.data",
-    #                    from = input$daterange[1],
-    #                    to = input$daterange[2]) %>% 
-    #     select(date, price) %>%
-    #     rename(ds=date, y=price) %>%
-    #     na.locf()
-    #   
-    #   
-    # }else{
-    #   
-    #   
-    #   b_data <- tq_get(input$variable_1, get = "stock.prices",
-    #                    from = input %>% selec$daterange[1],
-    #                    to = input$daterange[2]) %>% 
-    #     rename(price = adjusted) %>% 
-    #     select(date, price) %>%
-    #     rename(ds=date, y=price) %>%
-    #     na.locf()
-    #   
-    # }
-    
-
     b_data <- tq_get(input$variable_1, get = "economic.data",
                             from = input$daterange_1[1],
                             to = input$daterange_1[2]
@@ -327,8 +302,8 @@ shinyServer(function(input, output) {
 
    time_series
     
-    
   })
+  
   
   #time_series_return
   time_series_rt <- eventReactive(input$observe_1,{
@@ -400,25 +375,254 @@ shinyServer(function(input, output) {
      
    })
   
-    
+  # prescription -----
 
+   observeEvent(input$observe_2, {
+     # Show a modal when the button is pressed
+     shinyalert("Notification!", "Information it's being process in real time,
+               remember to click on the -Forecast- button every time you change variables",
+                type = "success",showConfirmButton = T,
+                showCancelButton = FALSE,  timer = 40000, animation = TRUE,
+                closeOnEsc = T,
+                closeOnClickOutside = T,)
+   })
+   
+   
+   # EPU - Economic Policy Uncertainty ::::
+   
+   EPU_data <- eventReactive(input$observe_2,{
+     
+     EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
+     
+     # triggers if delta increase 10 % or more OR index equals or its above 90 days mean
+     EPU_alt <- EPU_index %>%  select(-symbol) %>% 
+       mutate(delta = (EPU_index$price)/lag(EPU_index$price)-1)%>% 
+       mutate(delta_trigger = ifelse(delta >= 0.10 |
+                                       EPU_index$price >= mean(EPU_index$price + 
+                                                                 sd(EPU_index$price)*2.3),1L, 0L)) %>% 
+       slice(-1) %>% 
+       arrange(desc(date)) %>% 
+       rename(index = price, Risk = delta_trigger) %>% 
+       mutate(Risk = ifelse(Risk == 1, "OFF", "ON"))
+     
+     
+     # Summary of Risk ON|OFF, current year. 
+     EPU_abst <-   EPU_alt %>% filter(year(date) >= year(today())) %>% 
+       group_by(Risk) %>% summarise(n = n(), .groups = "drop_last") %>% 
+       rename( Days = n) %>% 
+       mutate("%" = scales::percent( Days/sum(Days))) %>% 
+       mutate_if(is.character, as.factor)
+     
+     
 
-   
-   
-   
-   
-   
-   
+#  Model ;;; Neural Networks ----------------------------------------------------------
+
+     
+      # Past Rates: 
+      # FED Funds Targets (Upper{fftu} & Lower{fftl}) & Fed Funds Futures:::
+      fftu <- tq_get("DFEDTARU","economic.data", from=today()-2000) # Fed Funds Target Upper 
+      fftl <- tq_get("DFEDTARL","economic.data", from=today()-2000) # Fed Funds Target Lower
+      effr <- tq_get("DFF",     "economic.data", from=today()-2000) # Effective Fed Funds Rate Dayly; monthly == FEDFUNDS
+      fff  <- tq_get("ZQ=F",    "stock.prices" , from=today()-2000) # Fed Funds Futures
+      
+      
+      interest_rate_all <- 
+        fff %>%   select(date, FFF = adjusted) %>% 
+        left_join(fftu, by = "date") %>% 
+        rename(target_up = price) %>% 
+        select(-symbol) %>% left_join(fftl, by = "date") %>% 
+        rename(target_low = price) %>% select(-symbol) %>% 
+        left_join(effr, by = "date") %>% 
+        rename(EFFR = price) %>% select(-symbol) %>% 
+        mutate(market_expectation = 100-FFF,
+               fed_action = market_expectation-EFFR) %>% 
+        na.locf() %>% 
+        select(-target_low, -target_up, -FFF)
+      
+
+      
+      # Data Asser  ---------------------------------------------------------
+      asset <- tq_get("SP500", get = "economic.data") %>% na.locf()
+      
+      asset <- asset %>% 
+        rename(asset = price) %>% 
+        select(-symbol) %>% 
+        mutate(sma = SMA(asset, 2),
+               ema = EMA(asset, 3),
+               dema = DEMA(asset, 4),
+               roc  = ROC(asset),
+               momentum = momentum(asset),
+               rsi = RSI(asset, 5),
+               strong_rsi = ifelse(rsi > 80, 1, 0),
+               weak_rsi   = ifelse(rsi < 20, 1, 0)) %>%
+        arrange(desc(date)) %>% 
+        mutate(up = ifelse(momentum > 0, 1 ,0))
+      
+      
+      # Data Model ~ {EPU, Asset, interest_rate} -----------------------------
+      data <-EPU_alt %>% 
+        mutate(Risk = ifelse(Risk == "ON", 1, 0),
+               delta= index/lag(index)-1) %>% 
+        left_join(interest_rate_all, by = "date") %>% 
+        na.locf() %>%
+        mutate(delta_h = ifelse(delta > .50, 1, 0),
+               delta_l = ifelse(delta < -.50, 1, 0),
+               d_1_2_p = ifelse(between(delta, .1,.2), 1,0),
+               d_1_2_n = ifelse(between(delta, -.2,-.1), 1,0),
+               d_3_5_p = ifelse(between(delta, .3, .5),1, 0),
+               d_3_5_n = ifelse(between(delta, -.5, -.3),1,0)) %>% 
+        relocate( .after = Risk, contains(c("delt", "d_"))) %>% 
+        relocate( .after = market_expectation, fed_action ) %>% 
+        mutate(fed_h = ifelse(market_expectation > 1.5, 1, 0 ),
+               fed_action_strong = ifelse(fed_action > .09, 1, 0)) %>% 
+        select(-fed_h, -fed_action_strong) %>% 
+        left_join(asset, by = "date") %>% na.locf()
+      
+      
+      # Model Ml --------------------------------------------------------------
+      data$up <- factor(data$up)
+      
+      # Partition 
+      t.id <- createDataPartition(data$up, p= 0.7, list = F)
+      
+      # Modelo con variable target, class, en funcion del resto V como predictores.
+      set.seed(5)
+      mod <- nnet(up ~ ., data = data[t.id,], 
+                  size = 4, maxit = 1000, decay = .001, rang = 0.05,
+                  na.action = na.omit, skip = T)
+      
+      
+      # Prediccion sobre los datos del conjunto de opuesto al entrenamiento, 
+      # con el modelo entrenado:
+      pred <- predict(mod, newdata = data[-t.id,], type = "class")
+      
+      table(data[-t.id,]$up, pred,dnn = c("Actual", "Predichos"))
+      
+      # para calcular valores probabilisticos y evaluar desempeño: 
+      pred2 <- predict(mod, newdata = data[-t.id,], type = "raw")
+      
+      perf <- performance(prediction(pred2, data[-t.id,"up"]), 
+                          "tpr", "fpr")
+      
+      plot(perf) # Perfect ROCR
+      
+      
+
+# Applied Model of NNEt -------------------------------------------------------
+
+      
+      # Model future data
+      asset_future <- tq_get("SP500", get = "economic.data",from = "2020-01-01") %>% 
+        select(date, price) %>% 
+        rename(ds = date, y = price)
+      
+      epu_future <- EPU_alt %>% 
+        select(date, index) %>% 
+        rename(ds = date, y = index)
+      
+      m <- prophet(asset_future)
+      n <- prophet(epu_future)
+      
+      future <- make_future_dataframe(m, periods = 6)
+      tail(future)
+      future_epu <- make_future_dataframe(m, periods = 6)
+      tail(future_epu)
+      
+      forecast <- predict(m, future)
+      forecast_epu <- predict(n, future)
+      
+      # Future asset 
+      asset_future_price <-   tail(forecast[c('ds', 'yhat')]) %>%
+        rename(date = ds, asset = yhat) %>% 
+        mutate(sma = SMA(asset, 1),
+               ema = EMA(asset, 1),
+               dema = DEMA(asset,1),
+               roc  = ROC(asset),
+               momentum = momentum(asset),
+               rsi = RSI(asset, 1),
+               strong_rsi = ifelse(rsi > 80, 1, 0),
+               weak_rsi   = ifelse(rsi < 20, 1, 0)) %>% 
+        mutate(up = ifelse(momentum > 0, 1 ,0)) %>% 
+        fill(roc, momentum, rsi,
+             strong_rsi, weak_rsi, up, .direction = "up") %>% 
+        arrange(desc(date)) %>% slice(-1)
+        
+        
+      # Fed actions == last, Asumming Ceteris paribus 
+      fed <- interest_rate_all %>% tail() %>% select(-date) %>% slice(1:5)
+
+      # Future EPU 
+      EPU_future_price <-   tail(forecast_epu[c('ds', 'yhat')]) %>%
+        rename(price = yhat, date = ds) %>% 
+        mutate(delta = price/lag(price)-1)%>% 
+        mutate(delta_trigger = ifelse(delta >= 0.09 |
+                                        price >= mean(price + 
+                                                        sd(price)*5),1L, 0L)) %>% 
+        fill(delta, .direction = "up") %>% 
+        fill(delta_trigger, .direction =  "up") %>% 
+        # slice(-1) %>% 
+        arrange(desc(date)) %>% 
+        rename(index = price, Risk = delta_trigger) %>% 
+        mutate(Risk = ifelse(Risk == 1, "OFF", "ON")) %>% 
+        mutate( delta= (index/lag(index)-1)) %>% 
+        # left_join(interest_rate_all, by = "date") %>% 
+        mutate(delta_h = ifelse(delta > .50, 1, 0),
+               delta_l = ifelse(delta < -.50, 1, 0),
+               d_1_2_p = ifelse(between(delta, .1,.2), 1,0),
+               d_1_2_n = ifelse(between(delta, -.2,-.1), 1,0),
+               d_3_5_p = ifelse(between(delta, .3, .5),1, 0),
+               d_3_5_n = ifelse(between(delta, -.5, -.3),1,0)) %>% 
+        slice(-1)
+      
+      
+      # Future dataset 
+      data_new <- EPU_future_price %>% 
+        left_join(asset_future_price, by = "date") %>%  
+        cbind(fed) %>% as_tibble() %>% 
+        mutate(date = as.Date(date),
+               Risk = ifelse(Risk == "ON", 1, 0))
+
+      
+      # Combination of info & Prediction of value ------------------------------
+      data_pred <-  data_new %>% rbind(head(data, 500))
+      
+      data_pred_show <- data_pred%>% 
+        select(-delta_h, -delta_l, -d_1_2_n, -d_1_2_p,
+               -d_3_5_p, -d_3_5_n, -strong_rsi, -weak_rsi) %>% 
+        mutate(pred = predict(mod, newdata = data_pred, type = "class"),
+               prob = predict(mod, newdata = data_pred, type = "raw")[,1],
+               prob = scales::percent(prob, accuracy = 40)) %>% 
+        mutate(prob = ifelse( date <= today(), "100%", prob ),
+               pred = ifelse( pred == 1, "BUY", "SELL")) %>% 
+        select(-up)
+        
+            
+
+      # Neual network in regression ---------------------------------------------
+
+      
+      ##### GO to cookbook_gallery, neural_networks.R 4 regression 
+      ##### Applied example to the data_pred_show example 
+      ##### Create a plot of the neural network to share it 
+      ##### Maybe nnet plot must be static.
+      
+      
+      # Crear Segmentaciones de esta pieza de informacion..... 
+      # FED , EPU, tSeries  -> How to visualize? 
+      # visualize forecast ? or kind of correlation ? ? ? 
+ 
+      
+   })
    
    
    #-----
    
    
    
-   
    # B) Outputs ####
   
-  #Market sentiment ---- 
+   
+  # Market sentiment ---- 
   #sentiment ::: 
   output$hashtag <- renderDataTable({
     
@@ -580,7 +784,7 @@ shinyServer(function(input, output) {
      ) 
   })
 
-  #description ----
+  # description ----
   
   #corrmatrix
   output$index_cor   <- renderPlot({
@@ -657,7 +861,7 @@ shinyServer(function(input, output) {
   })
   
 
-  #prediction ----
+  # prediction ----
   
   #forecast
    output$fcast <- renderPlotly({
@@ -826,8 +1030,62 @@ shinyServer(function(input, output) {
   })
   
   
+  # prescription ----
   
+   #EPU Tables
+   
+   # Detailed
+   output$epu_data <- renderReactable ({
   
+     EPU_alt %>% head(15) %>% 
+       reactable()
+
+   })
+   
+   # Grouped
+   output$epu_abst <- renderPlotly ({
+     
+     
+     ggplotly(EPU_abst %>% ggplot(aes(x = Risk, y = Days, fill = Risk))+
+                geom_col()+
+                theme_classic()+
+                labs(title = "Day count of Risk OFF/ON for the current year" )
+     )
+     
+   })
+   
+   # Interest Rates graph
+   
+   output$rates_risk <- renderPlotly ({
+     
+   ggplotly (
+     interest_rate_all %>% ggplot(aes(date, EFFR))+
+       geom_col(color = "#b1d6f0", fill = "blue")+
+       geom_smooth(data = interest_rate_all, 
+                   aes(x = date, y = market_expectation),
+                   color = "#e03db7",
+                   size = 1)+
+       geom_smooth(data = EPU_alt,
+                   aes(x=date, index/250),
+                   color = "#d60000")+
+       theme_classic()+
+       labs(title = "Effective Fed Funds Rate vs EPU",
+            x_axis = "Date")
+   )
+  })
+   
+   
+   output$ts_nnet_pred <- renderReactable ({
+     
+   data_pred_show %>% reactable()
+     
+   }) 
+   
+  # -------
+   
+    
+  # Close of Main function  
   })
 
 save.image('environ.RData')
+

@@ -1,6 +1,4 @@
-# funcion añade estilo a boton de descarga 
-
-
+# Funcion añade estilo a boton de descarga para excel 
 
 
 boton_descarga <- function(outputId, label = "Download"){
