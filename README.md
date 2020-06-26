@@ -8,5 +8,5 @@ The Poupose of this project is to contribute to Mark to Market decision maing Pr
 
 
 Quantitative Finance interactive app, data import from FRED https://fred.stlouisfed.org/ 
-process boost thanks to tidyquant and tidyverse univere package : https://cran.r-project.org/web/packages/tidyquant/index.html
+process boost thanks to tidyquant & tidyverse univere packages : https://cran.r-project.org/web/packages/tidyquant/index.html
 

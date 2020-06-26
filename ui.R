@@ -386,7 +386,7 @@ ui <- dashboardPage(
                              tabPanel("Recomendations", br(), br(),
                              
                              tabBox( side = "left", width = 13,
-                             tabPanel("Neural Network", withSpinner( plotOutput("ts_nnet_pred", height = "450px"),color="#1da1f2")),
+                             tabPanel("Neural Network", withSpinner( plotOutput("ts_nnet_pred", height = "480px"),color="#1da1f2")),
                              tabPanel("Network Posible Future", withSpinner( reactableOutput("ts_nnet_pred_tbl"),color="#1da1f2"))
                              
                              
