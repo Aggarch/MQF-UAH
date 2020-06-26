@@ -1,5 +1,11 @@
 # Global ####
 
+
+# Libraries ::: 
+
+#install.packages("tidyverse")
+
+
 library(shiny)
 library(shinydashboard)
 library(tidyverse)
@@ -32,10 +38,8 @@ library(coronavirus)
 library(nnet)
 library(caret)
 library(ROCR)
-
-
-
-source("funciones/boton_descarga.R")
+library(TTR)
+library(devtools)
 
 
 # 1.) market_list ####
@@ -59,12 +63,12 @@ market_list <- list(
                      "Nasdaq Composite"             = "NASDAQCOM",
                      "Nikkei"                       = "NIKKEI225",
                      "VIX"                          = "VIXCLS"),
-  Commodities    = c("WTI"                          = "WTISPLC",
-                     "Brent"                        = "POILBREUSDM",
-                     "Gold"                         = "GOLDAMGBD228NLBM",
-                     "Aluminium"                    = "PALUMUSDM",
-                     "Corn"                         = "PMAIZMTUSDM",
-                     "Soy"                          = "PSOYBUSDQ"),
+  Commodities    = c("WTI"                          = "CL=F",
+                     "Brent"                        = "BZ=F",
+                     "Gold"                         = "GC=F",       # GOLDAMGBD228NLBM
+                     "Aluminium"                    = "ALI=F",      # PALUMUSDM
+                     "Corn"                         = "C=F",        # PMAIZMTUSDM
+                     "Soy"                          = "S=F"),       # PSOYBUSDQ
   Currencies     = c("DXY CUR"                      = "DTWEXAFEGS",
                      "EUR USD"                      = "DEXUSEU",
                      "GBP USD"                      = "DEXUSUK",
@@ -83,6 +87,23 @@ market_list <- list(
                      "Technology SPDR Fund"         = "XLK")
   
 )
+
+
+# FED Funds Targets (Upper{fftu} & Lower{fftl}) & Fed Funds Futures:::
+fftu <- tq_get("DFEDTARU","economic.data", from=today()-2000) # Fed Funds Target Upper 
+fftl <- tq_get("DFEDTARL","economic.data", from=today()-2000) # Fed Funds Target Lower
+effr <- tq_get("DFF",     "economic.data", from=today()-2000) # Effective Fed Funds Rate Dayly; monthly == FEDFUNDS
+fff  <- tq_get("ZQ=F",    "stock.prices" , from=today()-2000) # Fed Funds Futures
+
+# Economic Policy Uncertaint Index 
+EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
+
+
+# Notes : add , summary(data_pred_show$ASSET), to describe module
+
+source("funciones/boton_descarga.R")
+
+
 
 
 

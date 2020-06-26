@@ -120,7 +120,7 @@ ui <- dashboardPage(
 
                                   tags$img(src   = "data_science.png", width = "650px", height = "240px", 
                                            style = "width:720px;height:300px;display:block;margin:auto"),br(),
-                                  tags$a(href="https://r4ds.had.co.nz/","R for Data Science"))
+                                  tags$a(href="https://r4ds.had.co.nz/explore-intro.html","R for Data Science"))
                                  
                                  )
                                  
@@ -376,14 +376,23 @@ ui <- dashboardPage(
                              tabBox( side = "left", width = 13,
                              tabPanel("FED Rates vs Risk", withSpinner( plotlyOutput("rates_risk",height = "500px"), color = "#1da1f2" )),         
                              tabPanel("EPU Current year summary", withSpinner( plotlyOutput("epu_abst", height = "500px"), color="#1da1f2")),
+                             tabPanel("FED Effective Rates & Futures", withSpinner( reactableOutput("fed_data", height = "500px"), color="#1da1f2")),
                              tabPanel("EPU detailed table", withSpinner( reactableOutput("epu_data"), color="#1da1f2"))
                              
                              
                              )
                              ),
                          
-                             tabPanel("Recomendations", withSpinner( reactableOutput("ts_nnet_pred"),
-                                                                    color="#1da1f2")),
+                             tabPanel("Recomendations", br(), br(),
+                             
+                             tabBox( side = "left", width = 13,
+                             tabPanel("Neural Network", withSpinner( plotOutput("ts_nnet_pred", height = "450px"),color="#1da1f2")),
+                             tabPanel("Network Posible Future", withSpinner( reactableOutput("ts_nnet_pred_tbl"),color="#1da1f2"))
+                             
+                             
+                             
+                             )
+                             ),
                              
                              tabPanel("Mark to Market", withSpinner(plotlyOutput("m2m",height = "600px"),
                                                                     color="#1da1f2"))

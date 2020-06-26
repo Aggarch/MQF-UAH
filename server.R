@@ -6,7 +6,7 @@ shinyServer(function(input, output) {
   
   
 
-   # A) Reactive Expressions ####
+  # A) Reactive Expressions ####
   
   # Market sentiment ----
   
@@ -18,7 +18,7 @@ shinyServer(function(input, output) {
                type = "success",showConfirmButton = T,
                showCancelButton = FALSE,  timer = 40000, animation = TRUE,
                closeOnEsc = T,
-               closeOnClickOutside = T,)
+               closeOnClickOutside = T)
   })
   
   #sentiment
@@ -39,7 +39,7 @@ shinyServer(function(input, output) {
       group_by(screen_name) %>% 
       filter(created_at == max(created_at)) %>% 
       select(screen_name, text)%>% 
-      rename(Accounts=screen_name,
+      dplyr::rename(Accounts=screen_name,
              Tweets = text) %>%
     
 
@@ -61,7 +61,7 @@ shinyServer(function(input, output) {
       
       google.trends = google.trends %>% 
         as_tibble() %>% 
-        rename(value = paste0(arg,"_world"))
+        dplyr::rename(value = paste0(arg,"_world"))
       
       return(google.trends)
       
@@ -85,7 +85,7 @@ shinyServer(function(input, output) {
     
     vip_tweeters <- lookup_users(users) %>% 
       select(screen_name, text) %>% 
-      rename(ACCOUNT = screen_name,
+      dplyr::rename(ACCOUNT = screen_name,
              TWEET = text) %>% head(30) 
     
   })
@@ -117,7 +117,7 @@ shinyServer(function(input, output) {
                type = "success",showConfirmButton = T,
                showCancelButton = FALSE,  timer = 40000, animation = TRUE,
                closeOnEsc = T,
-               closeOnClickOutside = T,)
+               closeOnClickOutside = T)
   })
   
   # Correlation Matrix
@@ -136,7 +136,7 @@ shinyServer(function(input, output) {
       behavior_data <- tq_get(input$variable, get = "stock.prices",
                               from = input$daterange[1],
                               to   = input$daterange[2]) %>% 
-        rename(price = adjusted) %>% 
+        dplyr::rename(price = adjusted) %>% 
         select(price, symbol, date)
       
     }
@@ -167,7 +167,7 @@ shinyServer(function(input, output) {
       behavior_data <- tq_get(input$variable, get = "stock.prices",
                               from = input$daterange[1],
                               to = input$daterange[2]) %>%
-        rename(price = adjusted) %>%
+        dplyr::rename(price = adjusted) %>%
         select(price, symbol, date)
 
     }
@@ -209,7 +209,7 @@ shinyServer(function(input, output) {
   # Price Returns 
   price_return <- eventReactive(input$observe, {
     
-    if(!input$variable %in% market_list$ETFs){ 
+    if(!input$variable %in% c(market_list$Commodities ,market_list$ETFs)){ 
       
       behavior_data <- tq_get(input$variable, get = "economic.data",
                               from = input$daterange[1],
@@ -221,7 +221,7 @@ shinyServer(function(input, output) {
       behavior_data <- tq_get(input$variable, get = "stock.prices",
                               from = input$daterange[1],
                               to = input$daterange[2]) %>% 
-        rename(price = adjusted) %>% 
+        dplyr::rename(price = adjusted) %>% 
         select(price, symbol, date)
       
     }
@@ -241,7 +241,7 @@ shinyServer(function(input, output) {
   # Price Evolution 
   price_evolution <- eventReactive(input$observe, {
     
-    if(!input$variable %in% market_list$ETFs){ 
+    if(!input$variable %in% c(market_list$Commodities, market_list$ETFs)){ 
       
       behavior_data <- tq_get(input$variable, get = "economic.data",
                               from = input$daterange[1],
@@ -253,7 +253,7 @@ shinyServer(function(input, output) {
       behavior_data <- tq_get(input$variable, get = "stock.prices",
                               from = input$daterange[1],
                               to = input$daterange[2]) %>% 
-        rename(price = adjusted) %>% 
+        dplyr::rename(price = adjusted) %>% 
         select(price, symbol, date)
       
     }
@@ -278,7 +278,7 @@ shinyServer(function(input, output) {
                type = "success",showConfirmButton = T,
                showCancelButton = FALSE,  timer = 40000, animation = TRUE,
                closeOnEsc = T,
-               closeOnClickOutside = T,)
+               closeOnClickOutside = T)
   })
   
   
@@ -290,7 +290,7 @@ shinyServer(function(input, output) {
                             to = input$daterange_1[2]
     ) %>%
       select(date, price) %>%
-      rename(ds=date, y=price) %>%
+      dplyr::rename(ds=date, y=price) %>%
       na.locf()
 
     
@@ -314,7 +314,7 @@ shinyServer(function(input, output) {
                           tq_transmute(select     = price,
                                        mutate_fun = periodReturn,
                                        period     = "daily") %>%
-                          rename(ds = date, y = daily.returns) %>%
+                          dplyr::rename(ds = date, y = daily.returns) %>%
                           na.locf()
       
 
@@ -336,7 +336,7 @@ shinyServer(function(input, output) {
                      to = input$daterange_1[2]
     ) %>%
       select(date, price) %>%
-      rename(ds=date, y=price) %>%
+      dplyr::rename(ds=date, y=price) %>%
       na.locf()
     
     
@@ -360,7 +360,7 @@ shinyServer(function(input, output) {
                       to = input$daterange_1[2]
      ) %>%
        select(date, price) %>%
-       rename(ds=date, y=price) %>%
+       dplyr::rename(ds=date, y=price) %>%
        na.locf()
      
      
@@ -380,160 +380,263 @@ shinyServer(function(input, output) {
    observeEvent(input$observe_2, {
      # Show a modal when the button is pressed
      shinyalert("Notification!", "Information it's being process in real time,
-               remember to click on the -Forecast- button every time you change variables",
+               remember to click on the -Diagnose- button every time you change variables",
                 type = "success",showConfirmButton = T,
                 showCancelButton = FALSE,  timer = 40000, animation = TRUE,
                 closeOnEsc = T,
-                closeOnClickOutside = T,)
+                closeOnClickOutside = T)
    })
    
    
    # EPU - Economic Policy Uncertainty ::::
    
-   EPU_data <- eventReactive(input$observe_2,{
+  EPU_alt <- eventReactive(input$observe_2,{
      
-     EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
-     
+     # EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
      # triggers if delta increase 10 % or more OR index equals or its above 90 days mean
-     EPU_alt <- EPU_index %>%  select(-symbol) %>% 
-       mutate(delta = (EPU_index$price)/lag(EPU_index$price)-1)%>% 
+
+     EPU_alt <- EPU_index %>%  select(-symbol) %>%
+       mutate(delta = (EPU_index$price)/lag(EPU_index$price)-1)%>%
        mutate(delta_trigger = ifelse(delta >= 0.10 |
-                                       EPU_index$price >= mean(EPU_index$price + 
-                                                                 sd(EPU_index$price)*2.3),1L, 0L)) %>% 
-       slice(-1) %>% 
-       arrange(desc(date)) %>% 
-       rename(index = price, Risk = delta_trigger) %>% 
-       mutate(Risk = ifelse(Risk == 1, "OFF", "ON"))
+                                       EPU_index$price >= mean(EPU_index$price +
+                                                                 sd(EPU_index$price)*2.3),1L, 0L)) %>%
+       slice(-1) %>%
+       arrange(desc(date)) %>%
+       dplyr::rename(index = price, Risk = delta_trigger) %>%
+       mutate(Risk = ifelse(Risk == 1, "OFF", "ON"),
+              delta = scales::percent(round(delta,2)),
+              index = round(index)) 
      
+     EPU_alt
      
+  })
+  
+  EPU_abst <- eventReactive(input$observe_2,{
+    
+    # EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
+    
      # Summary of Risk ON|OFF, current year. 
-     EPU_abst <-   EPU_alt %>% filter(year(date) >= year(today())) %>% 
+     EPU_abst <-   EPU_alt() %>% filter(year(date) >= year(today())) %>% 
        group_by(Risk) %>% summarise(n = n(), .groups = "drop_last") %>% 
-       rename( Days = n) %>% 
+       dplyr::rename( Days = n) %>% 
        mutate("%" = scales::percent( Days/sum(Days))) %>% 
        mutate_if(is.character, as.factor)
      
+     EPU_abst
      
-
-#  Model ;;; Neural Networks ----------------------------------------------------------
-
-     
+  })
+  
+  interest_rate_all <- eventReactive(input$observe_2,{
+    
       # Past Rates: 
-      # FED Funds Targets (Upper{fftu} & Lower{fftl}) & Fed Funds Futures:::
-      fftu <- tq_get("DFEDTARU","economic.data", from=today()-2000) # Fed Funds Target Upper 
-      fftl <- tq_get("DFEDTARL","economic.data", from=today()-2000) # Fed Funds Target Lower
-      effr <- tq_get("DFF",     "economic.data", from=today()-2000) # Effective Fed Funds Rate Dayly; monthly == FEDFUNDS
-      fff  <- tq_get("ZQ=F",    "stock.prices" , from=today()-2000) # Fed Funds Futures
-      
-      
-      interest_rate_all <- 
-        fff %>%   select(date, FFF = adjusted) %>% 
+
+      interest_rate_all <- fff %>%   select(date, FFF = adjusted) %>% 
         left_join(fftu, by = "date") %>% 
-        rename(target_up = price) %>% 
+        dplyr::rename(target_up = price) %>% 
         select(-symbol) %>% left_join(fftl, by = "date") %>% 
-        rename(target_low = price) %>% select(-symbol) %>% 
+        dplyr::rename(target_low = price) %>% select(-symbol) %>% 
         left_join(effr, by = "date") %>% 
-        rename(EFFR = price) %>% select(-symbol) %>% 
+        dplyr::rename(EFFR = price) %>% select(-symbol) %>% 
         mutate(market_expectation = 100-FFF,
                fed_action = market_expectation-EFFR) %>% 
         na.locf() %>% 
         select(-target_low, -target_up, -FFF)
       
+      interest_rate_all
+      
+})
+  
+  interest_rate_all_tbl <- eventReactive(input$observe_2,{
+    
+    # Past Rates: 
+    
+    interest_rate_all_tbl <- fff %>%   select(date, FFF = adjusted) %>% 
+      left_join(fftu, by = "date") %>% 
+      dplyr::rename(target_up = price) %>% 
+      select(-symbol) %>% left_join(fftl, by = "date") %>% 
+      dplyr::rename(target_low = price) %>% select(-symbol) %>% 
+      left_join(effr, by = "date") %>% 
+      dplyr::rename(EFFR = price) %>% select(-symbol) %>% 
+      mutate(market_expectation = 100-FFF,
+             fed_action = market_expectation-EFFR) %>% 
+      na.locf() %>% 
+      unite("Target Range", target_low, target_up, sep = " - ") %>% 
+      arrange(desc(date)) %>% 
+      mutate(market_expectation = round(market_expectation, 3),
+                                    fed_action = round(fed_action,3)) %>% 
+      dplyr::rename("Market Expectations" = market_expectation,
+             "FED action" = fed_action,
+             "Date" = date)
+      
 
+    interest_rate_all_tbl
+    
+  })
+  
       
-      # Data Asser  ---------------------------------------------------------
-      asset <- tq_get("SP500", get = "economic.data") %>% na.locf()
+  
+  
+  
+  # Model ;;; Neural Networks ------------------------------------------------
+  
+  
+                                        ########################################
+                                        #              NNET ZONE               #
+                                        ########################################
+                                        
+  
+  asset <- eventReactive(input$observe_2,{
+
+
+      # Data Asset  ---------------------------------------------------------
       
-      asset <- asset %>% 
-        rename(asset = price) %>% 
-        select(-symbol) %>% 
-        mutate(sma = SMA(asset, 2),
-               ema = EMA(asset, 3),
-               dema = DEMA(asset, 4),
-               roc  = ROC(asset),
-               momentum = momentum(asset),
-               rsi = RSI(asset, 5),
+    
+    #input = list(variable_2 = "SP500") # 4 debugging
+    
+    
+       if(!input$variable_2 %in% market_list$ETFs){ 
+        
+      asset_selection <- tq_get(input$variable_2, get = "economic.data") %>% 
+          na.locf()
+        
+      }else{
+        
+        
+      asset_selection <- tq_get(input$variable_2, get = "stock.prices") %>%
+          dplyr::rename(price = adjusted) %>%
+          select(price, symbol, date) %>% 
+          na.locf()
+        
+      } 
+       
+      asset <- asset_selection %>%
+        # dplyr::rename(asset = price) %>%
+        select(-symbol) %>%
+        mutate(sma = SMA(price, 2),
+               ema = EMA(price, 3),
+               dema = DEMA(price, 4),
+               roc  = ROC(price),
+               momentum = momentum(price),
+               rsi = RSI(price, 5),
                strong_rsi = ifelse(rsi > 80, 1, 0),
                weak_rsi   = ifelse(rsi < 20, 1, 0)) %>%
-        arrange(desc(date)) %>% 
-        mutate(up = ifelse(momentum > 0, 1 ,0))
+        arrange(desc(date)) %>%
+        mutate(up = ifelse(momentum > 0, 1 ,0)) %>% 
+        dplyr::rename(asset = price)
+        
+      asset
       
       
+  }) # Check
+
+  data <- eventReactive(input$observe_2,{ 
       # Data Model ~ {EPU, Asset, interest_rate} -----------------------------
-      data <-EPU_alt %>% 
+      
+      data <- asset() %>%
+        left_join( EPU_alt(), by = "date") %>%
+        fill(colnames(.) , .direction = "up") %>% 
+        
         mutate(Risk = ifelse(Risk == "ON", 1, 0),
-               delta= index/lag(index)-1) %>% 
-        left_join(interest_rate_all, by = "date") %>% 
-        na.locf() %>%
+               delta= index/lag(index)-1) %>%
+        left_join(interest_rate_all(), by = "date") %>%
+        fill(colnames(.) , .direction = "up") %>% 
+        
         mutate(delta_h = ifelse(delta > .50, 1, 0),
                delta_l = ifelse(delta < -.50, 1, 0),
                d_1_2_p = ifelse(between(delta, .1,.2), 1,0),
                d_1_2_n = ifelse(between(delta, -.2,-.1), 1,0),
                d_3_5_p = ifelse(between(delta, .3, .5),1, 0),
-               d_3_5_n = ifelse(between(delta, -.5, -.3),1,0)) %>% 
-        relocate( .after = Risk, contains(c("delt", "d_"))) %>% 
-        relocate( .after = market_expectation, fed_action ) %>% 
+               d_3_5_n = ifelse(between(delta, -.5, -.3),1,0)) %>%
+        relocate( .after = Risk, contains(c("delt", "d_"))) %>%
+        relocate( .after = market_expectation, fed_action ) %>%
         mutate(fed_h = ifelse(market_expectation > 1.5, 1, 0 ),
-               fed_action_strong = ifelse(fed_action > .09, 1, 0)) %>% 
+               fed_action_strong = ifelse(fed_action > .09, 1, 0)) %>%
         select(-fed_h, -fed_action_strong) %>% 
-        left_join(asset, by = "date") %>% na.locf()
+        mutate(up = as.factor(up))
       
-      
-      # Model Ml --------------------------------------------------------------
-      data$up <- factor(data$up)
-      
-      # Partition 
-      t.id <- createDataPartition(data$up, p= 0.7, list = F)
-      
-      # Modelo con variable target, class, en funcion del resto V como predictores.
-      set.seed(5)
-      mod <- nnet(up ~ ., data = data[t.id,], 
-                  size = 4, maxit = 1000, decay = .001, rang = 0.05,
-                  na.action = na.omit, skip = T)
-      
-      
-      # Prediccion sobre los datos del conjunto de opuesto al entrenamiento, 
-      # con el modelo entrenado:
-      pred <- predict(mod, newdata = data[-t.id,], type = "class")
-      
-      table(data[-t.id,]$up, pred,dnn = c("Actual", "Predichos"))
-      
-      # para calcular valores probabilisticos y evaluar desempeño: 
-      pred2 <- predict(mod, newdata = data[-t.id,], type = "raw")
-      
-      perf <- performance(prediction(pred2, data[-t.id,"up"]), 
-                          "tpr", "fpr")
-      
-      plot(perf) # Perfect ROCR
+      data
       
       
 
-# Applied Model of NNEt -------------------------------------------------------
+  })
 
+
+  
+  # Model Ml --------------------------------------------------------------
+
+  # modelo <- eventReactive(input$observe_2,{ 
+  # 
+  #     # Partition
+  #     t.id <- createDataPartition(data()$up, p= 0.7, list = F)
+  # 
+  #     set.seed(666)
+  #    
+  #      mod <- nnet(up ~ ., data() = data[t.id,],
+  #                 size = 5 , maxit = 1000000, decay = .001, rang = 0.07,
+  #                 na.action = na.omit, skip = T)
+  # 
+  #     # Quality Model checks :::  
+  #     # calcular valores probabilisticos y evaluar desempeño:
+  #      
+  #     # pred <- predict(mod, newdata = data[-t.id,], type = "class")
+  #     # table(data[-t.id,]$up, pred,dnn = c("real", "preds"))
+  #     # 
+  #     # pred2 <- predict(mod, newdata = data[-t.id,], type = "raw")
+  #     # perf <- performance(prediction(pred2, data[-t.id,"up"]),
+  #     #                     "tpr", "fpr")
+  #     # plot(perf) # Perfect ROCR
+  #     # pred <- predict(mod, newdata = data[-t.id,], type = "class")
+  #     
+  #     saveRDS(mod, "mod.rds")
+  #       
+  # 
+  # })
       
+
+  # Applied Model of Nnet -------------------------------------------------------
+
+  # generate future dataframe ::: 
+  data_pred_show <- eventReactive(input$observe_2,{  
+    
+    
+    data <- data()
+    
+    # Partition
+    t.id <- createDataPartition(data$up, p= 0.7, list = F)
+    
+    set.seed(666)
+    
+    mod <- nnet(up ~ ., data = data[t.id,],
+                size = 5 , maxit = 1000000, decay = .001, rang = 0.07,
+                na.action = na.omit, skip = T)
+
+    saveRDS(mod, "mod.rds")
+    
+    today() %m-% months(month(today())) -> t
+    
       # Model future data
-      asset_future <- tq_get("SP500", get = "economic.data",from = "2020-01-01") %>% 
-        select(date, price) %>% 
-        rename(ds = date, y = price)
-      
-      epu_future <- EPU_alt %>% 
-        select(date, index) %>% 
-        rename(ds = date, y = index)
-      
+      asset_future <- tq_get(input$variable_2, get = "economic.data",from = t) %>%
+        select(date, price) %>%
+        dplyr::rename(ds = date, y = price)
+
+      epu_future <- EPU_alt() %>%
+        select(date, index) %>%
+        dplyr::rename(ds = date, y = index)
+
       m <- prophet(asset_future)
       n <- prophet(epu_future)
-      
+
       future <- make_future_dataframe(m, periods = 6)
       tail(future)
       future_epu <- make_future_dataframe(m, periods = 6)
       tail(future_epu)
-      
+
       forecast <- predict(m, future)
       forecast_epu <- predict(n, future)
-      
-      # Future asset 
+
+      # Future asset
       asset_future_price <-   tail(forecast[c('ds', 'yhat')]) %>%
-        rename(date = ds, asset = yhat) %>% 
+        dplyr::rename(date = ds, asset = yhat) %>%
         mutate(sma = SMA(asset, 1),
                ema = EMA(asset, 1),
                dema = DEMA(asset,1),
@@ -541,85 +644,134 @@ shinyServer(function(input, output) {
                momentum = momentum(asset),
                rsi = RSI(asset, 1),
                strong_rsi = ifelse(rsi > 80, 1, 0),
-               weak_rsi   = ifelse(rsi < 20, 1, 0)) %>% 
-        mutate(up = ifelse(momentum > 0, 1 ,0)) %>% 
+               weak_rsi   = ifelse(rsi < 20, 1, 0)) %>%
+        mutate(up = ifelse(momentum > 0, 1 ,0)) %>%
         fill(roc, momentum, rsi,
-             strong_rsi, weak_rsi, up, .direction = "up") %>% 
+             strong_rsi, weak_rsi, up, .direction = "up") %>%
         arrange(desc(date)) %>% slice(-1)
-        
-        
-      # Fed actions == last, Asumming Ceteris paribus 
-      fed <- interest_rate_all %>% tail() %>% select(-date) %>% slice(1:5)
 
-      # Future EPU 
+      # Fed actions == last, Asumming Ceteris paribus
+      fed <- interest_rate_all() %>% tail() %>% select(-date) %>% slice(1:5)
+
+      # Future EPU
       EPU_future_price <-   tail(forecast_epu[c('ds', 'yhat')]) %>%
-        rename(price = yhat, date = ds) %>% 
-        mutate(delta = price/lag(price)-1)%>% 
+        dplyr::rename(price = yhat, date = ds) %>%
+        mutate(delta = price/lag(price)-1)%>%
         mutate(delta_trigger = ifelse(delta >= 0.09 |
-                                        price >= mean(price + 
-                                                        sd(price)*5),1L, 0L)) %>% 
-        fill(delta, .direction = "up") %>% 
-        fill(delta_trigger, .direction =  "up") %>% 
-        # slice(-1) %>% 
-        arrange(desc(date)) %>% 
-        rename(index = price, Risk = delta_trigger) %>% 
-        mutate(Risk = ifelse(Risk == 1, "OFF", "ON")) %>% 
-        mutate( delta= (index/lag(index)-1)) %>% 
-        # left_join(interest_rate_all, by = "date") %>% 
+                                        price >= mean(price +
+                                                        sd(price)*5),1L, 0L)) %>%
+        fill(delta, .direction = "up") %>%
+        fill(delta_trigger, .direction =  "up") %>%
+        # slice(-1) %>%
+        arrange(desc(date)) %>%
+        dplyr::rename(index = price, Risk = delta_trigger) %>%
+        mutate(Risk = ifelse(Risk == 1, "OFF", "ON")) %>%
+        mutate( delta= (index/lag(index)-1)) %>%
+        # left_join(interest_rate_all, by = "date") %>%
         mutate(delta_h = ifelse(delta > .50, 1, 0),
                delta_l = ifelse(delta < -.50, 1, 0),
                d_1_2_p = ifelse(between(delta, .1,.2), 1,0),
                d_1_2_n = ifelse(between(delta, -.2,-.1), 1,0),
                d_3_5_p = ifelse(between(delta, .3, .5),1, 0),
-               d_3_5_n = ifelse(between(delta, -.5, -.3),1,0)) %>% 
+               d_3_5_n = ifelse(between(delta, -.5, -.3),1,0)) %>%
         slice(-1)
       
       
-      # Future dataset 
-      data_new <- EPU_future_price %>% 
-        left_join(asset_future_price, by = "date") %>%  
-        cbind(fed) %>% as_tibble() %>% 
+      # Future dataset
+      data_new <- EPU_future_price %>%
+        left_join(asset_future_price, by = "date") %>%
+        cbind(fed) %>% as_tibble() %>%
         mutate(date = as.Date(date),
                Risk = ifelse(Risk == "ON", 1, 0))
-
       
-      # Combination of info & Prediction of value ------------------------------
-      data_pred <-  data_new %>% rbind(head(data, 500))
       
-      data_pred_show <- data_pred%>% 
+      data_pred <-  data_new %>% rbind(head(data(), 30))
+      
+      
+      mod <- readRDS("mod.rds")
+      
+      data_pred_show <- data_pred%>%
         select(-delta_h, -delta_l, -d_1_2_n, -d_1_2_p,
-               -d_3_5_p, -d_3_5_n, -strong_rsi, -weak_rsi) %>% 
+               -d_3_5_p, -d_3_5_n, -strong_rsi, -weak_rsi) %>%
         mutate(pred = predict(mod, newdata = data_pred, type = "class"),
                prob = predict(mod, newdata = data_pred, type = "raw")[,1],
-               prob = scales::percent(prob, accuracy = 40)) %>% 
+               prob = scales::percent(prob, accuracy = 40)) %>%
         mutate(prob = ifelse( date <= today(), "100%", prob ),
-               pred = ifelse( pred == 1, "BUY", "SELL")) %>% 
-        select(-up)
+               pred = ifelse( pred == 1, "BUY", "SELL")) %>%
+        select(-up, -pred, -prob) %>%
+        dplyr::rename_all(.funs = toupper) %>% 
+        select(-SMA, -EMA, -DEMA) %>% 
+        dplyr::rename(EXPECTATION = MARKET_EXPECTATION)
         
-            
+    
+    data_pred_show
+    
+  })
 
-      # Neual network in regression ---------------------------------------------
+  # Neual network in regression ---------------------------------------------
 
+  pred_show <- eventReactive(input$observe_2,{ 
+    
+    
+    data_pred_show <- data_pred_show()
+    
+    
+    t.id <- createDataPartition(data_pred_show$ASSET , p= 0.7, list = F)
+
+
+    fit_n <- nnet(ASSET ~., data=data_pred_show[t.id, ],
+                size = 15, decay = 0.2, rang = 0.1,
+                maxit = 100000000, linout=T)
+
+    saveRDS(fit_n, "fit.rds")
+
+    fit_n <- readRDS("fit.rds")
+     
+    fit <-  readRDS("nnet_alternative_sp500.rds")
+   
+  pred_show <- data_pred_show %>%
+    mutate(PRED_nnet = predict(fit, data_pred_show)[,1]) %>% 
+    select(-FED_ACTION, -RISK, -RSI, -EXPECTATION, -EFFR,
+           -DELTA, -ROC) %>% 
+    head(100) %>%  
+    mutate_if(is.numeric, round,2) %>% 
+    mutate(W.Forecast  = PRED_nnet-(INDEX * .3))
+  
+    # mutate(diff = ASSET - PRED_nnet)
+
+  
+  pred_show
+  
+  #archivos <- list.files() %>% enframe() %>% filter(str_detect(value, c("fit.rds|mod.rds"))) %>% pull(value)
+  #walk(.x = archivos, .f = file.remove)
+  
+  })
+  
+
+  
+
+  #})
       
       ##### GO to cookbook_gallery, neural_networks.R 4 regression 
       ##### Applied example to the data_pred_show example 
       ##### Create a plot of the neural network to share it 
       ##### Maybe nnet plot must be static.
-      
-      
-      # Crear Segmentaciones de esta pieza de informacion..... 
-      # FED , EPU, tSeries  -> How to visualize? 
-      # visualize forecast ? or kind of correlation ? ? ? 
- 
-      
-   })
+
+   
+  
+  
+  
+  
+  
+  
+   
+#-----------------------------------------------------------------------------------------------------------------------------------#
    
    
-   #-----
-   
-   
-   
-   # B) Outputs ####
+  
+  # B) Outputs ####
+  
+  
   
    
   # Market sentiment ---- 
@@ -651,7 +803,7 @@ shinyServer(function(input, output) {
       group_by(screen_name) %>% 
       filter(created_at == max(created_at)) %>% 
       select(screen_name, text)%>% 
-      rename(Accounts=screen_name,
+      dplyr::rename(Accounts=screen_name,
              Tweets = text) %>%
       
       datatable( rownames = F, style = 'bootstrap4',
@@ -678,7 +830,7 @@ shinyServer(function(input, output) {
     
     vip_tweeters <- lookup_users(users) %>% 
       select(screen_name, text) %>% 
-      rename(ACCOUNT = screen_name,
+      dplyr::rename(ACCOUNT = screen_name,
              TWEET = text) %>% head(30) 
     
     
@@ -758,7 +910,7 @@ shinyServer(function(input, output) {
       
       google.trends = google.trends %>% 
         as_tibble() %>% 
-        rename(value = paste0(arg,"_world"))
+        dplyr::rename(value = paste0(arg,"_world"))
       
       return(google.trends)
 
@@ -871,7 +1023,7 @@ shinyServer(function(input, output) {
                      to = input$daterange_1[2]
     ) %>%
       select(date, price) %>%
-      rename(ds=date, y=price) %>%
+      dplyr::rename(ds=date, y=price) %>%
       na.locf()
     #
      m <- prophet(b_data)
@@ -895,7 +1047,7 @@ shinyServer(function(input, output) {
                           tq_transmute(select     = price,
                                        mutate_fun = periodReturn,
                                        period     = "daily") %>%
-                          rename(ds = date, y = daily.returns) %>%
+                          dplyr::rename(ds = date, y = daily.returns) %>%
                           na.locf()
     
 
@@ -921,7 +1073,7 @@ shinyServer(function(input, output) {
                             from = input$daterange_1[1],
                             to = input$daterange_1[2]) %>%
        select(date, price) %>%
-       rename(ds=date, y=price) %>%
+       dplyr::rename(ds=date, y=price) %>%
        na.locf()
      
      
@@ -940,7 +1092,7 @@ shinyServer(function(input, output) {
                       to = input$daterange_1[2]
      ) %>%
        select(date, price) %>%
-       rename(ds=date, y=price) %>%
+       dplyr::rename(ds=date, y=price) %>%
        na.locf()
 
 
@@ -970,7 +1122,7 @@ shinyServer(function(input, output) {
        left_join(b_data_tbl, by="ds") %>%
        filter(ds >= ymd(today()-7)) %>% 
        mutate(y=ifelse(is.na(y),"Uncertain",y)) %>% 
-       rename(Date = ds, Price = y) %>%
+       dplyr::rename(Date = ds, Price = y) %>%
        select(Date, Price, everything()) %>% 
      
   
@@ -998,7 +1150,7 @@ shinyServer(function(input, output) {
                           to = input$daterange_1[2]
      ) %>%
        select(date, price) %>%
-       rename(ds=date, y=price) %>%
+       dplyr::rename(ds=date, y=price) %>%
        na.locf()
      
      changep <- 
@@ -1009,7 +1161,7 @@ shinyServer(function(input, output) {
        left_join(b_data_tbl, by="ds") %>%
        filter(ds >= ymd(today()-7)) %>% 
        mutate(y=ifelse(is.na(y),"Uncertain",y)) %>% 
-       rename(Date = ds, Price = y ) %>% 
+       dplyr::rename(Date = ds, Price = y ) %>% 
        select(Date, Price, everything())
 
      
@@ -1032,54 +1184,85 @@ shinyServer(function(input, output) {
   
   # prescription ----
   
-   #EPU Tables
+  # EPU Tables
    
-   # Detailed
+  # Detailed
    output$epu_data <- renderReactable ({
-  
-     EPU_alt %>% head(15) %>% 
-       reactable()
+
+
+     EPU_alt() %>% head(15) %>% 
+       dplyr::rename(Delta = delta, "EPU Index" = index, 
+              Date = date, "Risk Appetite" = Risk) %>%  reactable()
 
    })
-   
-   # Grouped
+
+  # Grouped
    output$epu_abst <- renderPlotly ({
-     
-     
-     ggplotly(EPU_abst %>% ggplot(aes(x = Risk, y = Days, fill = Risk))+
+
+
+     ggplotly(EPU_abst() %>% ggplot(aes(x = Risk, y = Days, fill = Risk))+
                 geom_col()+
                 theme_classic()+
                 labs(title = "Day count of Risk OFF/ON for the current year" )
      )
      
+
    })
-   
-   # Interest Rates graph
-   
+
+  # Interest Rates graph
    output$rates_risk <- renderPlotly ({
-     
-   ggplotly (
-     interest_rate_all %>% ggplot(aes(date, EFFR))+
+
+  #EPU_alt <- EPU_alt()
+
+   ggplotly (interest_rate_all() %>% ggplot(aes(date, EFFR))+
        geom_col(color = "#b1d6f0", fill = "blue")+
-       geom_smooth(data = interest_rate_all, 
+       geom_smooth(data = interest_rate_all(),
                    aes(x = date, y = market_expectation),
                    color = "#e03db7",
                    size = 1)+
-       geom_smooth(data = EPU_alt,
+       geom_smooth(data = EPU_alt(),
                    aes(x=date, index/250),
                    color = "#d60000")+
        theme_classic()+
        labs(title = "Effective Fed Funds Rate vs EPU",
             x_axis = "Date")
    )
+
   })
+
+  # Fed Interest Rates Analisys
+   output$fed_data <- renderReactable ({
+     
+      interest_rate_all_tbl() %>% head(15) %>%
+       reactable()
+     
+   })
+   
+  
+  # Neural Network visualizacion 
+   output$ts_nnet_pred <- renderPlot({
+     
+    # fit <- readRDS("nnet_fit_sp500.rds") # trained
+    
+    fit <- readRDS("fit.rds") 
+    
+    source_url("https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a505ff044412703516c34f1a4684a5/nnet_plot_update.r")
+    
+    plot(fit, max.sp = T)
+    
+
+   }) # checked
+  
+
+  # NNET posible futures 
+   output$ts_nnet_pred_tbl <- renderReactable({
+     
+          pred_show() %>% reactable()
+
+     
+   })
    
    
-   output$ts_nnet_pred <- renderReactable ({
-     
-   data_pred_show %>% reactable()
-     
-   }) 
    
   # -------
    
@@ -1087,5 +1270,4 @@ shinyServer(function(input, output) {
   # Close of Main function  
   })
 
-save.image('environ.RData')
 
