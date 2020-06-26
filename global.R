@@ -63,12 +63,12 @@ market_list <- list(
                      "Nasdaq Composite"             = "NASDAQCOM",
                      "Nikkei"                       = "NIKKEI225",
                      "VIX"                          = "VIXCLS"),
-  Commodities    = c("WTI"                          = "CL=F",
-                     "Brent"                        = "BZ=F",
-                     "Gold"                         = "GC=F",       # GOLDAMGBD228NLBM
-                     "Aluminium"                    = "ALI=F",      # PALUMUSDM
-                     "Corn"                         = "C=F",        # PMAIZMTUSDM
-                     "Soy"                          = "S=F"),       # PSOYBUSDQ
+  Commodities    = c("WTI"                          = "DCOILWTICO",
+                     "Brent"                        = "POILBREUSDM",
+                     "Gold"                         = "GOLDAMGBD228NLBM",       
+                     "Aluminium"                    = "PALUMUSDM",      
+                     "Corn"                         = "PMAIZMTUSDM",        
+                     "Soy"                          = "PSOYBUSDQ"),       
   Currencies     = c("DXY CUR"                      = "DTWEXAFEGS",
                      "EUR USD"                      = "DEXUSEU",
                      "GBP USD"                      = "DEXUSUK",

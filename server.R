@@ -209,7 +209,7 @@ shinyServer(function(input, output) {
   # Price Returns 
   price_return <- eventReactive(input$observe, {
     
-    if(!input$variable %in% c(market_list$Commodities ,market_list$ETFs)){ 
+    if(!input$variable %in% market_list$ETFs){ 
       
       behavior_data <- tq_get(input$variable, get = "economic.data",
                               from = input$daterange[1],
@@ -241,7 +241,7 @@ shinyServer(function(input, output) {
   # Price Evolution 
   price_evolution <- eventReactive(input$observe, {
     
-    if(!input$variable %in% c(market_list$Commodities, market_list$ETFs)){ 
+    if(!input$variable %in%  market_list$ETFs){ 
       
       behavior_data <- tq_get(input$variable, get = "economic.data",
                               from = input$daterange[1],

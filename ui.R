@@ -134,7 +134,7 @@ ui <- dashboardPage(
                        wellPanel(
                          h3("Decision Intelligence"), 
                          tags$a(href="https://en.wikipedia.org/wiki/Decision_intelligence" ,"The Discipline of Decision Intelligence",
-                                style = "padding-left:7px"),
+                                style = "padding-left:7px;height:550px"),
                          
                          hr(),
                          h4(
