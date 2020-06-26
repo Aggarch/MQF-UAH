@@ -597,9 +597,9 @@ EPU_abst <-   EPU_alt %>% filter(year(date) >= year(today())) %>%
 
 
 # FED rate Expectations #####
-browseURL("https://www.economics-finance.org/jefe/fin/KeaslerGoffpaper.pdf")
-browseURL("https://www.cmegroup.com/trading/interest-rates/stir/30-day-federal-fund_quotes_settlements_futures.html")
-browseURL("https://www.danielstrading.com/education/markets/interest-rates-financials/30-day-federal-funds")
+#browseURL("https://www.economics-finance.org/jefe/fin/KeaslerGoffpaper.pdf")
+#browseURL("https://www.cmegroup.com/trading/interest-rates/stir/30-day-federal-fund_quotes_settlements_futures.html")
+#browseURL("https://www.danielstrading.com/education/markets/interest-rates-financials/30-day-federal-funds")
 
 #Import data 
 # FED Funds Targets (Upper{fftu} & Lower{fftl}) & Fed Funds Futures:::
@@ -638,7 +638,7 @@ fftu %>% rename("FedFunds Target Upper" = price) %>%
 
 
 # Beispiel of market Expectations. 
-browseURL("https://www.cmegroup.com/trading/interest-rates/stir/30-day-federal-fund_contractSpecs_futures.html")
+#browseURL("https://www.cmegroup.com/trading/interest-rates/stir/30-day-federal-fund_contractSpecs_futures.html")
 
 
 interest_rate_current <- tibble(
@@ -1495,7 +1495,7 @@ corona_data <- coronavirus::coronavirus %>% filter(type == "confirmed") %>%
   group_by(date) %>% summarise(cases = sum(cases), .groups = "drop_last")
 
 # GitHub about ::: 
-browseURL("https://github.com/RamiKrispin/coronavirus") 
+#browseURL("https://github.com/RamiKrispin/coronavirus") 
 
 # Rank:
 conf_df <- coronavirus %>% 
