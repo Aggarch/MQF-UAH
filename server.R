@@ -587,7 +587,7 @@ shinyServer(function(input, output) {
   #     # plot(perf) # Perfect ROCR
   #     # pred <- predict(mod, newdata = data[-t.id,], type = "class")
   #     
-  #     saveRDS(mod, "mod.rds")
+  #     saveRDS(mod, "neural_networks/mod.rds")
   #       
   # 
   # })
@@ -610,7 +610,7 @@ shinyServer(function(input, output) {
                 size = 5 , maxit = 1000000, decay = .001, rang = 0.07,
                 na.action = na.omit, skip = T)
 
-    saveRDS(mod, "mod.rds")
+    saveRDS(mod, "neural_networks/mod.rds")
     
     today() %m-% months(month(today())) -> t
     
@@ -688,7 +688,7 @@ shinyServer(function(input, output) {
       data_pred <-  data_new %>% rbind(head(data(), 30))
       
       
-      mod <- readRDS("mod.rds")
+      mod <- readRDS("neural_networks/mod.rds")
       
       data_pred_show <- data_pred%>%
         select(-delta_h, -delta_l, -d_1_2_n, -d_1_2_p,
@@ -723,11 +723,11 @@ shinyServer(function(input, output) {
                 size = 15, decay = 0.2, rang = 0.1,
                 maxit = 100000000, linout=T)
 
-    saveRDS(fit_n, "fit.rds")
+    saveRDS(fit_n, "neural_networks/fit.rds")
 
-    fit_n <- readRDS("fit.rds")
+    fit_n <- readRDS("neural_networks//fit.rds")
      
-    fit <-  readRDS("nnet_alternative_sp500.rds")
+    fit <-  readRDS("neural_networks/nnet_alternative_sp500.rds")
    
   pred_show <- data_pred_show %>%
     mutate(PRED_nnet = predict(fit, data_pred_show)[,1]) %>% 
@@ -1244,7 +1244,7 @@ shinyServer(function(input, output) {
      
     # fit <- readRDS("nnet_fit_sp500.rds") # trained
     
-    fit <- readRDS("fit.rds") 
+    fit <- readRDS("neural_networks/fit.rds") 
     
     source_url("https://gist.githubusercontent.com/fawda123/7471137/raw/466c1474d0a505ff044412703516c34f1a4684a5/nnet_plot_update.r")
     
