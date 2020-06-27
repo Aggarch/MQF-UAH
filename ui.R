@@ -140,7 +140,8 @@ ui <- dashboardPage(
                          h4(
                            helpText("",
                                     
-                                    tags$img(src= "decision_intelligence.png", style ="width:800px;height:450px;display:block;margin:auto"))
+                                    tags$img(src= "decision_intelligence.png",
+                                             style ="width:800px;height:450px;display:block;margin:auto"))
                          )
                        )
                 )
@@ -268,7 +269,7 @@ ui <- dashboardPage(
                            )
                          )
                          
-                       )
+                      )
                        
                 )
               )
@@ -322,8 +323,11 @@ ui <- dashboardPage(
                          wellPanel(
                            tabsetPanel(
                              
+                             tabPanel("Time Series Concept", br(),br(),br(),
+                                      tags$img(src= "comps.jpg",
+                                               style = "padding-left:7px;width:600px;height:200px;display:block;margin:auto")),
 
-                             tabPanel("Time Series", withSpinner(plotlyOutput("fcast",height = "600px"),
+                             tabPanel("Asset TS", withSpinner(plotlyOutput("fcast",height = "600px"),
                                                                         color="#1da1f2")),
                              
                              tabPanel("TS Returns", withSpinner(plotlyOutput("tsr",height = "600px"),
