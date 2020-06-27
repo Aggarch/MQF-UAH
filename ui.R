@@ -244,8 +244,20 @@ ui <- dashboardPage(
                              tabPanel("Price Evolution", withSpinner(plotlyOutput("evolution",height = "600px"),
                                                                      color="#1da1f2")),
                              
-                             tabPanel("Price Returns", withSpinner(plotlyOutput("returns",height = "600px"),
-                                                                   color="#1da1f2")),
+                             tabPanel("Price Returns", br(), 
+                                       
+                                       tabBox( side = "left", width = 13,
+                                               tabPanel("Daily", withSpinner( plotlyOutput("returns_d",height = "600px"), color = "#1da1f2")),         
+                                               tabPanel("Weekly", withSpinner( plotlyOutput("returns_w", height = "600px"), color="#1da1f2")),
+                                               tabPanel("Monthly", withSpinner( plotlyOutput("returns_m", height = "600px"), color="#1da1f2")),
+                                               tabPanel("Yearly", withSpinner( plotlyOutput("returns_y", height = "600px"), color="#1da1f2"))
+                                               
+                                               
+                                       )),
+                             
+                             
+                             # tabPanel("Price Returns", withSpinner(plotlyOutput("returns",height = "600px"),
+                             #                                            color="#1da1f2")),
                              
                              tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor",height = "600px"),
                                                                         color="#1da1f2")),

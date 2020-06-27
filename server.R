@@ -160,7 +160,9 @@ shinyServer(function(input, output) {
       behavior_data <- tq_get(input$variable, get = "economic.data",
                               from = input$daterange[1],
                               to = input$daterange[2]
-      )
+      ) %>% na.locf()
+      
+      
     }else{
 
 
@@ -168,7 +170,7 @@ shinyServer(function(input, output) {
                               from = input$daterange[1],
                               to = input$daterange[2]) %>%
         dplyr::rename(price = adjusted) %>%
-        select(price, symbol, date)
+        select(price, symbol, date) %>% na.locf()
 
     }
     
@@ -207,7 +209,10 @@ shinyServer(function(input, output) {
   })
   
   # Price Returns 
-  price_return <- eventReactive(input$observe, {
+  
+  
+  # Daily
+  price_return_d <- eventReactive(input$observe, {
     
     if(!input$variable %in% market_list$ETFs){ 
       
@@ -227,16 +232,115 @@ shinyServer(function(input, output) {
     }
     
 
-    price_return <- behavior_data %>%
+    price_return_d <- behavior_data %>%
            group_by(symbol) %>%
            tq_transmute(select = price,
                         mutate_fun = periodReturn,
-                        period = "daily")
+                        period = "daily",
+                        type = "log")
     
     
-    price_return
+    price_return_d
     
   })
+  
+  
+  # weekly
+  price_return_w <- eventReactive(input$observe, {
+    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>% 
+        dplyr::rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
+    
+    
+    price_return_w <- behavior_data %>%
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "weekly",
+                   type = "log")
+    
+    price_return_w
+    
+  })
+  
+  # weekly
+  price_return_m <- eventReactive(input$observe, {
+    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>% 
+        dplyr::rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
+    
+    
+    price_return_m <- behavior_data %>%
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "monthly",
+                   type = "log")
+    
+    price_return_m
+    
+  })
+  
+  # weekly
+  price_return_y <- eventReactive(input$observe, {
+    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>% 
+        dplyr::rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
+    
+    
+    price_return_y <- behavior_data %>%
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "yearly",
+                   type = "log")
+    
+    price_return_y
+    
+  })
+  
   
   # Price Evolution 
   price_evolution <- eventReactive(input$observe, {
@@ -927,10 +1031,10 @@ shinyServer(function(input, output) {
   })
   
   #returns
-  output$returns     <- renderPlotly({
+  output$returns_d     <- renderPlotly({
 
     ggplotly(
-      price_return()%>%
+      price_return_d()%>%
         mutate(Color = ifelse(daily.returns > 0.00, "green", "red")) %>%
         ggplot(aes(x = date, y = daily.returns, color = Color))+
         # theme_tq()+
@@ -938,11 +1042,66 @@ shinyServer(function(input, output) {
         geom_point(size = 3)+
         geom_line(color = "gray", size = 1)+
         # geom_smooth(color = "orange", method = loess)+
-        labs(x = "Date", y = "Price Returns",
+        labs(x = "Date", y = "Log Price Returns",
              title = paste0(input$variable))+
         theme(legend.position = "none")
       )
 
+  })
+  
+  output$returns_w     <- renderPlotly({
+    
+    ggplotly(
+      price_return_w()%>%
+        mutate(Color = ifelse(weekly.returns > 0.00, "green", "red")) %>%
+        ggplot(aes(x = date, y = weekly.returns, color = Color))+
+        # theme_tq()+
+        theme_minimal()+
+        geom_point(size = 3)+
+        geom_line(color = "gray", size = 1)+
+        # geom_smooth(color = "orange", method = loess)+
+        labs(x = "Date", y = "Log Price Returns",
+             title = paste0(input$variable))+
+        theme(legend.position = "none")
+    )
+    
+  })
+  
+  output$returns_m     <- renderPlotly({
+    
+    ggplotly(
+      price_return_m()%>%
+        mutate(Color = ifelse(monthly.returns > 0.00, "green", "red")) %>%
+        ggplot(aes(x = date, y = monthly.returns, color = Color))+
+        # theme_tq()+
+        theme_minimal()+
+        geom_point(size = 3)+
+        geom_line(color = "gray", size = 1)+
+        # geom_smooth(color = "orange", method = loess)+
+        labs(x = "Date", y = "Log Price Returns",
+             title = paste0(input$variable))+
+        theme(legend.position = "none")
+    )
+    
+  })
+  
+  
+  output$returns_y     <- renderPlotly({
+    
+    ggplotly(
+      price_return_y()%>%
+        mutate(Color = ifelse(yearly.returns > 0.00, "green", "red")) %>%
+        ggplot(aes(x = date, y = yearly.returns, color = Color))+
+        # theme_tq()+
+        theme_minimal()+
+        geom_point(size = 3)+
+        geom_line(color = "gray", size = 1)+
+        # geom_smooth(color = "orange", method = loess)+
+        labs(x = "Date", y = "Log Price Returns",
+             title = paste0(input$variable))+
+        theme(legend.position = "none")
+    )
+    
   })
   
   #evolution
