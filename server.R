@@ -584,9 +584,121 @@ shinyServer(function(input, output) {
   # Model ;;; Neural Networks ------------------------------------------------
   
   
-                                    
+  ########################################
+  #              NNET ZONE               #
+  ########################################
+  
+  
+  asset <- eventReactive(input$observe_2,{
+    
+    
+    # Data Asset  ---------------------------------------------------------
+    
+    
+    #input = list(variable_2 = "SP500") # 4 debugging
+    
+    
+    if(!input$variable_2 %in% market_list$ETFs){
       
-
+      asset_selection <- tq_get(input$variable_2, get = "economic.data") %>%
+        na.locf()
+      
+    }else{
+      
+      
+      asset_selection <- tq_get(input$variable_2, get = "stock.prices") %>%
+        dplyr::rename(price = adjusted) %>%
+        select(price, symbol, date) %>%
+        na.locf()
+      
+    }
+    
+    asset <- asset_selection %>%
+      # dplyr::rename(asset = price) %>%
+      select(-symbol) %>%
+      mutate(sma = SMA(price, 2),
+             ema = EMA(price, 3),
+             dema = DEMA(price, 4),
+             roc  = ROC(price),
+             momentum = momentum(price),
+             rsi = RSI(price, 5),
+             strong_rsi = ifelse(rsi > 80, 1, 0),
+             weak_rsi   = ifelse(rsi < 20, 1, 0)) %>%
+      arrange(desc(date)) %>%
+      mutate(up = ifelse(momentum > 0, 1 ,0)) %>%
+      dplyr::rename(asset = price)
+    
+    asset
+    
+    
+  }) # Check
+  
+  data <- eventReactive(input$observe_2,{
+    # Data Model ~ {EPU, Asset, interest_rate} -----------------------------
+    
+    data <- asset() %>%
+      left_join( EPU_alt(), by = "date") %>%
+      fill(colnames(.) , .direction = "up") %>%
+      
+      mutate(Risk = ifelse(Risk == "ON", 1, 0),
+             delta= index/lag(index)-1) %>%
+      left_join(interest_rate_all(), by = "date") %>%
+      fill(colnames(.) , .direction = "up") %>%
+      
+      mutate(delta_h = ifelse(delta > .50, 1, 0),
+             delta_l = ifelse(delta < -.50, 1, 0),
+             d_1_2_p = ifelse(between(delta, .1,.2), 1,0),
+             d_1_2_n = ifelse(between(delta, -.2,-.1), 1,0),
+             d_3_5_p = ifelse(between(delta, .3, .5),1, 0),
+             d_3_5_n = ifelse(between(delta, -.5, -.3),1,0)) %>%
+      relocate( .after = Risk, contains(c("delt", "d_"))) %>%
+      relocate( .after = market_expectation, fed_action ) %>%
+      mutate(fed_h = ifelse(market_expectation > 1.5, 1, 0 ),
+             fed_action_strong = ifelse(fed_action > .09, 1, 0)) %>%
+      select(-fed_h, -fed_action_strong) %>%
+      mutate(up = as.factor(up))
+    
+    data
+    
+    
+    
+  })
+  
+  
+  
+  # Model Ml --------------------------------------------------------------
+  
+  # modelo <- eventReactive(input$observe_2,{
+  #
+  #     # Partition
+  #     t.id <- createDataPartition(data()$up, p= 0.7, list = F)
+  #
+  #     set.seed(666)
+  #    
+  #      mod <- nnet(up ~ ., data() = data[t.id,],
+  #                 size = 5 , maxit = 1000000, decay = .001, rang = 0.07,
+  #                 na.action = na.omit, skip = T)
+  #
+  #     # Quality Model checks :::  
+  #     # calcular valores probabilisticos y evaluar desempeño:
+  #      
+  #     # pred <- predict(mod, newdata = data[-t.id,], type = "class")
+  #     # table(data[-t.id,]$up, pred,dnn = c("real", "preds"))
+  #     #
+  #     # pred2 <- predict(mod, newdata = data[-t.id,], type = "raw")
+  #     # perf <- performance(prediction(pred2, data[-t.id,"up"]),
+  #     #                     "tpr", "fpr")
+  #     # plot(perf) # Perfect ROCR
+  #     # pred <- predict(mod, newdata = data[-t.id,], type = "class")
+  #    
+  #     saveRDS(mod, "neural_networks/mod.rds")
+  #      
+  #
+  # })
+  
+  
+  
+  
   # Applied Model of Nnet -------------------------------------------------------
 
   # generate future dataframe ::: 
@@ -702,7 +814,7 @@ shinyServer(function(input, output) {
     
   })
 
-  # Neual network in regression ---------------------------------------------
+  # Neural network in regression ---------------------------------------------
 
   pred_show <- eventReactive(input$observe_2,{ 
     
@@ -1370,7 +1482,7 @@ shinyServer(function(input, output) {
   # NNET posible futures 
    output$ts_nnet_pred_tbl <- renderReactable({
      
-          pred_show() %>% reactable()
+     pred_show() %>% reactable()
 
      
    })
