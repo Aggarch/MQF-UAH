@@ -233,6 +233,14 @@ ui <- dashboardPage(
                        fluidPage(
                          wellPanel(
                            tabsetPanel(
+                             
+                             tabPanel("Macro Events (Covid-19)", br(), 
+                                      
+                                      tabBox( side = "left", width = 13,
+                                              tabPanel("TreeMap ", withSpinner( plotlyOutput("treemap",height = "500px"), color = "#1da1f2" )),         
+                                              tabPanel("Density ", withSpinner( plotlyOutput("density", height = "500px"), color="#1da1f2"))
+                                      )),
+                             
                              tabPanel("Price Evolution", withSpinner(plotlyOutput("evolution",height = "600px"),
                                                                      color="#1da1f2")),
                              
@@ -243,8 +251,7 @@ ui <- dashboardPage(
                                                                         color="#1da1f2")),
                              
                              tabPanel("Rolling Correlation", withSpinner(plotlyOutput("rolling_cor",height = "600px"),
-                                                                         color="#1da1f2")) 
-                            
+                                                                         color="#1da1f2"))
 
                            )
                          )
@@ -299,9 +306,11 @@ ui <- dashboardPage(
                        )
                 ),
                 column(8,
-                       fluidPage(
+                       fluidPage( 
                          wellPanel(
                            tabsetPanel(
+                             
+
                              tabPanel("Time Series", withSpinner(plotlyOutput("fcast",height = "600px"),
                                                                         color="#1da1f2")),
                              
@@ -371,7 +380,7 @@ ui <- dashboardPage(
                        fluidPage(
                            tabsetPanel(
                              
-                             tabPanel("Scenario", br(), br(), 
+                             tabPanel("Scenario", br(), 
                              
                              tabBox( side = "left", width = 13,
                              tabPanel("FED Rates vs Risk", withSpinner( plotlyOutput("rates_risk",height = "500px"), color = "#1da1f2" )),         
@@ -383,7 +392,7 @@ ui <- dashboardPage(
                              )
                              ),
                          
-                             tabPanel("Recomendations", br(), br(),
+                             tabPanel("Recomendations", br(), 
                              
                              tabBox( side = "left", width = 13,
                              tabPanel("Neural Network", withSpinner( plotOutput("ts_nnet_pred", height = "480px"),color="#1da1f2")),

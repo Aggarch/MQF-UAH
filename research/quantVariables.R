@@ -2077,4 +2077,23 @@ pl <- w-d
 trm <- 3250
 ppl<-pl*trm
 
+
+# 3D Graphs
+
+library(threejs)
+suppressMessages(library(igraph))
+
+d <- as.matrix(read.csv(url("https://quantdare.com/wp-content/uploads/2018/12/dji_comp_distance.csv"), sep=',', header=FALSE))
+mynames <- c("MMM","AXP","AAPL","BA","CAT","CVX","CSCO","KO","XOM","GS","HD","INTC","IBM","JNJ","JPM","MCD","MRK","MSFT","NKE","PFE","PG","UTX","UNH","VZ","WMT","WBA","DIS")
+mycolors <- c("#CA7CFF","#00BFC7","#FF5FC8","#CA7CFF","#CA7CFF","#06BB66","#FF5FC8","#7AAC09","#06BB66","#00BFC7","#BD983E","#FF5FC8","#FF5FC8","#00A9FC","#00BFC7","#BD983E","#00A9FC","#FF5FC8","#BD983E","#00A9FC","#7AAC09","#CA7CFF","#00A9FC","#F57678","#7AAC09","#7AAC09","#F57678")
+
+Q = d * (d<0.25)
+g = graph.adjacency(Q, mode="undirected", weighted=TRUE, diag=FALSE)
+g = set_vertex_attr(g, "color", value=mycolors)
+graphjs(g,
+        vertex.size=0.2,
+        vertex.shape=mynames)
+
+
+browseURL("https://quantdare.com/more-examples-in-financial-visualisation/")
  
