@@ -312,7 +312,7 @@ ui <- dashboardPage(
                          
                          dateRangeInput ("daterange_1" , "Date Interval:" ,
                                          start   =  today()-1500,
-                                         end     =  today()+95,
+                                         end     =  today(),
                                          min     =  "2008-01-01",
                                          max     =  today()+ 365,
                                          separator = " - " ,

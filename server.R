@@ -182,7 +182,7 @@ shinyServer(function(input, output) {
     group_by(symbol) %>%
     tq_transmute(select = price,
                  mutate_fun = periodReturn,
-                 period = "daily")
+                 period = "monthly")
   
   baseline_return <- "DTWEXAFEGS" %>%
     tq_get(get  = "economic.data",
@@ -190,17 +190,17 @@ shinyServer(function(input, output) {
            to   = input$daterange[2]) %>%
     tq_transmute(select     = price,
                  mutate_fun = periodReturn,
-                 period     = "daily")
+                 period     = "monthly")
   
   returns_joined <- left_join(price_return,
                               baseline_return,
                               by = "date") %>% na.omit
   
   rolling_cor <- returns_joined %>%
-    tq_transmute_xy(x          = daily.returns.x,
-                    y          = daily.returns.y,
+    tq_transmute_xy(x          = monthly.returns.x,
+                    y          = monthly.returns.y,
                     mutate_fun = runCor,
-                    n          = 6,
+                    n          = 7,
                     col_rename = "rolling.corr") %>% 
     na.omit()
   
@@ -431,9 +431,30 @@ shinyServer(function(input, output) {
     head(asset.cv)
     
     # Performance
-    asset.p <- performance_metrics(asset.cv) %>%  head(10)
+    asset.p <- performance_metrics(asset.cv) 
     
     performance <- asset.p 
+    
+  })
+  
+  
+  crossval <- eventReactive(input$observe_1,{
+    
+    b_data <- tq_get(input$variable_1, get = "economic.data",
+                     from = input$daterange_1[1],
+                     to = input$daterange_1[2]
+    ) %>%
+      select(date, price) %>%
+      dplyr::rename(ds=date, y=price) %>%
+      na.locf()
+    
+    m <- prophet(b_data)
+    
+    crossval <- cross_validation(m, initial = 40, period = 30, horizon = 65, units = 'days')
+
+    # Performance
+  
+    crossval
     
   })
   
@@ -774,16 +795,16 @@ shinyServer(function(input, output) {
       m <- prophet(asset_future)
       n <- prophet(epu_future)
 
-      future <- make_future_dataframe(m, periods = 10) %>% 
+      future <- make_future_dataframe(m, periods = 9) %>% 
          mutate(weekdays = weekdays(ds)) %>% 
-         filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+         filter(!weekdays == "Saturday") %>% 
          select(-weekdays)
       
       tail(future)
       
-      future_epu <- make_future_dataframe(n, periods = 11) %>% 
+      future_epu <- make_future_dataframe(n, periods = 7) %>% 
          mutate(weekdays = weekdays(ds)) %>% 
-         filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+         filter(!weekdays == "Saturday")%>% 
          select(-weekdays)
       
       tail(future_epu)
@@ -892,8 +913,9 @@ shinyServer(function(input, output) {
            -DELTA, -ROC) %>% 
     head(100) %>%  
     mutate_if(is.numeric, round,2) %>% 
-    mutate(W.Forecast  = PRED_nnet-(INDEX * .3))
-  
+    mutate(W.Forecast  = PRED_nnet-(INDEX * .3)) %>% 
+    rowwise() %>% 
+    mutate(diff =round(ASSET - mean(PRED_nnet,W.Forecast))) 
     # mutate(diff = ASSET - PRED_nnet)
 
   
@@ -1316,8 +1338,7 @@ shinyServer(function(input, output) {
      m <- prophet(b_data)
 
      ggplotly(
-     plot(m,time_series()
-          )+ add_changepoints_to_plot(m),dynamicTicks = TRUE,
+     plot(m,time_series())+ add_changepoints_to_plot(m),dynamicTicks = TRUE,
      layerData = 2, originalData = FALSE) %>%
        rangeslider() %>%
        layout(hovermode = "x")
@@ -1468,25 +1489,20 @@ shinyServer(function(input, output) {
    
    
    
-   output$macroPrimes <- renderTable({
-    
-    
-  })
-   
-   
+
    output$performance <- render_gt({ 
      
      
-     performance() %>% gt()
+     performance() %>% head(10) %>%  gt()
      
      })
   
   
    output$crossv <- renderPlotly({ 
      
-     performance <- performance()
+     performance <- crossval()
      
-     ggplotly( plot_cross_validation_metric(sp.cv, metric = 'mape') )    
+     ggplotly( plot_cross_validation_metric(performance, metric = 'mape') )    
      
      })
    
