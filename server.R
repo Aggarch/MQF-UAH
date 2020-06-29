@@ -399,7 +399,13 @@ shinyServer(function(input, output) {
 
     
    m <- prophet(b_data)
-   future   <- make_future_dataframe(m,periods = 90)
+  
+    future   <- make_future_dataframe(m,periods = 90) %>% 
+     mutate(weekdays = weekdays(ds)) %>% 
+     filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+     select(-weekdays)
+
+   
    forecast <-  predict(m, future)
 
    time_series <- forecast
@@ -423,7 +429,11 @@ shinyServer(function(input, output) {
       
 
     m_rt <- prophet(b_data_rt)
-    future_rt   <- make_future_dataframe(m_rt,periods = 90)
+    future_rt   <- make_future_dataframe(m_rt,periods = 90) %>% 
+      mutate(weekdays = weekdays(ds)) %>% 
+      filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+      select(-weekdays)
+    
     forecast_rt <-  predict(m_rt, future_rt)
 
     time_series_rt <- forecast_rt
@@ -446,7 +456,11 @@ shinyServer(function(input, output) {
     
     
     m_decom <- prophet(b_data_decom)
-    future_decom   <- make_future_dataframe(m_decom,periods = 90)
+    future_decom   <- make_future_dataframe(m_decom,periods = 90) %>% 
+      mutate(weekdays = weekdays(ds)) %>% 
+      filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+      select(-weekdays)
+    
     forecast_decom <-  predict(m_decom, future_decom)
     
     time_series_decom <- forecast_decom
@@ -470,7 +484,11 @@ shinyServer(function(input, output) {
      
      
      m_tbl <- prophet(b_data_tbl)
-     future_tbl   <- make_future_dataframe(m_tbl,periods = 90)
+     future_tbl   <- make_future_dataframe(m_tbl,periods = 90) %>% 
+       mutate(weekdays = weekdays(ds)) %>% 
+       filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+       select(-weekdays)
+     
      forecast_tbl <-  predict(m_tbl, future_tbl)
    
      time_series_changep <- forecast_tbl
@@ -732,13 +750,22 @@ shinyServer(function(input, output) {
       m <- prophet(asset_future)
       n <- prophet(epu_future)
 
-      future <- make_future_dataframe(m, periods = 6)
+      future <- make_future_dataframe(m, periods = 10) %>% 
+         mutate(weekdays = weekdays(ds)) %>% 
+         filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+         select(-weekdays)
+      
       tail(future)
-      future_epu <- make_future_dataframe(m, periods = 6)
+      
+      future_epu <- make_future_dataframe(n, periods = 11) %>% 
+         mutate(weekdays = weekdays(ds)) %>% 
+         filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+         select(-weekdays)
+      
       tail(future_epu)
 
       forecast <- predict(m, future)
-      forecast_epu <- predict(n, future)
+      forecast_epu <- predict(n, future_epu)
 
       # Future asset
       asset_future_price <-   tail(forecast[c('ds', 'yhat')]) %>%
@@ -1322,7 +1349,11 @@ shinyServer(function(input, output) {
 
 
      m_tbl <- prophet(b_data_tbl)
-     future_tbl   <- make_future_dataframe(m_tbl,periods = 95)
+     future_tbl   <- make_future_dataframe(m_tbl,periods = 95) %>% 
+       mutate(weekdays = weekdays(ds)) %>% 
+       filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+       select(-weekdays)
+     
      forecast_tbl <-  predict(m_tbl, future_tbl)
 
      options(DT.options = list(dom = 'bfrtip',

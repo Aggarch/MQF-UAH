@@ -809,11 +809,14 @@ setwd("C:/Users/ANALITICA/Desktop")
 
 sp <- tq_get("SP500", get = "economic.data",from = "2020-01-01") %>% 
   select(date, price) %>% 
-  rename(ds = date, y = price)
+  dplyr::rename(ds = date, y = price)
 
 m <- prophet(sp)
 
-future <- make_future_dataframe(m, periods = 8)
+future <- make_future_dataframe(m, periods = 8)%>% 
+  mutate(weekdays = weekdays(ds)) %>% 
+  filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+  select(-weekdays)
 tail(future)
 
 forecast <- predict(m, future)
