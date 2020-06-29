@@ -811,7 +811,20 @@ sp <- tq_get("SP500", get = "economic.data",from = "2020-01-01") %>%
   select(date, price) %>% 
   dplyr::rename(ds = date, y = price)
 
+# Model
 m <- prophet(sp)
+
+# Cross Validation 
+sp.cv <- cross_validation(m, initial = 40, period = 30, horizon = 65, units = 'days')
+head(sp.cv)
+
+# Performance
+sp.p <- performance_metrics(sp.cv)
+head(sp.p, 15)
+
+# Cross Visual
+plot_cross_validation_metric(sp.cv, metric = 'mape')
+
 
 future <- make_future_dataframe(m, periods = 8)%>% 
   mutate(weekdays = weekdays(ds)) %>% 

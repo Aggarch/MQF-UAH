@@ -78,7 +78,7 @@ ui <- dashboardPage(
                        tags$img(src='rstudio_logo_white.png', height=40, width=120, 
                                 style = "padding-left:27px"),
                        tags$img(src='fred_white_2.png', height=40, width=40,
-                                style= "padding-left:7px"),
+                                style= "padding-left:7px")
                        
                      )
                    )
@@ -242,8 +242,13 @@ ui <- dashboardPage(
                                               tabPanel("Density ", withSpinner( plotlyOutput("density", height = "500px"), color="#1da1f2"))
                                       )),
                              
-                             tabPanel("Price Evolution", withSpinner(plotlyOutput("evolution",height = "600px"),
-                                                                     color="#1da1f2")),
+                             tabPanel("Price Evolution", br(),
+                                      
+                                      tabBox( side = "left", width = 13,
+                                              tabPanel("Asset Behaviour", withSpinner( plotlyOutput("evolution",height = "500px"), color = "#1da1f2" )),         
+                                              tabPanel("Summary of Data", withSpinner( reactableOutput("summary"), color="#1da1f2"))
+                                      )),
+                                              
                              
                              tabPanel("Price Returns", br(), 
                                       
@@ -327,17 +332,24 @@ ui <- dashboardPage(
                                       tags$img(src= "comps.jpg",
                                                style = "padding-left:7px;width:600px;height:200px;display:block;margin:auto")),
                              
-                             tabPanel("Asset TS", withSpinner(plotlyOutput("fcast",height = "600px"),
-                                                              color="#1da1f2")),
                              
-                             tabPanel("TS Returns", withSpinner(plotlyOutput("tsr",height = "600px"),
-                                                                color="#1da1f2")),
                              
-                             tabPanel("Trend Decomposition", withSpinner(plotOutput("trend",height = "600px"),
-                                                                         color="#1da1f2")),
+                             # tabPanel("Asset TS", withSpinner(plotlyOutput("fcast",height = "600px"),
+                             #                                  color="#1da1f2")),
                              
-                             tabPanel("TS Daypoints", withSpinner(dataTableOutput("changep",height = "600px"),
-                                                                  color="#1da1f2"),
+                             tabPanel("Asset TS", br(), 
+                                      
+                                      tabBox( side = "left", width = 13,
+                                              tabPanel("Forecast", withSpinner( plotlyOutput("fcast",height = "600px"), color = "#1da1f2")),         
+                                              tabPanel("P Metrics", withSpinner( gt_output("performance"), color="#1da1f2")),
+                                              tabPanel("Cross Validation", withSpinner( plotlyOutput("crossv", height = "600px"), color="#1da1f2"))
+                                              
+                                      )),
+                             
+                             
+                             tabPanel("TS Returns", withSpinner(plotlyOutput("tsr",height = "600px"), color="#1da1f2")),
+                             tabPanel("Trend Decomposition", withSpinner(plotOutput("trend",height = "600px"), color="#1da1f2")),
+                             tabPanel("TS Daypoints", withSpinner(dataTableOutput("changep",height = "600px"),color="#1da1f2"),
                                       boton_descarga("down", "Forecast"))
                              
                              

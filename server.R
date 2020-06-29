@@ -415,6 +415,30 @@ shinyServer(function(input, output) {
   })
   
   
+  performance <- eventReactive(input$observe_1,{
+    
+    b_data <- tq_get(input$variable_1, get = "economic.data",
+                     from = input$daterange_1[1],
+                     to = input$daterange_1[2]
+    ) %>%
+      select(date, price) %>%
+      dplyr::rename(ds=date, y=price) %>%
+      na.locf()
+    
+    m <- prophet(b_data)
+    
+    asset.cv <- cross_validation(m, initial = 40, period = 30, horizon = 65, units = 'days')
+    head(asset.cv)
+    
+    # Performance
+    asset.p <- performance_metrics(asset.cv) %>%  head(10)
+    
+    performance <- asset.p 
+    
+  })
+  
+  
+
   #time_series_return
   time_series_rt <- eventReactive(input$observe_1,{
     
@@ -1260,6 +1284,18 @@ shinyServer(function(input, output) {
     
   })
   
+  output$summary  <- renderReactable  ({ 
+    
+    
+    
+    price_evolution <- price_evolution()
+    
+    table.Stats(price_evolution$price) %>% 
+      reactable::reactable(defaultPageSize =20)    
+    
+    
+    })
+  
   
  
   
@@ -1436,8 +1472,24 @@ shinyServer(function(input, output) {
     
     
   })
+   
+   
+   output$performance <- render_gt({ 
+     
+     
+     performance() %>% gt()
+     
+     })
   
   
+   output$crossv <- renderPlotly({ 
+     
+     performance <- performance()
+     
+     ggplotly( plot_cross_validation_metric(sp.cv, metric = 'mape') )    
+     
+     })
+   
   # prescription ----
   
   # EPU Tables
