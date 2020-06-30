@@ -105,21 +105,26 @@ ui <- dashboardPage(
                          
                          hr(),
                          h3(
-                           helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
-                                  sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
-                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat tus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus.      
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.",
+                           helpText("In the context of Quantitative Finance, specifically the field of Market Risk,
+                                     the uncertainty it's a constant.
+                                     This initiative take into consideration, the paradigm of Decision Intelligence,
+                                     understanding this concept as the discpline of decision making, inspired in data, business knowledge and behaviour,
+                                     this discipline also known as decision engineering, try to close the gap between the quantitative
+                                     and the qualitative, it's important to understand this exercise as a dinamyc analisys, being aware that the market reality 
+                                     it's very complex so the intention underlying this resource it's about reinforcing the expert decision 
+                                     making  process, taking into account that a Financial Trader will incorporate to the process,
+                                     or stretegy, a set of differents dimensions or variables that might have significant impact in the strategy execution, 
+                                     or market analisys, the variables shared in this exercise, belongs to 4 different cathegories of the market risk, 
+                                     Macroeconomics, Commodities , Equity Indexes & Currencies.",         br(),
+ 
+                                     "The information for the analisys consider macroeconomics from the United States.
+                                     The user can interact with different variables in different time frames to find insights that might guide market decisions, 
+                                     market understanding or at least a data-driven observation, masterpiece for the incubation of intuition.",br(),
                                     
-                                    "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus.
-                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit,
-                                  sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
-                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere.",hr(),
+                                    "NOTE: This is the result of an academic research, more variables can be included to response to more specific needs.", br(),br(),br(),
                                     
-                                    tags$img(src   = "/data_science.png", width = "650px", height = "240px", 
-                                             style = "width:720px;height:300px;display:block;margin:auto"),br(),
+                                    tags$img(src   = "/data_science.png", width = "450px", height = "180px", 
+                                             style = "width:620px;height:250px;display:block;margin:auto"),br(),
                                     tags$a(href="https://r4ds.had.co.nz/explore-intro.html","R for Data Science"))
                            
                          )
@@ -136,13 +141,13 @@ ui <- dashboardPage(
                          tags$a(href="https://en.wikipedia.org/wiki/Decision_intelligence" ,"The Discipline of Decision Intelligence",
                                 style = "padding-left:7px;height:550px"),
                          
-                         hr(),
+                         hr(),br(),br(),
                          h4(
                            helpText("",
                                     
                                     tags$img(src= "/decision_intelligence.png",
                                              style ="width:800px;height:450px;display:block;margin:auto"))
-                         )
+                         ),br(),br()
                        )
                 )
               )
@@ -156,12 +161,12 @@ ui <- dashboardPage(
                          tags$a(href="https://es.wikipedia.org/wiki/Cross_Industry_Standard_Process_for_Data_Mining" ,"CRISP-DM",
                                 style = "padding-left:7px"),
                          
-                         hr(),
+                         hr(),br(),br(),
                          h4(
                            helpText("",
                                     
                                     tags$img(src= "/crisp.png", style ="width:550px;height:550px;display:block;margin:auto"))
-                         )
+                         ),br(),br()
                        )
                 )
               )
@@ -174,13 +179,13 @@ ui <- dashboardPage(
                          tags$a(href="https://pubsonline.informs.org/doi/pdf/10.1287/opre.38.1.7" ,"Analytics",
                                 style = "padding-left:7px"),
                          
-                         hr(),
+                         hr(),br(),br(),
                          h4(
                            helpText("",
                                     
                                     tags$img(src= "https://www.gurobi.com/wp-content/uploads/2018/12/analytic-types-chart.png",
                                              style ="width:900px;height:500px;display:block;margin:auto"))
-                         )
+                         ),br(),br(),
                        )
                 )
               )
@@ -199,13 +204,21 @@ ui <- dashboardPage(
                        wellPanel(
                          h2("Descriptive Market Analytics"),
                          
-                         helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit
-                                  sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
-                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
-                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purusat ipsum luctus varius. 
-                                  Proin varius quam at congue posuere purus."),
+                         helpText("¿What Happened and Why?" , br(),
+                                  "Statistically knowing what happened, it's 'easy' because we are able to calculate central or deviation measures, distributions of frequency, etc,
+                                  but conecting the dots between what happened and why, it's a Story-Telling activity, product of human understanding and representations of reality.",br(),
+                                  
+                                  
+                                  "In this area we can select a variable, probably an asset of the prefered asset class, or the Economic Policy Uncertainty Index, to observe how does the 
+                                  uncertainty evolves in a specific time range, the time range it's analyst election, maybe a date range linked to an specific event.", br(),
+                                  
+                                  "After selecting the variable and timeframe of interest, we can observe the price evolution and checkout the dots density across time, dancing around a simple smoothed linear model,
+                                  the election can be translated to the logarithmic returns, this migth provide an intuition of performance, then it may be interesting to observe how do different 
+                                  variables liearly correlate each other, and by the end, take a look to the dinamyc correlation of the selection against the Dollar Index spot, 'US dollar Strenght'.", br(),
+                                  
+                                  "Data about the Coronavirus distribution and density are available in WHO webpage, this is a Global event important to be considered in this context, since
+                                  directly affects humans health and economies, principal drivers of productivity, performance and wealth."),
+                         
                          
                          pickerInput(
                            inputId = "variable",
@@ -294,12 +307,25 @@ ui <- dashboardPage(
                 column(4,
                        wellPanel(
                          h2("Predictive Market Analytics"),
-                         helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
-                                  sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
-                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
-                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus."),
+                         helpText("¿What Might Happen?" , br(),
+                                  
+                                  
+                                  "To have a good notion of where the price might be, it's important to know where is it now and how it moves, in this panel, it's the same dinamyc, we select a variable and a date range,
+                                  then we push the 'Forecast button', and the algorithm calculate a time series model, time series have 3 principal components.",br(),
+                                  
+                                  "Trend, Seasonality and Noise or randomness.", br(), 
+                                  
+                                  "Basically the time series model and analisys decompose the time series, understanding a time series as a succession of observations in time, so a time series it's a long 
+                                  table with 2 columns, date and price in this case. The analisys of the time series isolate the components of the time series selected, and combines them in 3 possible ways,
+                                  by addition, multiplication or a combination of both, the algorithm used, transform the data and makes the decomposition and recomposition in the best possible way in order to 
+                                  predict a range of possible values that incorporate the prevalent aspects of the components mentioned.", br(),
+                                  
+                                  "This approach and method is very popular in financial forecasting, the model do not incorporate information distinct that the date and price,
+                                  exogenous information it's not legible for the model so this approach can and will be enrich a posteriori in the prescription module. The time series forecasting and methology, 
+                                  enjoy of a good reputation in financial sector as an statistic approach to forecast."
+                                  
+                                  
+                                  ),
                          pickerInput(
                            inputId = "variable_1",
                            label = "Variables",
@@ -374,12 +400,26 @@ ui <- dashboardPage(
                 column(4,
                        wellPanel(
                          h2("Prescriptive Market Analytics"),
-                         helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit, 
-                                  sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
-                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
-                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purus."),
+                         helpText("¿What Should We Do?" , br(),
+                                  
+                                  
+                                  "Considering the result of the time series forecast, and the expertise of the analyst or trader, we can explore the behavior of main financial markets drivers, 
+                                  to make a forecast able to icorporate exogenous information, understanding exogenous information as data that do not directly correspond to the time series.",br(),
+                                  
+                                  "Uncertainty Measurement & Monetary Policy are key examples of valuable information that might be consider as 'exogenous'.", br(), 
+                                  
+                                  "This panel select the variable of interest, calculate the future of the timeseries and EPU (Economic Policy Uncertainty Index), and assume that the FED Policy Stategy and market expectations 
+                                  about FED possible actions remains constant. Then a Regression Neural Network, study the data available in a dataset containing this information structure about the past, and predict the future, 
+                                  so now we have 3 Forecast outputs for the asset.", br(),
+                                  
+                                  "ASSET : The real life price when the market closure was effective, otherwise the time series prediction.", br(),
+                                  "INDEX : The real life Economic Policy Uncertainty Index in case it was released, otherwise the time series prediction.", br(),
+                                  "PRED.nnet : The Neural Network prediction considering the INDEX, and the FED Funds rates & futures.",br(),
+                                  "W.Forecast: Neural Network prediction weigthed by the Uncertainty Level,the main idea of this measure it's to increase seansibility about uncertainty."
+                                  
+                                  
+                                  
+                         ),
                          pickerInput(
                            inputId = "variable_2",
                            label = "Variables",
@@ -453,13 +493,17 @@ ui <- dashboardPage(
                        wellPanel(
                          h2("Market Sentiment"),
                          
-                         helpText("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec blandit
-                                  sapien quis convallis porttitor, nunc justo ultrices justo, ut laoreet nisl risus vitae nisl.
-                                  Donec dictum risus at ipsum luctus varius. Proin varius quam at congue posuere. 
-                                  Fusce fringilla tellus pretium, egestas lorem at, volutpat leo.
-                                  Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                                  Proin leo tortor, pulvinar non massa commodo, tempus vulputate purusat ipsum luctus varius. 
-                                  Proin varius quam at congue posuere purus."),
+                         helpText("¿How does people feel about markets and risk?" , br(),
+                                  " Answer to this question it's not easy, and requires to build more specific questions about what is sentiment and what
+                                  do we really need to know, in the context of quantitative finance, this information may contribute to asset valuation,
+                                  specially to the read of market expectation, the human tends to share feels and thoughts, feels and thoughts guide actions, so 
+                                  probably knowing a little bit more about what do the people think about the market it's valuable.",br(),
+                                  
+                                  "In this Area we can look for specific tweets matching a #Hasthag, checkout whats the frecuency of searches  about a word 
+                                  linked to market behaviour, for example 'recession', on Google Trends, but also on Twitter.", br(),
+                                  
+                                  "It's important to understand that this is a minimalistic example of market sentiment analisys, this technique can be 
+                                  very sofisticated, complex and insightful."),
                          
                          # pickerInput(
                          #   inputId = "variable",
