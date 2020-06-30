@@ -110,18 +110,18 @@ ui <- dashboardPage(
                                      This initiative take into consideration, the paradigm of Decision Intelligence,
                                      understanding this concept as the discpline of decision making, inspired in data, business knowledge and behaviour,
                                      this discipline also known as decision engineering, try to close the gap between the quantitative
-                                     and the qualitative, it's important to understand this exercise as a dinamyc analisys, being aware that the market reality 
+                                     and the qualitative, it's important to understand this exercise as a dinamyc analysis, being aware that the market reality 
                                      it's very complex so the intention underlying this resource it's about reinforcing the expert decision 
                                      making  process, taking into account that a Financial Trader will incorporate to the process,
                                      or stretegy, a set of differents dimensions or variables that might have significant impact in the strategy execution, 
-                                     or market analisys, the variables shared in this exercise, belongs to 4 different cathegories of the market risk, 
+                                     or market analysis, the variables shared in this exercise, belongs to 4 different cathegories of the market risk, 
                                      Macroeconomics, Commodities , Equity Indexes & Currencies.",         br(),
  
-                                     "The information for the analisys consider macroeconomics from the United States.
+                                     "The information for the analysis consider macroeconomics from the United States.
                                      The user can interact with different variables in different time frames to find insights that might guide market decisions, 
-                                     market understanding or at least a data-driven observation, masterpiece for the incubation of intuition.",br(),
+                                     market understanding or at least a data-driven observations, masterpiece for the incubation of intuition.",br(),
                                     
-                                    "NOTE: This is the result of an academic research, more variables can be included to response to more specific needs.", br(),br(),br(),
+                                    "NOTE: This is the result of an academic research, more variables can be included to respond more specific needs.", br(),br(),br(),
                                     
                                     tags$img(src   = "/data_science.png", width = "450px", height = "180px", 
                                              style = "width:620px;height:250px;display:block;margin:auto"),br(),
@@ -315,8 +315,8 @@ ui <- dashboardPage(
                                   
                                   "Trend, Seasonality and Noise or randomness.", br(), 
                                   
-                                  "Basically the time series model and analisys decompose the time series, understanding a time series as a succession of observations in time, so a time series it's a long 
-                                  table with 2 columns, date and price in this case. The analisys of the time series isolate the components of the time series selected, and combines them in 3 possible ways,
+                                  "Basically the time series model and analysis decompose the time series, understanding a time series as a succession of observations in time, so a time series it's a long 
+                                  table with 2 columns, date and price in this case. The analysis of the time series isolate the components of the time series selected, and combines them in 3 possible ways,
                                   by addition, multiplication or a combination of both, the algorithm used, transform the data and makes the decomposition and recomposition in the best possible way in order to 
                                   predict a range of possible values that incorporate the prevalent aspects of the components mentioned.", br(),
                                   
@@ -415,7 +415,7 @@ ui <- dashboardPage(
                                   "ASSET : The real life price when the market closure was effective, otherwise the time series prediction.", br(),
                                   "INDEX : The real life Economic Policy Uncertainty Index in case it was released, otherwise the time series prediction.", br(),
                                   "PRED.nnet : The Neural Network prediction considering the INDEX, and the FED Funds rates & futures.",br(),
-                                  "W.Forecast: Neural Network prediction weigthed by the Uncertainty Level,the main idea of this measure it's to increase seansibility about uncertainty."
+                                  "W.Forecast: Neural Network prediction weigthed by the Uncertainty Level,the main idea of this measure it's to increase sensibility about uncertainty."
                                   
                                   
                                   
@@ -471,8 +471,16 @@ ui <- dashboardPage(
                                       )
                              ),
                              
-                             tabPanel("Mark to Market", withSpinner(plotlyOutput("m2m",height = "600px"),
-                                                                    color="#1da1f2"))
+                             # tabPanel("Mark to Market", withSpinner(plotlyOutput("m2m",height = "600px"),
+                             #                                        color="#1da1f2"))
+                             
+                             
+                             tabPanel("Mark to Market Management", br(),
+                                      tags$img(src= "m2m.png",
+                                               style = "padding-left:7px;width:850px;height:600px;display:block;margin:auto"), br(),
+                                      tags$a(href="http://www.myfxbook.com/members/TraderHub/financialaboratorygmailcom/3984258/4ob5N1cxNCsZa8nHKF53",
+                                             "Explore more details about a M2Market Management Strategy",
+                                               style = "padding-left:11px"))
                              
                              
                            )
@@ -502,7 +510,7 @@ ui <- dashboardPage(
                                   "In this Area we can look for specific tweets matching a #Hasthag, checkout whats the frecuency of searches  about a word 
                                   linked to market behaviour, for example 'recession', on Google Trends, but also on Twitter.", br(),
                                   
-                                  "It's important to understand that this is a minimalistic example of market sentiment analisys, this technique can be 
+                                  "It's important to understand that this is a minimalistic example of market sentiment analysis, this technique can be 
                                   very sofisticated, complex and insightful."),
                          
                          # pickerInput(
