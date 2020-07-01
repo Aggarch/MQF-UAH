@@ -1,0 +1,67 @@
+---
+title: "Panel texto de QuanTradeR"
+author: "Analítica, Andrés García"
+date: "`r Sys.Date()`"
+output: word_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libreries, include=FALSE}
+
+library(tidyverse)
+library(lubridate)
+library(pool)
+library(formattable)
+library(kableExtra)
+library(janitor)
+library(knitr)
+library(gridExtra)
+library(tidyquant)
+library(xml2)
+library(tidyquant)
+library(timetk)
+library(corrplot)
+library(alphavantager)
+library(plotly)
+library(prophet)
+
+```
+
+## Quantitative Market Analytics
+
+In the context of Quantitative Finance, specifically the field of Market Risk, the uncertainty it is a constant. This initiative take into consideration, the paradigm of Decision Intelligence, understanding this concept as the discipline of decision making, inspired in data, business knowledge and behavior, this discipline also known as decision engineering, try to close the gap between the quantitative and the qualitative, it’s important to understand this exercise as a dynamic analysis, being aware that the market reality
+it’s very complex so the intention underlying this resource it’s about reinforcing the expert decision making process, taking into account that a Financial Trader will incorporate to the process, or strategy, a set of different dimensions or variables that might have significant impact in the strategy execution, or market analysis, the variables shared in this exercise, belongs to 4 different cathegories of the market risk, Macroeconomics, Commodities , Equity Indexes & Currencies. The information for the analysis considers macroeconomics from the United States. The user can interact with different variables in different time frames to find insights that might guide market decisions, market understanding or at least a data-driven observation, masterpiece for the incubation of intuition. NOTE: This is the result of an academic research, more variables can be included to respond more specific needs.
+      
+
+## Descriptive Market Analytics
+                         
+¿What Happened and Why?
+
+Statistically knowing what happened, it’s ‘easy’ because we are able to calculate central or deviation measures, distributions of frequency, etc., but connecting the dots between what happened and why, it’s a Story-Telling activity, product of human understanding and representations of reality. In this area we can select a variable, probably an asset of the preferred asset class, or the Economic Policy Uncertainty Index, to observe how does the uncertainty evolves in a specific time range, the time range it’s analyst election, maybe a date range linked to an specific event. After selecting the variable and timeframe of interest, we can observe the price evolution and checkout the dots density across time, dancing around a simple smoothed linear model, the election can be translated to the logarithmic returns, this might provide an intuition of performance, then it may be interesting to observe how do different variables linearly correlate each other, and by the end, take a look to the dynamic correlation of the selection against the Dollar Index spot, ‘US dollar Strength’. Data about the Coronavirus distribution and density are available in WHO webpage, this is a Global event important to be considered in this context, since directly affects human’s health and economies, principal drivers of productivity, performance and wealth.
+
+
+## Predictive Market Analytics
+
+¿What Might Happen?
+
+To have a good notion of where the price might be, it’s important to know where is it now and how it moves, in this panel, it’s the same dynamic, we select a variable and a date range, then we push the ‘Forecast button’, and the algorithm calculate a time series model, time series have 3 principal components.
+Trend, Seasonality and Noise or randomness. Basically, the time series model and analysis decompose the time series, understanding a time series as a succession of observations in time, so a time series it is a long table with 2 columns, date and price in this case. The analysis of the time series isolate the components of the time series selected, and combines them in 3 possible ways by addition, multiplication or a combination of both, the algorithm used, transform the data and makes the decomposition and recomposition in the best possible way in order to predict a range of possible values that incorporate the prevalent aspects of the components mentioned. This approach and method is very popular in financial forecasting, the model do not incorporate information distinct that the date and price, exogenous information it’s not legible for the model so this approach can and will be enrich a posteriori in the prescription module. The time series forecasting and methodology, enjoy of a good reputation in financial sector as an statistic approach to forecast.
+
+
+## Prescriptive Market Analytics
+
+¿What Should We Do?"
+                                  
+Considering the result of the time series forecast, and the expertise of the analyst or trader, we can explore the behavior of main financial markets drivers, to make a forecast able to incorporate exogenous information, understanding exogenous information as data that do not directly correspond to the time series. Uncertainty Measurement & Monetary Policy are key examples of valuable information that might be consider as ‘exogenous’. This panel select the variable of interest, calculate the future of the timeseries and EPU (Economic Policy Uncertainty Index), and assume that the FED Policy Strategy and market expectations about FED possible actions remains constant. Then a Regression Neural Network, study the data available in a dataset containing this information structure about the past, and predict the future, so now we have 3 Forecast outputs for the asset.
+ASSET : The real life price when the market closure was effective, otherwise the time series prediction. INDEX : The real life Economic Policy Uncertainty Index in case it was released, otherwise the time series prediction. PRED.nnet : The Neural Network prediction considering the INDEX, and the FED Funds rates & futures. W.Forecast: Neural Network prediction weighted by the Uncertainty Level, the main idea of this measure it’s to increase sensibility about uncertainty.
+
+# Main Ideas:
+
+
+                                  
+                         
