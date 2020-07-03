@@ -123,7 +123,8 @@ ui <- dashboardPage(
                                     
                                     "NOTE: This is the result of an academic research, more variables can be included to respond more specific needs.", br(),br(),br(),
                                     
-                                    tags$img(src   = "/data_science.png", width = "450px", height = "180px", 
+                                    tags$img(src   = "https://wwwen.uni.lu/var/storage/images/media/images/data_science_explore/1136248-1-fre-FR/data_science_explore.png", 
+                                             width = "450px", height = "180px", 
                                              style = "width:620px;height:250px;display:block;margin:auto"),br(),
                                     tags$a(href="https://r4ds.had.co.nz/explore-intro.html","R for Data Science"))
                            
@@ -145,7 +146,7 @@ ui <- dashboardPage(
                          h4(
                            helpText("",
                                     
-                                    tags$img(src= "/decision_intelligence.png",
+                                    tags$img(src= "https://upload.wikimedia.org/wikipedia/commons/3/3c/DEFramework.png",
                                              style ="width:800px;height:450px;display:block;margin:auto"))
                          ),br(),br()
                        )
@@ -165,7 +166,8 @@ ui <- dashboardPage(
                          h4(
                            helpText("",
                                     
-                                    tags$img(src= "/crisp.png", style ="width:550px;height:550px;display:block;margin:auto"))
+                                    tags$img(src= "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/CRISP-DM_Process_Diagram.png/800px-CRISP-DM_Process_Diagram.png", 
+                                             style ="width:550px;height:550px;display:block;margin:auto"))
                          ),br(),br()
                        )
                 )
@@ -475,7 +477,7 @@ ui <- dashboardPage(
                              #                                        color="#1da1f2"))
                              
                              
-                             tabPanel("Mark to Market Management", br(),
+                             tabPanel("Mark to Market Management", br(),br(),
                                       tags$img(src= "m2m.png",
                                                style = "padding-left:7px;width:850px;height:600px;display:block;margin:auto"), br(),
                                       tags$a(href="http://www.myfxbook.com/members/TraderHub/financialaboratorygmailcom/3984258/4ob5N1cxNCsZa8nHKF53",
