@@ -1344,13 +1344,13 @@ shinyServer(function(input, output) {
      
      
      ggplotly(
-     plot(m,time_series(),figsize=8)+
+     plot(m,time_series())+
        xlab("Date") +
        ylab("Asset") +
-       theme_classic() + 
+       theme_get () + 
        ggtitle(paste0(input$variable_1))+
        add_changepoints_to_plot(m),dynamicTicks = TRUE,
-     layerData = 1, originalData = FALSE) %>%
+     layerData = 1, originalData = F) %>%
        rangeslider() %>%
        layout(hovermode = "x")
 
