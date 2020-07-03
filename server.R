@@ -1226,8 +1226,8 @@ shinyServer(function(input, output) {
         ggplot(aes(x = date, y = daily.returns, color = Color))+
         # theme_tq()+
         theme_minimal()+
-        geom_point(size = 3)+
-        geom_line(color = "gray", size = 1)+
+        geom_point(size = 1)+
+        geom_line(color = "gray", size = .3)+
         # geom_smooth(color = "orange", method = loess)+
         labs(x = "Date", y = "Log Price Returns",
              title = paste0(input$variable))+
@@ -1244,8 +1244,8 @@ shinyServer(function(input, output) {
         ggplot(aes(x = date, y = weekly.returns, color = Color))+
         # theme_tq()+
         theme_minimal()+
-        geom_point(size = 3)+
-        geom_line(color = "gray", size = 1)+
+        geom_point(size = 1.5)+
+        geom_line(color = "gray", size = .5)+
         # geom_smooth(color = "orange", method = loess)+
         labs(x = "Date", y = "Log Price Returns",
              title = paste0(input$variable))+
@@ -1262,8 +1262,8 @@ shinyServer(function(input, output) {
         ggplot(aes(x = date, y = monthly.returns, color = Color))+
         # theme_tq()+
         theme_minimal()+
-        geom_point(size = 3)+
-        geom_line(color = "gray", size = 1)+
+        geom_point(size = 1.5)+
+        geom_line(color = "gray", size = .5)+
         # geom_smooth(color = "orange", method = loess)+
         labs(x = "Date", y = "Log Price Returns",
              title = paste0(input$variable))+
@@ -1281,8 +1281,8 @@ shinyServer(function(input, output) {
         ggplot(aes(x = date, y = yearly.returns, color = Color))+
         # theme_tq()+
         theme_minimal()+
-        geom_point(size = 3)+
-        geom_line(color = "gray", size = 1)+
+        geom_point(size = 1.5)+
+        geom_line(color = "gray", size = .5)+
         # geom_smooth(color = "orange", method = loess)+
         labs(x = "Date", y = "Log Price Returns",
              title = paste0(input$variable))+
@@ -1299,9 +1299,9 @@ shinyServer(function(input, output) {
         ggplot(aes(x = date, y = price))+
         # theme_tq()+
         theme_minimal()+
-        geom_point(color = "steelblue", size = 2)+
-        geom_line(color = "gray", size = 1)+
-        geom_smooth(color = "orange", method = loess)+
+        geom_point(color = "steelblue", size = 1)+
+        geom_line(color = "gray", size = .5)+
+        geom_smooth(color = "orange", method = loess, size = .5)+
         labs(x = "Date", y = "Price Evolution",
              title = paste0(input$variable))
     )
@@ -1339,9 +1339,18 @@ shinyServer(function(input, output) {
     #
      m <- prophet(b_data)
 
+     
+    
+     
+     
      ggplotly(
-     plot(m,time_series())+ add_changepoints_to_plot(m),dynamicTicks = TRUE,
-     layerData = 2, originalData = FALSE) %>%
+     plot(m,time_series(),figsize=8)+
+       xlab("Date") +
+       ylab("Asset") +
+       theme_classic() + 
+       ggtitle(paste0(input$variable_1))+
+       add_changepoints_to_plot(m),dynamicTicks = TRUE,
+     layerData = 1, originalData = FALSE) %>%
        rangeslider() %>%
        layout(hovermode = "x")
 
