@@ -269,7 +269,7 @@ ui <- dashboardPage(
                              tabPanel("Static & Dynamic Correlation", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("Matrix", withSpinner(plotOutput("index_cor",height = "300px"),color="#1da1f2")),
+                                              tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor",height = "300px"),color="#1da1f2")),
                                               tabPanel("Rolling Correlation", withSpinner(plotlyOutput("rolling_cor",height = "300px"),color="#1da1f2"))
                                       ))
                              

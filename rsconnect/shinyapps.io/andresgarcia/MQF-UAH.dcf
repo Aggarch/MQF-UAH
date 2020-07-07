@@ -1,0 +1,13 @@
+name: MQF-UAH
+title: MQF-UAH
+username:
+account: andresgarcia
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2533253
+bundleId: 3348367
+url: https://andresgarcia.shinyapps.io/MQF-UAH/
+when: 1593788441.59704
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: README.md|research

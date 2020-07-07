@@ -915,9 +915,9 @@ shinyServer(function(input, output) {
            -DELTA, -ROC) %>% 
     head(100) %>%  
     mutate_if(is.numeric, round,2) %>% 
-    mutate(W.Forecast  = PRED_nnet-(INDEX * .3)) %>% 
-    rowwise() %>% 
-    mutate(diff =round(ASSET - mean(PRED_nnet,W.Forecast))) 
+    mutate(W.Forecast  = PRED_nnet-(INDEX * .3))
+    # rowwise() %>% 
+    # mutate(diff =round(ASSET - mean(PRED_nnet,W.Forecast))) 
     # mutate(diff = ASSET - PRED_nnet)
 
   
@@ -938,13 +938,7 @@ shinyServer(function(input, output) {
       ##### Create a plot of the neural network to share it 
       ##### Maybe nnet plot must be static.
 
-   
-  
-  
-  
-  
-  
-  
+
    
 #-----------------------------------------------------------------------------------------------------------------------------------#
    
@@ -1428,18 +1422,21 @@ shinyServer(function(input, output) {
                                ordering = F,
                                initComplete = JS("function(settings, json) {",
                                                  "$(this.api().table().header()).css({
-                                              'font-size': '20px',
+                                              'font-size': '15px',
                                               'color': '#3b444b',
                                               'text-align':'center',
                                               'padding-left': '20px',
                                               'padding-right': '20px',
-                                              'width': '150%'});",
+                                              'width': '100%'});",
                                                  "}")))
 
      
      changep <- 
        time_series_changep() %>% 
        select(ds, yhat, yhat_lower, yhat_upper) %>%
+       mutate(yhat = round(yhat,2)) %>% 
+       mutate(yhat_lower = round(yhat_lower,2)) %>% 
+       mutate(yhat_upper = round(yhat_upper,2)) %>% 
        as_tibble() %>% 
        mutate(ds = as.Date(substr(ds,0,10))) %>% 
        left_join(b_data_tbl, by="ds") %>%
@@ -1452,13 +1449,13 @@ shinyServer(function(input, output) {
        datatable(rownames = F,style ='bootstrap4',
                  extensions = c('Buttons','Scroller'),
                  options = list(
-                   dom = 'bfrtip',
-                   pageLength = 30,
+                   dom = 'tip',
+                   pageLength = 8,
                    info = FALSE,
                    scrollY = 350,
                    autoWidth = TRUE,
-                   position = 'bottom',
-                   columnDefs = list(list(width = '200px', targets = c(2, 3)))
+                   position = 'bottom'
+                   # columnDefs = list(list(width = '200px', targets = c(2, 3)))
                    )
        )
 
@@ -1504,7 +1501,7 @@ shinyServer(function(input, output) {
    output$performance <- render_gt({ 
      
      
-     performance() %>% head(10) %>%  gt()
+     performance() %>% head(8) %>%  gt()
      
      })
   
@@ -1525,9 +1522,10 @@ shinyServer(function(input, output) {
    output$epu_data <- renderReactable ({
 
 
-     EPU_alt() %>% head(15) %>% 
+     EPU_alt() %>% head(8) %>% 
        dplyr::rename(Delta = delta, "EPU Index" = index, 
-              Date = date, "Risk Appetite" = Risk) %>%  reactable()
+              Date = date, "Risk Appetite" = Risk) %>%  reactable(compact = T,
+                                                                  resizable = T)
 
    })
 
@@ -1568,8 +1566,13 @@ shinyServer(function(input, output) {
   # Fed Interest Rates Analisys
    output$fed_data <- renderReactable ({
      
-      interest_rate_all_tbl() %>% head(15) %>%
-       reactable()
+      interest_rate_all_tbl() %>%
+       dplyr::rename(Expectation = "Market Expectations",
+                     "R-Range"= "Target Range") %>% 
+       head(8) %>%
+       reactable(compact = T,
+                 resizable = T,
+       )
      
    })
    
@@ -1592,7 +1595,8 @@ shinyServer(function(input, output) {
   # NNET posible futures 
    output$ts_nnet_pred_tbl <- renderReactable({
      
-     pred_show() %>% reactable()
+     pred_show() %>% reactable(compact = T, 
+                               resizable = T)
 
      
    })
