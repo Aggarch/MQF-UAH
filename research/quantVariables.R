@@ -12,7 +12,6 @@
 # browseVignettes(package = "tidyquant")
 # browseVignettes(package = "timetk")
 
-
 # Libraries activate the packs, please do install.packages() before continue.
 
 library(tidyverse)
