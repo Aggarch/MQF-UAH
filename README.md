@@ -9,5 +9,6 @@ The Purpose of this project is to contribute to Financial-Trading Mark to Market
 
 Quantitative Finance interactive app, for a master in Quantitative Finance in UAH.
 data import from FRED https://fred.stlouisfed.org/  &   Yahoo Finance.
+
 Thanks to tidyquant & tidyverse universe packages : https://cran.r-project.org/web/packages/tidyquant/index.html
 
