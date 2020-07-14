@@ -10,14 +10,14 @@
     # NVIDIA:
     
     # Multinacional especializada en el desarrollo de unidades de procesamiento
-    # gráfico y tecnologías de circuitos integrados para estaciones de trabajo,
-    # ordenadores personales y dispositivos móviles. 
+    # gr?fico y tecnolog?as de circuitos integrados para estaciones de trabajo,
+    # ordenadores personales y dispositivos m?viles. 
     # uno de los principales proveedores de circuitos integrados (CI)
     
     # Qualcomm :
     
-    # Chipsets para la tecnología móvil, creador de plataforma Brew:
-    # que permite la creación de aplicaciones para dispositivos móviles.
+    # Chipsets para la tecnolog?a m?vil, creador de plataforma Brew:
+    # que permite la creaci?n de aplicaciones para dispositivos m?viles.
     # suministradores de procesadores para smartphones Snapdragon. 
     # Es un desarrollador de semiconductores para redes y comunicaciones,
 
@@ -45,10 +45,10 @@
         
         # Las empresas del sector tecnologico; NVIDIA y Qualcomm pertenecen ambas a el indice bursatil 
         # NASDAQ Composite -->> (National Association of Securities Dealers Automated Quotation)
-        # es la segunda bolsa de valores electrónica y automatizada más grande de los Estados Unidos
-        # Tiene más volumen de intercambio por hora que cualquier otra bolsa de valores en el mundo.
-        # Más de 7000 acciones de pequeña y mediana capitalización cotizan en la NASDAQ. 
-        # Comprende empresas de alta tecnología en electrónica,informática, telecomunicaciones,biotech.
+        # es la segunda bolsa de valores electr?nica y automatizada m?s grande de los Estados Unidos
+        # Tiene m?s volumen de intercambio por hora que cualquier otra bolsa de valores en el mundo.
+        # M?s de 7000 acciones de peque?a y mediana capitalizaci?n cotizan en la NASDAQ. 
+        # Comprende empresas de alta tecnolog?a en electr?nica,inform?tica, telecomunicaciones,biotech.
         
         plot(DataNDAQ$Adj.Close,type="l",col=4,ylim=c(0,100),xlab="Days",ylab="Price",las=1,main="NASDAQ Composite INDEX")
         
@@ -83,7 +83,7 @@
         
         # Aprox el inicio del alza de NVIDIA respecto a Qualcomm y su indice : 
         # NVIDIA supero drasticamente a Qualcomm y al indice de tecnologicas NASDAQ al  que ambas 
-        # compañias pertenecen, brindo uno de los tantos eventos que estuvo relacionado con un despegue
+        # compa?ias pertenecen, brindo uno de los tantos eventos que estuvo relacionado con un despegue
         # de la cotizacion tan agresivo, que a priori cotizaba por debajo de Qualcomm y NASDAQ Comp. 
         
         DataNVDA$Date[2200]
@@ -141,9 +141,9 @@
         addSMA(n = 250,on=1)
         addSMA(n = 1000,on=1) 
        
-       # En los ultimpos 3 años NVIDIA al alza bien definida
+       # En los ultimpos 3 a?os NVIDIA al alza bien definida
        # El comportamiento de Qualcomm fue menos atractivo. 
-       # El periodo de tiempo desde (2015-01-02)el adj.close de Qualcomm perdío (10USD+)
+       # El periodo de tiempo desde (2015-01-02)el adj.close de Qualcomm perd?o (10USD+)
        # el RSI como el MACD Convergen en sus minimos y maximos.
        # La convergencia entre dos indicadores basados en medias moviles 
        # Puede ser util para identificar zonas de sobrecompra, sobreventa . 
@@ -168,8 +168,8 @@
         par(new=T)
         plot(ret_QCOM,type="l",col=2,ylim=c(-0.2,0.2),xlab="Days",ylab="RET",las=1)
         
-        # Los beneficios en función de la inversión reflejados a diario en tiempo continuo 
-        # [(ingresos - inversión) / inversión] * 100 = retorno de inversión.
+        # Los beneficios en funci?n de la inversi?n reflejados a diario en tiempo continuo 
+        # [(ingresos - inversi?n) / inversi?n] * 100 = retorno de inversi?n.
         # Intuitivamente da la impresion de que el activo Qualcomm (rojo) se ve sometido
         # a mas variaciones en la parte inferior que en la superior.
         # En el caso NVIDIA se aprecian mas oscilaciones en la parte superior sobretodo a partir 
@@ -230,8 +230,8 @@
     sd_QCOM    = sd(ret_QCOM);sd_QCOM                #Standard Deviation. 
     sigma_QCOM = sd(ret_QCOM);sigma_QCOM             #Varianza -->> Dispersion de datos.
   
-  skewness_QCOM = skewness(ret_QCOM);skewness_QCOM   #Coeff de asimetría.  
-  kurtosis_QCOM = kurtosis(ret_QCOM);kurtosis_QCOM   #Cercanía a la media
+  skewness_QCOM = skewness(ret_QCOM);skewness_QCOM   #Coeff de asimetr?a.  
+  kurtosis_QCOM = kurtosis(ret_QCOM);kurtosis_QCOM   #Cercan?a a la media
   cor(ret_QCOM,ret_NVDA)                             #Indice de correlacion.  
         
     mu_NVDA  = mean(ret_NVDA);mu_NVDA
@@ -264,9 +264,9 @@
         
         #Media anualizada y riesgo anualizado.
         #La rentabilidad media anualizada de Qualcomm (7%),se asocia a
-        #Un nivel riesgo equivalente a la dispersion ó varianza de (30%).
+        #Un nivel riesgo equivalente a la dispersion ? varianza de (30%).
         
-        #En el caso de NVIDIA; La rentabilidad esperada será del (21,5%)
+        #En el caso de NVIDIA; La rentabilidad esperada ser? del (21,5%)
         #Correspondiente a una sigma de (47%)
         
         
@@ -338,7 +338,7 @@
         
         #El Comportamiento de NVDA es mucho mas atractivo y en el pasado ha sido superior a de
         #Qualcomm pero en el presente no sabemos si dicho patron se seguira repitiendo
-        #Podemos aprender acerca de los drivers que hicieron del 2015 un año tan bueno par NVIDIA
+        #Podemos aprender acerca de los drivers que hicieron del 2015 un a?o tan bueno par NVIDIA
         #Y analizar si permanecen conmstantes o se repiten con frecuencia. 
         
         #https://www.fool.com/investing/general/2016/05/03/this-is-why-2015-was-so-great-for-nvidia-stock.aspx
@@ -347,6 +347,6 @@
         
         
         
- ################################### - Andrés García - MFC-UAH - ############################################
+ ################################### - Andres Garcia - MFC-UAH - ############################################
 
         

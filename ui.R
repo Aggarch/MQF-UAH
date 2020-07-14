@@ -50,12 +50,10 @@ ui <- dashboardPage(
                      menuItem("Description", tabName = "description", icon = icon("poll   ")
                               # menuSubItem('Macroeconomics', tabName = 'macroeconomics', icon = icon("circle-notch")),
                               # menuSubItem('Indexes', tabName = 'indexes',  icon = icon("circle-notch")),
-                              # menuSubItem('Comodities', tabName = 'comodities',  icon = icon("circle-notch")),
-                              # menuSubItem('Currencies', tabName = 'comodities',  icon = icon("circle-notch"))
+                             
                      ),
                      menuItem("Prediction", tabName = "prediction", icon = icon("project-diagram    ")
                               # menuSubItem('FedMeeting Matrix', tabName = 'fedmeetings', icon = icon("circle-notch")),
-                              # menuSubItem('Time series', tabName = 'timeseries', icon = icon("circle-notch")),
                               # menuSubItem('Montecarlo', tabName = 'montecarlo', icon = icon("circle-notch"))
                      ),
                      menuItem("Prescription", tabName = "prescription", icon = icon("chart-line  ")
@@ -82,14 +80,8 @@ ui <- dashboardPage(
                        
                      )
                    )
-                   # tags$blockquote("Andrés García & Sagith Amín"))
-                   
-                   
-                   
-                   #home 
-                   
-                   
-                   
+
+
                    # 3.) home ####
                    
   ),
@@ -105,23 +97,23 @@ ui <- dashboardPage(
                          
                          hr(),
                          h3(
-                           helpText("In the context of Quantitative Finance, specifically the field of Market Risk,
-                                     the uncertainty it's a constant.
-                                     This initiative take into consideration, the paradigm of Decision Intelligence,
-                                     understanding this concept as the discpline of decision making, inspired in data, business knowledge and behaviour,
-                                     this discipline also known as decision engineering, try to close the gap between the quantitative
-                                     and the qualitative, it's important to understand this exercise as a dinamyc analysis, being aware that the market reality 
-                                     it's very complex so the intention underlying this resource it's about reinforcing the expert decision 
-                                     making  process, taking into account that a Financial Trader will incorporate to the process,
-                                     or stretegy, a set of differents dimensions or variables that might have significant impact in the strategy execution, 
-                                     or market analysis, the variables shared in this exercise, belongs to 4 different cathegories of the market risk, 
-                                     Macroeconomics, Commodities , Equity Indexes & Currencies.",         br(),
- 
-                                     "The information for the analysis consider macroeconomics from the United States.
-                                     The user can interact with different variables in different time frames to find insights that might guide market decisions, 
-                                     market understanding or at least a data-driven observations, masterpiece for the incubation of intuition.",br(),
+                           helpText("In the context of Quantitative Finance, specifically the field of Market Risk, the uncertainty is a constant.
+                                     This initiative takes into consideration the paradigm of Decision Intelligence, understanding this concept as the discipline of decision making,
+                                     inspired in data, business knowledge and behavior.
+                                     This discipline, also known as decision engineering, tries to close the gap between quantitative and qualitative elements.
+                                     It is important to understand this exercise as a dynamic analysis, and to bear in mind that markets are very complex and therefore
+                                     the purpose of this tool is to reinforce the expert’s decision-making process. 
+                                     The Financial Trader will incorporate to the process, or strategy, a set of different dimensions or variables that might have significant
+                                     impact in the execution, or market analysis.
+                                     The variables shared in this exercise belong to 4 different categories of the market risk;
+                                     Macroeconomics, Commodities, Equity Indexes & Currencies.",         br(),
                                     
-                                    "NOTE: This is the result of an academic research, more variables can be included to respond more specific needs.", br(),br(),br(),
+                                    
+                                    "The information for the analysis considers macroeconomics from the United States.
+                                    The user can interact with different variables in different time frames to find insights that might guide market decisions,
+                                    market understanding or at least a data-driven observation. This is the masterpiece for the incubation of intuition.", br(), 
+                                    
+                                    "NOTE: This is the result of an academic research, more variables can be included to respond to more specific needs." , br(),br(),br(),
                                     
                                     tags$img(src   = "https://wwwen.uni.lu/var/storage/images/media/images/data_science_explore/1136248-1-fre-FR/data_science_explore.png", 
                                              width = "450px", height = "180px", 
@@ -193,8 +185,7 @@ ui <- dashboardPage(
               )
       ),
       
-      
-      
+
       
       # 4.) description ####
       
@@ -325,8 +316,7 @@ ui <- dashboardPage(
                                   "This approach and method is very popular in financial forecasting, the model do not incorporate information distinct that the date and price,
                                   exogenous information it's not legible for the model so this approach can and will be enrich a posteriori in the prescription module. The time series forecasting and methology, 
                                   enjoy of a good reputation in financial sector as an statistic approach to forecast."
-                                  
-                                  
+
                                   ),
                          pickerInput(
                            inputId = "variable_1",

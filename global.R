@@ -1,6 +1,5 @@
 # Global ####
 
-
 # Libraries ::: 
 
 #install.packages("tidyverse")
@@ -41,6 +40,8 @@ library(TTR)
 library(skimr)
 library(devtools)
 
+
+# Variables, grouped by asset-class
 
 # 1.) market_list ####
 
@@ -89,6 +90,8 @@ market_list <- list(
 )
 
 
+# transversals 
+
 # FED Funds Targets (Upper{fftu} & Lower{fftl}) & Fed Funds Futures:::
 fftu <- tq_get("DFEDTARU","economic.data", from=today()-2000) # Fed Funds Target Upper 
 fftl <- tq_get("DFEDTARL","economic.data", from=today()-2000) # Fed Funds Target Lower
@@ -101,6 +104,7 @@ EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
 
 # Notes : add , summary(data_pred_show$ASSET), to describe module
 
+# downloable forecast 
 source("funciones/boton_descarga.R")
 
 

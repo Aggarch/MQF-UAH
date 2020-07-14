@@ -11,26 +11,6 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r libreries, include=FALSE}
-
-library(tidyverse)
-library(lubridate)
-library(pool)
-library(formattable)
-library(kableExtra)
-library(janitor)
-library(knitr)
-library(gridExtra)
-library(tidyquant)
-library(xml2)
-library(tidyquant)
-library(timetk)
-library(corrplot)
-library(alphavantager)
-library(plotly)
-library(prophet)
-
-```
 
 ## Quantitative Market Analytics
 

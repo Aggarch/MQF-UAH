@@ -1,5 +1,8 @@
 #### Quant  AG : Master in Quantitative Finance ####
 
+# This script, contains all methods applied in the web-app & other useful resources. 
+# Can be understood as the research script where the idea was studied.
+
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ----
 
 # Infrastructure :  tidyquant {timetk, xts, zoo, Qunatmod, TTR, PerformanceAnalytics}
@@ -23,9 +26,9 @@ library(plotly)
 
 # Thesis: Data treatment philosophy:
 # 1.)   Tidy - Data: ####
-# makes reference to the macroeconomic data and treasury rates in a tidy format: 
+# Reference to the macroeconomic data and treasury rates in a tidy format: 
 # Data tidyng phiosophy: Each Column represents a variable, each row show the values.
-#browseURL("https://vita.had.co.nz/papers/tidy-data.pdf")
+browseURL("https://vita.had.co.nz/papers/tidy-data.pdf")
 
 # Displpay some tidyquant options :::
 
@@ -2091,7 +2094,6 @@ w<-  perfomance %>% slice(2) %>% pull(Amount)
 pl <- w-d
 trm <- 3250
 ppl<-pl*trm
-
 
 # 3D Graphs
 

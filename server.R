@@ -4,13 +4,10 @@
 
 shinyServer(function(input, output) {
   
-  
 
   # A) Reactive Expressions ####
   
   # Market sentiment ----
-  
-  
   observeEvent(input$observer, {
     # Show a modal when the button is pressed
     shinyalert(" Notification! ", "Information it's being process in real time,
@@ -33,7 +30,6 @@ shinyServer(function(input, output) {
     }
     
     # read text in datatable
-    
     
     tweets <- tt(input$hashtag) %>%
       group_by(screen_name) %>% 
@@ -76,7 +72,6 @@ shinyServer(function(input, output) {
   
   #news
   newsp <- eventReactive(input$observer, {
-    
     
     get_token()
     
@@ -177,7 +172,6 @@ shinyServer(function(input, output) {
     
    # behavior_data <- behavior_data_1 %>% rbind(behavior_data_2)
     
-  
   price_return <- behavior_data %>%
     group_by(symbol) %>%
     tq_transmute(select = price,
@@ -891,13 +885,10 @@ shinyServer(function(input, output) {
   # Neural network in regression ---------------------------------------------
 
   pred_show <- eventReactive(input$observe_2,{ 
-    
-    
-    data_pred_show <- data_pred_show()
-    
-    
-    t.id <- createDataPartition(data_pred_show$ASSET , p= 0.7, list = F)
 
+    data_pred_show <- data_pred_show()
+
+    t.id <- createDataPartition(data_pred_show$ASSET , p= 0.7, list = F)
 
     fit_n <- nnet(ASSET ~., data=data_pred_show[t.id, ],
                 size = 15, decay = 0.2, rang = 0.1,
@@ -920,7 +911,6 @@ shinyServer(function(input, output) {
     mutate(diff =round(ASSET - mean(PRED_nnet,W.Forecast))) 
     # mutate(diff = ASSET - PRED_nnet)
 
-  
   pred_show
   
   #archivos <- list.files() %>% enframe() %>% filter(str_detect(value, c("fit.rds|mod.rds"))) %>% pull(value)
@@ -929,32 +919,12 @@ shinyServer(function(input, output) {
   })
   
 
-  
 
-  #})
-      
-      ##### GO to cookbook_gallery, neural_networks.R 4 regression 
-      ##### Applied example to the data_pred_show example 
-      ##### Create a plot of the neural network to share it 
-      ##### Maybe nnet plot must be static.
-
-   
-  
-  
-  
-  
-  
-  
-   
 #-----------------------------------------------------------------------------------------------------------------------------------#
    
-   
-  
-  
+
   
   # B) Outputs ####
-  
-  
   
    
   # Market sentiment ---- 
