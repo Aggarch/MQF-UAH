@@ -4,7 +4,7 @@ QuanTrader
 
 <img src="https://rstudio.com/wp-content/uploads/2018/10/RStudio-Logo-White.png" width="500" height="155">
 
-The Porupose of this project is to contribute to Mark to Market decision making Process from a quantitative perspective. 
+The Purpose of this project is to contribute to Mark to Market decision making Process from a quantitative perspective. 
 
 
 Quantitative Finance interactive app, for a master in Quantitative Finance in UAH.
