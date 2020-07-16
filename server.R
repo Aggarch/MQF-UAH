@@ -4,6 +4,7 @@
 
 shinyServer(function(input, output) {
   
+  
 
   # A) Reactive Expressions ####
   
@@ -136,10 +137,25 @@ shinyServer(function(input, output) {
       
     }
 
+    # price based 
+    
+    # index_cor <- behavior_data %>%
+    #   pivot_wider(names_from = symbol, values_from = price) %>%
+    #   select(-date) %>%
+    #   na.omit() %>%
+    #   cor()
+    
+    
+    # returns based 
     index_cor <- behavior_data %>%
-      pivot_wider(names_from = symbol, values_from = price) %>%
-      select(-date) %>%
-      na.omit() %>%
+      na.locf() %>% 
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "daily",
+                   type   = "log") %>% 
+      pivot_wider(names_from = symbol, values_from = daily.returns) %>%
+      select(-date) %>% 
       cor()
     
     index_cor
@@ -1159,7 +1175,8 @@ shinyServer(function(input, output) {
              col = col(200),
              addCoef.col = "black",
              tl.col = "darkblue",
-             order = "hclust")
+             order = "hclust"
+             )
    })
   
   #rollingcorr
