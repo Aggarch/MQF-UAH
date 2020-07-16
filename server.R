@@ -13,10 +13,10 @@ shinyServer(function(input, output) {
   
   observeEvent(input$observer, {
     # Show a modal when the button is pressed
-    shinyalert(" Notification! ", "Information it's being process in real time,
-               remember to click on the -Feel- button every time introduce a new search value",
+    shinyalert(" Notification! ", 
+               "Click on -Feel-  to introduce a new search value",
                type = "success",showConfirmButton = T,
-               showCancelButton = FALSE,  timer = 40000, animation = TRUE,
+               showCancelButton = FALSE,  timer = 10000, animation = TRUE,
                closeOnEsc = T,
                closeOnClickOutside = T)
   })
@@ -112,8 +112,7 @@ shinyServer(function(input, output) {
   
   observeEvent(input$observe, {
     # Show a modal when the button is pressed
-    shinyalert(" Notification! ", "Information it's being process in real time,
-               remember to click on the -Describe- button every time you change variables",
+    shinyalert(" Notification! ", "Click on -Describe- every time you change variables",
                type = "success",showConfirmButton = T,
                showCancelButton = FALSE,  timer = 40000, animation = TRUE,
                closeOnEsc = T,
@@ -556,8 +555,7 @@ shinyServer(function(input, output) {
   
   observeEvent(input$observe_1, {
     # Show a modal when the button is pressed
-    shinyalert("Notification!", "Information it's being process in real time,
-               remember to click on the -Forecast- button every time you change variables",
+    shinyalert("Notification!", "Click on  -Forecast- every time you change variables",
                type = "success",showConfirmButton = T,
                showCancelButton = FALSE,  timer = 40000, animation = TRUE,
                closeOnEsc = T,
@@ -727,8 +725,7 @@ shinyServer(function(input, output) {
 
    observeEvent(input$observe_2, {
      # Show a modal when the button is pressed
-     shinyalert("Notification!", "Information it's being process in real time,
-               remember to click on the -Diagnose- button every time you change variables",
+     shinyalert("Notification!", "Click on -Diagnose- every time you change variables",
                 type = "success",showConfirmButton = T,
                 showCancelButton = FALSE,  timer = 40000, animation = TRUE,
                 closeOnEsc = T,
