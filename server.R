@@ -120,8 +120,9 @@ shinyServer(function(input, output) {
                closeOnClickOutside = T)
   })
   
-  # Correlation Matrix
-  index_cor <- eventReactive(input$observe, {
+  # Correlation Matrixes
+  
+  index_cor_d <- eventReactive(input$observe, {
     
     
     if(!input$variable %in% market_list$ETFs){ 
@@ -141,19 +142,143 @@ shinyServer(function(input, output) {
       
     }
 
-    index_cor <- behavior_data %>%
-      pivot_wider(names_from = symbol, values_from = price) %>%
-      select(-date) %>%
-      na.omit() %>%
+ 
+    index_cor_d <- behavior_data %>%
+      na.locf() %>% 
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "daily",
+                   type   = "log") %>% 
+      pivot_wider(names_from = symbol, values_from = daily.returns) %>%
+      select(-date) %>% 
+      na.omit() %>% 
       cor()
     
-    index_cor
+    index_cor_d
+    
+    
+  })
+
+  index_cor_w <- eventReactive(input$observe, {
+    
+    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to   = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to   = input$daterange[2]) %>% 
+        dplyr::rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
+    
+
+    index_cor_w <- behavior_data %>%
+      na.locf() %>% 
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "weekly",
+                   type   = "log") %>% 
+      pivot_wider(names_from = symbol, values_from = weekly.returns) %>%
+      select(-date) %>% 
+      na.omit() %>% 
+      cor()
+    
+    index_cor_w
     
     
   })
   
+  index_cor_m <- eventReactive(input$observe, {
+    
+    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to   = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to   = input$daterange[2]) %>% 
+        dplyr::rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
+    
+    
+    index_cor_m <- behavior_data %>%
+      na.locf() %>% 
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "monthly",
+                   type   = "log") %>% 
+      pivot_wider(names_from = symbol, values_from = monthly.returns) %>%
+      select(-date) %>% 
+      na.omit() %>% 
+      cor()
+    
+    index_cor_m
+    
+    
+  })
+  
+  index_cor_y <- eventReactive(input$observe, {
+    
+    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to   = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to   = input$daterange[2]) %>% 
+        dplyr::rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
+    
+    
+    index_cor_y <- behavior_data %>%
+      na.locf() %>% 
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "yearly",
+                   type   = "log") %>% 
+      pivot_wider(names_from = symbol, values_from = yearly.returns) %>%
+      select(-date) %>% 
+      na.omit() %>% 
+      cor()
+    
+    index_cor_y
+    
+    
+  })
+
+  
+  
+  
   # Rolling Correlation 
-  rolling_cor <- eventReactive(input$observe, {
+  rolling_cor_w <- eventReactive(input$observe, {
 
     if(!input$variable %in% market_list$ETFs){ 
       
@@ -174,15 +299,13 @@ shinyServer(function(input, output) {
 
     }
     
-    
    # behavior_data <- behavior_data_1 %>% rbind(behavior_data_2)
-    
-  
+
   price_return <- behavior_data %>%
     group_by(symbol) %>%
     tq_transmute(select = price,
                  mutate_fun = periodReturn,
-                 period = "monthly")
+                 period = "weekly")
   
   baseline_return <- "DTWEXAFEGS" %>%
     tq_get(get  = "economic.data",
@@ -190,26 +313,82 @@ shinyServer(function(input, output) {
            to   = input$daterange[2]) %>%
     tq_transmute(select     = price,
                  mutate_fun = periodReturn,
-                 period     = "monthly")
+                 period     = "weekly")
   
   returns_joined <- left_join(price_return,
                               baseline_return,
                               by = "date") %>% na.omit
   
-  rolling_cor <- returns_joined %>%
-    tq_transmute_xy(x          = monthly.returns.x,
-                    y          = monthly.returns.y,
+  rolling_cor_w <- returns_joined %>%
+    tq_transmute_xy(x          = weekly.returns.x,
+                    y          = weekly.returns.y,
                     mutate_fun = runCor,
                     n          = 7,
                     col_rename = "rolling.corr") %>% 
     na.omit()
   
-  rolling_cor
+  rolling_cor_w
   
   })
   
-  # Price Returns 
+  rolling_cor_m <- eventReactive(input$observe, {
+    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      ) %>% na.locf()
+      
+      
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>%
+        dplyr::rename(price = adjusted) %>%
+        select(price, symbol, date) %>% na.locf()
+      
+    }
+    
+    # behavior_data <- behavior_data_1 %>% rbind(behavior_data_2)
+    
+    price_return <- behavior_data %>%
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "monthly")
+    
+    baseline_return <- "DTWEXAFEGS" %>%
+      tq_get(get  = "economic.data",
+             from = input$daterange[1],
+             to   = input$daterange[2]) %>%
+      tq_transmute(select     = price,
+                   mutate_fun = periodReturn,
+                   period     = "monthly")
+    
+    returns_joined <- left_join(price_return,
+                                baseline_return,
+                                by = "date") %>% na.omit
+    
+    rolling_cor_m <- returns_joined %>%
+      tq_transmute_xy(x          = monthly.returns.x,
+                      y          = monthly.returns.y,
+                      mutate_fun = runCor,
+                      n          = 7,
+                      col_rename = "rolling.corr") %>% 
+      na.omit()
+    
+    rolling_cor_m
+    
+  })
   
+
+  
+  
+  
+  ## Price Returns 
   
   # Daily
   price_return_d <- eventReactive(input$observe, {
@@ -277,7 +456,7 @@ shinyServer(function(input, output) {
     
   })
   
-  # weekly
+  # monthly
   price_return_m <- eventReactive(input$observe, {
     
     if(!input$variable %in% market_list$ETFs){ 
@@ -309,7 +488,7 @@ shinyServer(function(input, output) {
     
   })
   
-  # weekly
+  # yearly
   price_return_y <- eventReactive(input$observe, {
     
     if(!input$variable %in% market_list$ETFs){ 
@@ -1173,12 +1352,12 @@ shinyServer(function(input, output) {
   })
   
   
-  #corrmatrix
-  output$index_cor   <- renderPlot({
+  #corrmatrix DoD
+  output$index_cor_d   <- renderPlot({
     
     col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
     
-    corrplot(index_cor(),
+    corrplot(index_cor_d(),
              method = "color",
              col = col(200),
              addCoef.col = "black",
@@ -1186,13 +1365,52 @@ shinyServer(function(input, output) {
              order = "hclust")
    })
   
+  #corrmatrix WoW
+  output$index_cor_w   <- renderPlot({
+    
+    col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+    
+    corrplot(index_cor_w(),
+             method = "color",
+             col = col(200),
+             addCoef.col = "black",
+             tl.col = "darkblue",
+             order = "hclust")
+  })
+  
+  #corrmatrix MoM
+  output$index_cor_m   <- renderPlot({
+    
+    col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+    
+    corrplot(index_cor_m(),
+             method = "color",
+             col = col(200),
+             addCoef.col = "black",
+             tl.col = "darkblue",
+             order = "hclust")
+  })
+  
+  #corrmatrix YoY
+  output$index_cor_y   <- renderPlot({
+    
+    col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
+    
+    corrplot(index_cor_y(),
+             method = "color",
+             col = col(200),
+             addCoef.col = "black",
+             tl.col = "darkblue",
+             order = "hclust")
+  })
+  
   #rollingcorr
-  output$rolling_cor <- renderPlotly({
+  output$rolling_cor_w <- renderPlotly({
     
     # DXY_mean_cor <- mean(index_cor [,7:7])
     
      ggplotly( 
-      rolling_cor() %>%
+      rolling_cor_w() %>%
         filter(symbol != "DXY") %>% 
         ggplot(aes(x = date, y = rolling.corr, color = symbol)) +
         geom_hline(yintercept =  0, color = palette_light()[[8]]) +
@@ -1210,6 +1428,33 @@ shinyServer(function(input, output) {
     
     
   })
+  
+  #rollingcorr
+  output$rolling_cor_m <- renderPlotly({
+    
+    # DXY_mean_cor <- mean(index_cor [,7:7])
+    
+    ggplotly( 
+      rolling_cor_m() %>%
+        filter(symbol != "DXY") %>% 
+        ggplot(aes(x = date, y = rolling.corr, color = symbol)) +
+        geom_hline(yintercept =  0, color = palette_light()[[8]]) +
+        geom_point(size = 1.5)+
+        geom_line(size  = 1) +
+        labs(title = "DXY CUR Baseline ",br(),
+             x = "", y = "Dynamic Correlation", color = "") +
+        facet_wrap(~ symbol, ncol = 2) +
+        # theme_tq() +
+        theme_minimal()+
+        scale_color_tq()+
+        theme(legend.position = "none")
+      
+    )
+    
+    
+  })
+  
+
   
   #returns
   output$returns_d     <- renderPlotly({

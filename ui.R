@@ -239,22 +239,22 @@ ui <- dashboardPage(
                          wellPanel(
                            tabsetPanel(
                              
-                             tabPanel("Macro Events (Covid-19)", 
+                             tabPanel("Covid-19 Data", 
                                       
                                       tabBox( side = "left", width = 13,
                                               tabPanel("TreeMap ", withSpinner( plotlyOutput("treemap",height = "360px"), color = "#1da1f2" )),         
                                               tabPanel("Density ", withSpinner( plotlyOutput("density", height = "360px"), color="#1da1f2"))
                                       )),
                              
-                             tabPanel("Price Evolution", 
+                             tabPanel("Price", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("Asset Behaviour", withSpinner( plotlyOutput("evolution",height = "360px"), color = "#1da1f2" )),         
-                                              tabPanel("Summary of Data", withSpinner( reactableOutput("summary"), color="#1da1f2"))
+                                              tabPanel("Behaviour", withSpinner( plotlyOutput("evolution",height = "360px"), color = "#1da1f2" )),         
+                                              tabPanel("Summary", withSpinner( reactableOutput("summary"), color="#1da1f2"))
                                       )),
                              
                              
-                             tabPanel("Price Returns", 
+                             tabPanel("Returns", 
                                       
                                       tabBox( side = "left", width = 13,
                                               tabPanel("Daily", withSpinner( plotlyOutput("returns_d",height = "360px"), color = "#1da1f2")),         
@@ -266,11 +266,23 @@ ui <- dashboardPage(
                                       )),
                              
                              
-                             tabPanel("Static & Dynamic Correlation", 
+                             tabPanel("Correlation Matrix", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor",height = "300px"),color="#1da1f2")),
-                                              tabPanel("Rolling Correlation", withSpinner(plotlyOutput("rolling_cor",height = "300px"),color="#1da1f2"))
+                                              tabPanel("Daily", withSpinner(plotOutput("index_cor_d",height = "300px"),color="#1da1f2")),
+                                              tabPanel("Weekly", withSpinner(plotOutput("index_cor_w",height = "300px"),color="#1da1f2")),
+                                              tabPanel("Monthly", withSpinner(plotOutput("index_cor_m",height = "300px"),color="#1da1f2")),
+                                              tabPanel("Yearly", withSpinner(plotOutput("index_cor_y",height = "300px"),color="#1da1f2"))
+                                              
+                                      )),
+                             
+                             tabPanel("Rolling Correlation", 
+                                      
+                                      tabBox( side = "left", width = 13,
+                                              tabPanel("Weekly", withSpinner(plotlyOutput("rolling_cor_w",height = "300px"),color="#1da1f2")),
+                                              tabPanel("Monthly", withSpinner(plotlyOutput("rolling_cor_m",height = "300px"),color="#1da1f2"))
+
+                                              
                                       ))
                              
                            )
@@ -446,12 +458,12 @@ ui <- dashboardPage(
                              #                                        color="#1da1f2"))
                              
                              
-                             tabPanel("Mark to Market Management",
-                                      tags$img(src= "m2m.png",
-                                               style = "padding-left:7px;width:570px;height:400px;display:block;margin:auto"), br(),
+                             tabPanel("Mark to Market Management",br(),br(),
+                                      # tags$img(src= "m2m.png",
+                                      #          style = "padding-left:7px;width:570px;height:400px;display:block;margin:auto"), br(),
                                       tags$a(href="http://www.myfxbook.com/members/TraderHub/financialaboratorygmailcom/3984258/4ob5N1cxNCsZa8nHKF53",
-                                             "Explore more details about a M2Market Management Strategy",
-                                             style = "padding-left:11px"))
+                                             "Explore more about a M2Market Management Strategy",
+                                              style = "padding-left:11px"))
                              
                              
                            )
