@@ -99,33 +99,29 @@ ui <- dashboardPage(
                          
                          hr(),
                          h5(
-                           helpText("In the context of Quantitative Finance, specifically the field of Market Risk,
-                                     the uncertainty it's a constant.
-                                     This initiative take into consideration, the paradigm of Decision Intelligence,
-                                     understanding this concept as the discpline of decision making, inspired in data, business knowledge and behaviour,
-                                     this discipline also known as decision engineering, try to close the gap between the quantitative
-                                     and the qualitative, it's important to understand this exercise as a dinamyc analysis, being aware that the market reality 
-                                     it's very complex so the intention underlying this resource it's about reinforcing the expert decision 
-                                     making  process, taking into account that a Financial Trader will incorporate to the process,
-                                     or stretegy, a set of differents dimensions or variables that might have significant impact in the strategy execution, 
-                                     or market analysis, the variables shared in this exercise, belongs to 4 different cathegories of the market risk, 
-                                     Macroeconomics, Commodities , Equity Indexes & Currencies.",  br(),
-                                    
-                                    "The information for the analysis consider macroeconomics from the United States.
-                                     The user can interact with different variables in different time frames to find insights that might guide market decisions, 
-                                     market understanding or at least a data-driven observations, masterpiece for the incubation of intuition.",br(),br(),
-                                    
-                                    "NOTE: This is the result of an academic research, more variables can be included to respond more specific needs.", br(),br(),
-                                    
-                                    tags$img(src   = "https://wwwen.uni.lu/var/storage/images/media/images/data_science_explore/1136248-1-fre-FR/data_science_explore.png", 
-                                             width = "500px", height = "200px", 
-                                             style = "width:490px;height:190px;display:block;margin:auto"),br(),
-                                    tags$a(href="https://r4ds.had.co.nz/explore-intro.html","R for Data Science"))
+                           helpText(
+                             # div(style="text-align:center",
+                            div( div(style="text-align:center",
                            
+                           "Uncertainty is a constant, Data-driven decision making, inspired in business knowledge and behaviour, contribute to performance",br(),
+                           "The challenge is to close the gap between the quantitative and the qualitative and reduce markets complexity using Data Science, ",br(),
+                           
+
+                           "Variables you can interact with in this tool belongs to four cathegories:  Macroeconomics, Commodities, Equity-Indices & Currencies.", br(),
+                
+                          "NOTE: This R web-app is the result of an academic research, more variables can be included as well to respond more specific needs.", br(),br(),br(),
+                          
+                          tags$img(src   = "https://wwwen.uni.lu/var/storage/images/media/images/data_science_explore/1136248-1-fre-FR/data_science_explore.png", 
+                                   width = "500px", height = "200px", 
+                                   style = "width:390px;height:150px;display:block;margin:auto"),br(),
+                          tags$a(href="https://r4ds.had.co.nz/explore-intro.html","R for Data Science"))
+                 
                          )
+                           )
                          
                        )
-                )
+                    ) 
+                 )
               )
       ),
       tabItem("paradigm",
@@ -201,24 +197,19 @@ ui <- dashboardPage(
                          h3("Descriptive Analytics"),
                          
                          h5( 
-                           helpText("¿What Happened and Why?" , br(),br(),
-                                    "Statistically knowing what happened, it's 'easy' using central and deviation measures, distributions of frequency, etc,
-                                  but connect the dots between what happened and why, it's a Story-Telling activity",br(),
-                                    
-                                    "Check out price evolution and the dots density across time with a smoothed linear model,
-                                   the logarithmic returns provide an intuition of performance, it might be interesting to observe 
-                                   the dinamyc & static correlation against the Dollar Index spot.", br(),
-                                    
-                                    "Coronavirus data available on WHO webpage, considered as a diruptive force since 
-                                  directly affects principal drivers of economies")
-                           
-                         ),
+                           helpText( "¿What Happened and Why?" , br(),br(),
+                                    "Central and deviation measures, distributions of frequency and others descriptions, tells the what,
+                                    The why it's a Story-Telling, interpretation based.
+                                    Coronavirus data on www.who.int."
+                                    )
+                                ),
+                         
                          pickerInput(
                            inputId = "variable",
                            label = "Variables",
                            choices = market_list,
                            selected = "SP500",
-                           multiple = TRUE
+                           multiple = T
                            
                          ),
                          
@@ -270,7 +261,6 @@ ui <- dashboardPage(
                                       
                                       tabBox( side = "left", width = 13,
                                               tabPanel("Daily", withSpinner(plotOutput("index_cor_d",height = "300px"),color="#1da1f2")),
-                                              tabPanel("Weekly", withSpinner(plotOutput("index_cor_w",height = "300px"),color="#1da1f2")),
                                               tabPanel("Monthly", withSpinner(plotOutput("index_cor_m",height = "300px"),color="#1da1f2")),
                                               tabPanel("Yearly", withSpinner(plotOutput("index_cor_y",height = "300px"),color="#1da1f2"))
                                               
@@ -310,12 +300,9 @@ ui <- dashboardPage(
                          h3("Predictive Analytics"),
                          helpText("¿What Might Happen?" , br(),br(),
                                   
-                                  "The analysis of the time series isolate the components, and combines them in 3 possible ways,
-                                  addition, multiplication or a combination of both, the algorithm used, transform the data and recompose it efficiently, to 
-                                  predict a range of possible values that incorporate the prevalent aspects of the components mentioned.", br(),
-                                  
-                                  "The model do not incorporate information distinct that the date and price evolution,
-                                  exogenous information it's not legible for the model."
+                                  "The time series isolate the components, combines them efficiently to 
+                                  predict a range of values with the main aspects of the price.", 
+                               
                                   
                          ),
                          pickerInput(
@@ -395,20 +382,17 @@ ui <- dashboardPage(
                          helpText("¿What Should We Do?" , br(),br(),
                                   
                                   
-                                  "Explore the behavior of main financial markets drivers, in combination with the time series forecast. 
-                                  to make a forecast able to icorporate exogenous information, understanding exogenous information as data that do not directly correspond to the time series.",br(),
+                                  "Uncertainty Measurement & Monetary Policy are key examples of valuable 
+                                  information that might be consider as exogenous and impact forecast."
                                   
-                                  "Uncertainty Measurement & Monetary Policy are key examples of valuable information that might be consider as 'exogenous'. 
-                                  
-                                  The Neural Network, Assume that FED Stategy as constant.", br(),
-                                  
+
                          ),
                          pickerInput(
                            inputId = "variable_2",
                            label = "Variables",
                            choices = market_list, 
                            selected = "SP500",
-                           multiple = TRUE
+                           multiple = F
                          ), 
                          # textInput(inputId = "text", 
                          #           label = "Stock Ticker", value = "Enter text..."),  ####
@@ -485,13 +469,9 @@ ui <- dashboardPage(
                          h3("Market Sentiment"),
                          
                          h5( 
-                           helpText("¿How does people feel about markets and risk?" , br(),br(),
-                                    "In the context of finance, this information might contribute to asset valuation,
-                                  specially to the read of market expectation, humans tends to share feels and thoughts, elements that guide actions,
-                                  probably knowing more about what do the people think about the market it's valuable.",br(),
-                                    
-                                    "This is a minimalistic example of market sentiment analysis, the technique can be 
-                                  very sofisticated, complex and insightful."),
+                           helpText("¿How does people feel about risk?" , br(),br(),
+                                
+                                    "Minimalistic example of market sentiment analysis."),
                          ),
                          
                          

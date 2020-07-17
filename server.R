@@ -151,7 +151,7 @@ shinyServer(function(input, output) {
                    type   = "log") %>% 
       pivot_wider(names_from = symbol, values_from = daily.returns) %>%
       select(-date) %>% 
-      na.omit() %>% 
+      na.locf() %>% 
       cor()
     
     index_cor_d
@@ -159,44 +159,7 @@ shinyServer(function(input, output) {
     
   })
 
-  index_cor_w <- eventReactive(input$observe, {
-    
-    
-    if(!input$variable %in% market_list$ETFs){ 
-      
-      behavior_data <- tq_get(input$variable, get = "economic.data",
-                              from = input$daterange[1],
-                              to   = input$daterange[2]
-      )
-    }else{
-      
-      
-      behavior_data <- tq_get(input$variable, get = "stock.prices",
-                              from = input$daterange[1],
-                              to   = input$daterange[2]) %>% 
-        dplyr::rename(price = adjusted) %>% 
-        select(price, symbol, date)
-      
-    }
-    
 
-    index_cor_w <- behavior_data %>%
-      na.locf() %>% 
-      group_by(symbol) %>%
-      tq_transmute(select = price,
-                   mutate_fun = periodReturn,
-                   period = "weekly",
-                   type   = "log") %>% 
-      pivot_wider(names_from = symbol, values_from = weekly.returns) %>%
-      select(-date) %>% 
-      na.omit() %>% 
-      cor()
-    
-    index_cor_w
-    
-    
-  })
-  
   index_cor_m <- eventReactive(input$observe, {
     
     
@@ -227,7 +190,7 @@ shinyServer(function(input, output) {
                    type   = "log") %>% 
       pivot_wider(names_from = symbol, values_from = monthly.returns) %>%
       select(-date) %>% 
-      na.omit() %>% 
+      na.locf() %>% 
       cor()
     
     index_cor_m
@@ -265,7 +228,7 @@ shinyServer(function(input, output) {
                    type   = "log") %>% 
       pivot_wider(names_from = symbol, values_from = yearly.returns) %>%
       select(-date) %>% 
-      na.omit() %>% 
+      na.locf() %>% 
       cor()
     
     index_cor_y
@@ -316,7 +279,7 @@ shinyServer(function(input, output) {
   
   returns_joined <- left_join(price_return,
                               baseline_return,
-                              by = "date") %>% na.omit
+                              by = "date") %>% na.locf
   
   rolling_cor_w <- returns_joined %>%
     tq_transmute_xy(x          = weekly.returns.x,
@@ -324,7 +287,7 @@ shinyServer(function(input, output) {
                     mutate_fun = runCor,
                     n          = 7,
                     col_rename = "rolling.corr") %>% 
-    na.omit()
+    na.locf()
   
   rolling_cor_w
   
@@ -369,7 +332,7 @@ shinyServer(function(input, output) {
     
     returns_joined <- left_join(price_return,
                                 baseline_return,
-                                by = "date") %>% na.omit
+                                by = "date") %>% na.locf
     
     rolling_cor_m <- returns_joined %>%
       tq_transmute_xy(x          = monthly.returns.x,
@@ -377,7 +340,7 @@ shinyServer(function(input, output) {
                       mutate_fun = runCor,
                       n          = 7,
                       col_rename = "rolling.corr") %>% 
-      na.omit()
+      na.locf()
     
     rolling_cor_m
     
@@ -918,7 +881,7 @@ shinyServer(function(input, output) {
   #    
   #      mod <- nnet(up ~ ., data() = data[t.id,],
   #                 size = 5 , maxit = 1000000, decay = .001, rang = 0.07,
-  #                 na.action = na.omit, skip = T)
+  #                 na.action = na.locf, skip = T)
   #
   #     # Quality Model checks :::  
   #     # calcular valores probabilisticos y evaluar desempeño:
@@ -1278,8 +1241,8 @@ shinyServer(function(input, output) {
      gTrend <- 
       ggplotly(
       gTrend %>%  ggplot(aes(x=date, y = value))+
-        geom_line(color = "blue")+
-        geom_point( color = "blue")+
+        geom_line(color = "gray")+
+        geom_point( color = "steelblue")+
         geom_smooth(color = "pink")+
         theme_classic()+
         labs(x = "Date", y = " Ressecion Search" , 
@@ -1362,19 +1325,7 @@ shinyServer(function(input, output) {
              order = "hclust")
    })
   
-  #corrmatrix WoW
-  output$index_cor_w   <- renderPlot({
-    
-    col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
-    
-    corrplot(index_cor_w(),
-             method = "color",
-             col = col(200),
-             addCoef.col = "black",
-             tl.col = "darkblue",
-             order = "hclust")
-  })
-  
+
   #corrmatrix MoM
   output$index_cor_m   <- renderPlot({
     
