@@ -493,13 +493,13 @@ ui <- dashboardPage(
                              tabPanel("Google Trends", withSpinner(plotlyOutput("google_trends",height = "450px"),
                                                                    color="#1da1f2")),
                              
-                             tabPanel("Newspapers", withSpinner(dataTableOutput("news",height = "450px"),
+                             tabPanel("Newspapers", withSpinner(dataTableOutput("news_",height = "450px"),
                                                                 color="#1da1f2")),
                              
-                             tabPanel("Frequency Charts", withSpinner(plotlyOutput("freq",height = "450px"),
+                             tabPanel("Frequency Charts", withSpinner(plotlyOutput("freq_",height = "450px"),
                                                                       color="#1da1f2")),
                              
-                             tabPanel("Sentiment", withSpinner(dataTableOutput("hashtag",height = "450px"),
+                             tabPanel("Sentiment", withSpinner(dataTableOutput("hashtag_",height = "450px"),
                                                                color="#1da1f2"))
                              
                              # tabPanel("Correlation Matrix", withSpinner(plotOutput("index_cor",height = "600px"),

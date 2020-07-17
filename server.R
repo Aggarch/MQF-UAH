@@ -13,9 +13,9 @@ shinyServer(function(input, output) {
   
   observeEvent(input$observer, {
     # Show a modal when the button is pressed
-    shinyalert(" Notification! ", 
-               "Click on -Feel-  to introduce a new search value",
-               type = "success",showConfirmButton = T,
+    shinyalert("Comming Soon! ", 
+               "This analysis it's waiting for twitter approval",
+               type = "info",showConfirmButton = T,
                showCancelButton = FALSE,  timer = 10000, animation = TRUE,
                closeOnEsc = T,
                closeOnClickOutside = T)
