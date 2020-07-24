@@ -109,7 +109,8 @@ ui <- dashboardPage(
 
                            "Variables you can interact with in this tool belongs to four cathegories:  Macroeconomics, Commodities, Equity-Indices & Currencies.", br(),
                 
-                          "NOTE: This R web-app is the result of an academic research, more variables can be included as well to respond more specific needs.", br(),br(),br(),
+                          "NOTE: This R web-app is the result of an academic research, more variables can be included as well to respond more specific needs.", br(),
+                          br(),br(),br(),br(),
                           
                           tags$img(src   = "https://wwwen.uni.lu/var/storage/images/media/images/data_science_explore/1136248-1-fre-FR/data_science_explore.png", 
                                    width = "500px", height = "200px", 
