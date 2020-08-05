@@ -3,26 +3,34 @@
 
 
 library(tidyquant)
+library(tidyverse)
 library(corrplot)
 
 
 # Data
+
 sp  <- tq_get("SP500", "economic.data"); sp
 vix <- tq_get("VIXCLS","economic.data"); vix
 dow <- tq_get("DJIA",  "economic.data"); dow
+epu <- tq_get("USEPUINDXD","economic.data")
+gold <-tq_get("GOLDAMGBD228NLBM", "economic.data") 
 
+# Log Returns Matrix
 
-# Matriz de Retornos Logaritmicos 
-behavior_data <- sp %>% 
+behavior_data <- sp %>%  
   bind_rows(vix) %>% 
-  bind_rows(dow) %>% na.locf() %>% 
+  bind_rows(dow) %>% 
+  bind_rows(epu) %>% 
+  bind_rows(gold)%>% 
+  na.locf() %>% 
   group_by(symbol) %>% 
   tq_transmute(select = price,
                mutate_fun = periodReturn,
                period = "monthly",
                type   = "log") %>%
   ungroup() %>% 
-  pivot_wider(names_from = symbol, values_from = monthly.returns)
+  pivot_wider(names_from = symbol,
+              values_from = monthly.returns) %>% na.locf()
 
 
 # Dickey - Fuller test::: 
@@ -57,7 +65,8 @@ index_cor_d
 
 behavior_data_price <- sp %>% 
   bind_rows(vix) %>% 
-  bind_rows(dow) %>% na.locf() %>% 
+  bind_rows(dow) %>%
+  bind_rows(epu) %>% na.locf() %>% 
   pivot_wider(names_from = symbol, values_from = price)
 
 
@@ -107,4 +116,88 @@ fore <- predict(draws, 20)
 
 ## plot the results
 plot(draws, forecast = fore)
+
+
+
+
+# ggplot of Standard & Poors 500
+
+sp %>% filter(date >= "2019-08-01") %>% 
+  ggplot(aes(x=date, y=price))+
+  theme_minimal()+
+  geom_point()+
+  geom_line() +
+  geom_smooth()+
+  labs(x = "Date", y = "Price Evolution",
+       title = "Standard & Poors 500")
+
+
+
+behavior_data <- behavior_data %>% na.omit()
+
+# S&P Log Returns
+
+behavior_data %>% 
+  select(date, SP500) %>% 
+  filter(date >= "2019-08-01") %>% 
+  ggplot(aes(x=date, y=SP500))+
+  geom_point()+
+  geom_line()+
+  theme_minimal()+
+  labs(x = "Date", y = "Log - Returns",
+       title = "S&P Log Returns")
+  
+
+behavior_data %>% 
+  filter( date >= "2019-08-01") %>%
+  select(-date) %>%
+  rename(Gold = GOLDAMGBD228NLBM,
+         EPU  = USEPUINDXD,
+         Dow  = DJIA,
+         VIX  = VIXCLS,
+         "S&P"  = SP500) %>% 
+  cor() %>% 
+     corrplot(
+           method = "pie",  
+           addCoef.col = "gray",
+           tl.col = "blue")
+
+# Correlation Matrix
+
+behavior_data %>% 
+  filter( date >= "2019-08-01") %>% 
+  select(-date) %>% 
+  cor() %>% 
+  corrplot( method = "pie",  
+            addCoef.col = "gray",
+            tl.col = "blue")
+
+
+# Rolling Correlation
+
+price_return <- behavior_data_prices %>%
+  group_by(symbol) %>%
+  tq_transmute(select = price,
+               mutate_fun = periodReturn,
+               period = "weekly")
+
+baseline_return <- "DTWEXAFEGS" %>%
+  tq_get(get  = "economic.data",
+         from = input$daterange[1],
+         to   = input$daterange[2]) %>%
+  tq_transmute(select     = price,
+               mutate_fun = periodReturn,
+               period     = "weekly")
+
+returns_joined <- left_join(price_return,
+                            baseline_return,
+                            by = "date") %>% na.omit
+
+rolling_cor <- returns_joined %>%
+  tq_transmute_xy(x          = weekly.returns.x,
+                  y          = weekly.returns.y,
+                  mutate_fun = runCor,
+                  n          = 7,
+                  col_rename = "rolling.corr") 
+
 

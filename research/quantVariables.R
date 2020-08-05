@@ -599,7 +599,7 @@ EPU_abst <-   EPU_alt %>% filter(year(date) >= year(today())) %>%
 
 
 # FED rate Expectations #####
-#browseURL("https://www.economics-finance.org/jefe/fin/KeaslerGoffpaper.pdf")
+browseURL("https://www.economics-finance.org/jefe/fin/KeaslerGoffpaper.pdf")
 #browseURL("https://www.cmegroup.com/trading/interest-rates/stir/30-day-federal-fund_quotes_settlements_futures.html")
 #browseURL("https://www.danielstrading.com/education/markets/interest-rates-financials/30-day-federal-funds")
 

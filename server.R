@@ -192,6 +192,7 @@ shinyServer(function(input, output) {
     group_by(symbol) %>%
     tq_transmute(select = price,
                  mutate_fun = periodReturn,
+                 type = "log",
                  period = "monthly")
   
   baseline_return <- "DTWEXAFEGS" %>%
@@ -200,6 +201,7 @@ shinyServer(function(input, output) {
            to   = input$daterange[2]) %>%
     tq_transmute(select     = price,
                  mutate_fun = periodReturn,
+                 type = "log",
                  period     = "monthly")
   
   returns_joined <- left_join(price_return,
