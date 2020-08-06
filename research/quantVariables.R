@@ -2111,6 +2111,5 @@ graphjs(g,
         vertex.size=0.2,
         vertex.shape=mynames)
 
-
 browseURL("https://quantdare.com/more-examples-in-financial-visualisation/")
  

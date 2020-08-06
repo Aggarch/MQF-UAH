@@ -108,10 +108,3 @@ EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
 source("funciones/boton_descarga.R")
 
 
-
-
-
-
-
-
-
