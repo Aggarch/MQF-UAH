@@ -33,6 +33,8 @@ behavior_data <- sp %>%
               values_from = monthly.returns) %>% na.locf()
 
 
+table.Stats(behavior_data$SP500)
+
 # Dickey - Fuller test::: 
 
 behavior_data$SP500 %>% na.omit -> sp_ret
@@ -54,6 +56,13 @@ index_cor_d <- behavior_data %>%
 
 index_cor_d
 
+
+
+price_evolution <- sp%>%
+  tq_transmute(select = price,
+               mutate_fun = periodReturn,
+               period = "daily",
+               type = "log")
 
 
 #  price based correlations ----------------------------------------
