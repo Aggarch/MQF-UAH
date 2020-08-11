@@ -1499,10 +1499,14 @@ shinyServer(function(input, output) {
     
     
     
-    price_evolution <- price_evolution()
+    price_evolution <- price_evolution()%>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "monthly",
+                   type = "log")
     
-    table.Stats(price_evolution$price) %>% 
-      reactable::reactable(defaultPageSize =20, compact = T)    
+    table.Stats(price_evolution$monthly.returns) %>% 
+            reactable::reactable(defaultPageSize =20, compact = T)    
     
     
     })
