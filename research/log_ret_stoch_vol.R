@@ -46,12 +46,14 @@ sp_ret %>% tseries::adf.test()
 
 # Dibujo de matriz de correlaciones 
 index_cor_d <- behavior_data %>%
+ rename(VIX=VIXCLS,EPU=USEPUINDXD,GOLD=GOLDAMGBD228NLBM) %>% 
   na.locf() %>% 
   select(-date) %>% 
-  cor() %>% 
-  corrplot(method = "color",
-           addCoef.col = "black",
-           tl.col = "darkblue"
+  cor(method = "pearson") %>% 
+  corrplot(method = "pie",
+           addCoef.col = "steelblue",
+           tl.col = "black",
+           type = "upper"
   )
 
 index_cor_d
@@ -85,7 +87,8 @@ index_cor_d_p <- behavior_data_price %>%
   cor() %>% 
   corrplot(method = "color",
            addCoef.col = "black",
-           tl.col = "darkblue"
+           tl.col = "darkblue",
+           type   = "upper"
   )
 
 index_cor_d_p

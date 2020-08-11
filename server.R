@@ -156,7 +156,7 @@ shinyServer(function(input, output) {
                    type   = "log") %>% 
       pivot_wider(names_from = symbol, values_from = daily.returns) %>%
       select(-date) %>% 
-      cor()
+      cor(method = "pearson")
     
     index_cor
     
