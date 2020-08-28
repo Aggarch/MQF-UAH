@@ -1,11 +1,9 @@
 
 #  Log returns based correlations ----------------------------------------
 
-
 library(tidyquant)
 library(tidyverse)
 library(corrplot)
-
 
 # Data
 
@@ -35,7 +33,7 @@ behavior_data <- sp %>%
 
 table.Stats(behavior_data$SP500)
 
-# Dickey - Fuller test::: 
+# Dickey - Fuller test:::   
 
 behavior_data$SP500 %>% na.omit -> sp_ret
 
@@ -71,8 +69,6 @@ price_evolution <- sp%>%
 
 
 # wrong case !!
-
-
 
 behavior_data_price <- sp %>% 
   bind_rows(vix) %>% 
@@ -212,4 +208,28 @@ rolling_cor <- returns_joined %>%
                   n          = 7,
                   col_rename = "rolling.corr") 
 
+
+
+# Garch  ------------------------------------------------------------------
+
+
+data(EuStockMarkets)
+
+dax <- diff(log(EuStockMarkets))[,"DAX"]
+dax.garch <- garch(dax)  # Fit a GARCH(1,1) to DAX returns
+summary(dax.garch)       # ARCH effects are filtered. However, 
+plot(dax.garch)          # conditional normality seems to be violated
+
+
+sp <- tq_get("SP500", "economic.data") %>% tq_transmute(select = price,
+                                                        mutate_fun = periodReturn,
+                                                        perio = "daily",
+                                                        type = "log") %>% 
+  select(-date) %>% pull()
+
+sp_garch <- garch(sp)
+
+summ <- summary(sp_garch)       # ARCH effects are filtered. However, 
+
+plot(sp_garch)
 

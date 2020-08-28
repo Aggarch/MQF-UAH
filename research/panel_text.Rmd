@@ -40,8 +40,3 @@ Trend, Seasonality and Noise or randomness. Basically, the time series model and
 Considering the result of the time series forecast, and the expertise of the analyst or trader, we can explore the behavior of main financial markets drivers, to make a forecast able to incorporate exogenous information, understanding exogenous information as data that do not directly correspond to the time series. Uncertainty Measurement & Monetary Policy are key examples of valuable information that might be consider as ‘exogenous’. This panel select the variable of interest, calculate the future of the timeseries and EPU (Economic Policy Uncertainty Index), and assume that the FED Policy Strategy and market expectations about FED possible actions remains constant. Then a Regression Neural Network, study the data available in a dataset containing this information structure about the past, and predict the future, so now we have 3 Forecast outputs for the asset.
 ASSET : The real life price when the market closure was effective, otherwise the time series prediction. INDEX : The real life Economic Policy Uncertainty Index in case it was released, otherwise the time series prediction. PRED.nnet : The Neural Network prediction considering the INDEX, and the FED Funds rates & futures. W.Forecast: Neural Network prediction weighted by the Uncertainty Level, the main idea of this measure it’s to increase sensibility about uncertainty.
 
-# Main Ideas:
-
-
-                                  
-                         

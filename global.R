@@ -1,5 +1,7 @@
 # Global ####
 
+# call to all resources, declare varibles, functions and static queries. 
+
 # Libraries ::: 
 
 #install.packages("tidyverse")

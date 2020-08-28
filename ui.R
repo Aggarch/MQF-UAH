@@ -1,5 +1,8 @@
 
 
+# To observe the finished ui in terms of production & deployment go to deploy_app branch
+
+
 # 0.) ui ####
 skin <- Sys.getenv("DASHBOARD_SKIN")
 skin <- tolower(skin)

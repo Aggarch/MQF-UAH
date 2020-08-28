@@ -1,7 +1,7 @@
-#### Quant  AG : Master in Quantitative Finance ####
+#### QuanTradeR AG : Master in Quantitative Finance UAH ####
 
 # This script, contains all methods applied in the web-app & other useful resources. 
-# Can be understood as the research script where the idea was studied.
+# Can be understood as the research script where the idea was studied and explored
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ----
 
@@ -2075,7 +2075,9 @@ h2o.varimp_plot(xgb)
 
 xgb@parameters
 
-# Black Sholes 
+
+# Black Sholes  -----------------------------------------------------------
+
 
 BlackScholes <- function(S, K, r, T, sig, type){
  
@@ -2095,6 +2097,30 @@ BlackScholes <- function(S, K, r, T, sig, type){
 }
 
 call <- BlackScholes(110,100,0.04,1,0.2,"C")
+
+# Garch  ------------------------------------------------------------------
+
+
+
+data(EuStockMarkets)
+
+dax <- diff(log(EuStockMarkets))[,"DAX"]
+dax.garch <- garch(dax)  # Fit a GARCH(1,1) to DAX returns
+summary(dax.garch)       # ARCH effects are filtered. However, 
+plot(dax.garch)          # conditional normality seems to be violated
+
+
+sp <- tq_get("SP500", "economic.data") %>% tq_transmute(select = price,
+                                                        mutate_fun = periodReturn,
+                                                        perio = "daily",
+                                                        type = "log") %>% 
+  select(-date) %>% pull()
+
+sp_garch <- garch(sp)
+
+summ <- summary(sp_garch)       # ARCH effects are filtered. However, 
+
+plot(sp_garch)
 
 # . ----
 # ... ----
