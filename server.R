@@ -1,9 +1,7 @@
 
-
 #  ( A-Z ) Server ####
 
 shinyServer(function(input, output) {
-  
   
 
   # A) Reactive Expressions ####
@@ -22,7 +20,6 @@ shinyServer(function(input, output) {
   #sentiment
   sentiment <- eventReactive(input$observer, {
     
-
     get_token()
     
     tt <- function(ttt){
