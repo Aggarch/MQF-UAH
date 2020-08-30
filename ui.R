@@ -446,7 +446,7 @@ ui <- dashboardPage(
                              tabPanel("Mark to Market Management",br(),br(),
                                       # tags$img(src= "m2m.png",
                                       #          style = "padding-left:7px;width:570px;height:400px;display:block;margin:auto"), br(),
-                                      tags$a(href="http://www.myfxbook.com/members/TraderHub/financialaboratorygmailcom/3984258/4ob5N1cxNCsZa8nHKF53",
+                                      tags$a(href="https://www.myfxbook.com/members/andresga/andresgarciadcgmailcom/6639617/Rnw5ctS8zsiRhllVSaLK",
                                              "Explore more about a M2Market Management Strategy",
                                               style = "padding-left:11px"))
                              
