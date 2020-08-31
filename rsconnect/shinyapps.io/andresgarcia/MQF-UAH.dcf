@@ -5,9 +5,9 @@ account: andresgarcia
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2533253
-bundleId: 3402381
+bundleId: 3571483
 url: https://andresgarcia.shinyapps.io/MQF-UAH/
-when: 1594954454.94015
+when: 1598759716.3513
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .RData|research
+ignoredFiles: README.md|research
