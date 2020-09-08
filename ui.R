@@ -177,7 +177,7 @@ ui <- dashboardPage(
                            helpText("",
                                     
                                     tags$img(src= "https://www.gurobi.com/wp-content/uploads/2018/12/analytic-types-chart.png",
-                                             style ="width:580px;height:360px;display:block;margin:auto"))
+                                             style ="width:580px;height:380px;display:block;margin:auto"))
                          ),
                        )
                 )
@@ -193,7 +193,7 @@ ui <- dashboardPage(
       tabItem("description",
               fluidPage(
                 useShinyalert(),
-                column(4,
+                column(3,
                        wellPanel(
                          h3("Descriptive Analytics"),
                          
@@ -226,36 +226,58 @@ ui <- dashboardPage(
                                       style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                        )
                 ),
-                column(8,
+                column(9,
                        fluidPage(
                          wellPanel(
                            tabsetPanel(
                              
-                             tabPanel("Covid-19 Data", 
+                             tabPanel("Covid-19", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("TreeMap ", withSpinner( plotlyOutput("treemap",height = "360px"), color = "#1da1f2" )),         
-                                              tabPanel("Density ", withSpinner( plotlyOutput("density", height = "360px"), color="#1da1f2"))
+                                              tabPanel("TreeMap ", withSpinner( plotlyOutput("treemap",height = "380px"), color = "#1da1f2" )),         
+                                              tabPanel("Density ", withSpinner( plotlyOutput("density", height = "380px"), color="#1da1f2"))
                                       )),
                              
                              tabPanel("Price", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("Behaviour", withSpinner( plotlyOutput("evolution",height = "360px"), color = "#1da1f2" )),         
-                                              tabPanel("Summary", withSpinner( reactableOutput("summary"), color="#1da1f2"))
+                                              tabPanel("Behaviour", withSpinner( plotlyOutput("evolution",height = "380px"), color = "#1da1f2" )),         
+                                              tabPanel("Summary", withSpinner( reactableOutput("summary"), color="#1da1f2")),
+                                              tabPanel("Rolling Volatility 6m", withSpinner(plotlyOutput("roll_vol_six",height = "380px"), color = "#1da1f2" )),
+                                              tabPanel("Rolling Volatility 3m", withSpinner(plotlyOutput("roll_vol_three",height = "380px"), color = "#1da1f2" ))         
+                                   
                                       )),
                              
-                             
+                                              
+                              
                              tabPanel("Returns", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("Daily", withSpinner( plotlyOutput("returns_d",height = "360px"), color = "#1da1f2")),         
-                                              tabPanel("Weekly", withSpinner( plotlyOutput("returns_w", height = "360px"), color="#1da1f2")),
-                                              tabPanel("Monthly", withSpinner( plotlyOutput("returns_m", height = "360px"), color="#1da1f2")),
-                                              tabPanel("Yearly", withSpinner( plotlyOutput("returns_y", height = "360px"), color="#1da1f2"))
+                                              tabPanel("Daily", withSpinner( plotlyOutput("returns_d",height = "380px"), color = "#1da1f2")),         
+                                              tabPanel("Weekly", withSpinner( plotlyOutput("returns_w", height = "380px"), color="#1da1f2")),
+                                              tabPanel("Monthly", withSpinner( plotlyOutput("returns_m", height = "380px"), color="#1da1f2")),
+                                              tabPanel("Yearly", withSpinner( plotlyOutput("returns_y", height = "380px"), color="#1da1f2"))
                                               
                                               
                                       )),
+                             
+                             
+                             
+                             tabPanel("VaR & CVaR", 
+                                      
+                                      tabBox( side = "left", width = 13,
+                                              tabPanel("99%", withSpinner( plotlyOutput("vars_99", height = "400px"), color="#1da1f2")),
+                                              tabPanel("95%", withSpinner( plotlyOutput("vars_95",height  = "400px"), color="#1da1f2")),         
+                                              tabPanel("90%", withSpinner( plotlyOutput("vars_90", height = "400px"), color="#1da1f2")),
+                                              tabPanel("85%", withSpinner( plotlyOutput("vars_85", height = "400px"), color="#1da1f2")),
+                                              tabPanel("80%", withSpinner( plotlyOutput("vars_80", height = "400px"), color="#1da1f2"))
+                                              
+                                              
+                                              
+                                              
+                                      )),
+                          
+                             
                              
                              
                              tabPanel("Correlation Matrix", 
@@ -296,7 +318,7 @@ ui <- dashboardPage(
       tabItem("prediction",
               fluidPage(
                 useShinyalert(),
-                column(4,
+                column(3,
                        wellPanel(
                          h3("Predictive Analytics"),
                          helpText("¿What Might Happen?" , br(),br(),
@@ -329,7 +351,7 @@ ui <- dashboardPage(
                                       style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                        )
                 ),
-                column(8,
+                column(9,
                        fluidPage( 
                          wellPanel(
                            tabsetPanel(
@@ -346,16 +368,16 @@ ui <- dashboardPage(
                              tabPanel("Asset TS", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("Forecast", withSpinner( plotlyOutput("fcast",height = "360px"), color = "#1da1f2")),         
+                                              tabPanel("Forecast", withSpinner( plotlyOutput("fcast",height = "380px"), color = "#1da1f2")),         
                                               tabPanel("P Metrics", withSpinner( gt_output("performance"), color="#1da1f2")),
-                                              tabPanel("Cross Validation", withSpinner( plotlyOutput("crossv", height = "360px"), color="#1da1f2"))
+                                              tabPanel("Cross Validation", withSpinner( plotlyOutput("crossv", height = "380px"), color="#1da1f2"))
                                               
                                       )),
                              
                              
-                             tabPanel("TS Returns", withSpinner(plotlyOutput("tsr",height = "360px"), color="#1da1f2")),
-                             tabPanel("Trend Decomposition", withSpinner(plotOutput("trend",height = "360px"), color="#1da1f2")),
-                             tabPanel("TS Daypoints", withSpinner(dataTableOutput("changep",height = "360px"),color="#1da1f2"),
+                             tabPanel("TS Returns", withSpinner(plotlyOutput("tsr",height = "380px"), color="#1da1f2")),
+                             tabPanel("Trend Decomposition", withSpinner(plotOutput("trend",height = "380px"), color="#1da1f2")),
+                             tabPanel("TS Daypoints", withSpinner(dataTableOutput("changep",height = "380px"),color="#1da1f2"),
                                       boton_descarga("down", "Forecast"))
                              
                              
@@ -377,7 +399,7 @@ ui <- dashboardPage(
       
       tabItem("prescription",
               fluidPage(
-                column(4,
+                column(3,
                        wellPanel(
                          h3("Prescriptive Analytics"),
                          helpText("¿What Should We Do?" , br(),br(),
@@ -410,7 +432,7 @@ ui <- dashboardPage(
                                       style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
                        )
                 ),
-                column(8,
+                column(9,
                        
                        wellPanel(
                          fluidPage(
@@ -419,9 +441,9 @@ ui <- dashboardPage(
                              tabPanel("Scenario", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("FED Rates vs Risk", withSpinner( plotlyOutput("rates_risk",height = "360px"), color = "#1da1f2" )),         
-                                              tabPanel("EPU year summary", withSpinner( plotlyOutput("epu_abst", height = "360px"), color="#1da1f2")),
-                                              tabPanel("EFFR & Futures", withSpinner( reactableOutput("fed_data", height = "360px"), color="#1da1f2")),
+                                              tabPanel("FED Rates vs Risk", withSpinner( plotlyOutput("rates_risk",height = "380px"), color = "#1da1f2" )),         
+                                              tabPanel("EPU year summary", withSpinner( plotlyOutput("epu_abst", height = "380px"), color="#1da1f2")),
+                                              tabPanel("EFFR & Futures", withSpinner( reactableOutput("fed_data", height = "380px"), color="#1da1f2")),
                                               tabPanel("EPU table", withSpinner( reactableOutput("epu_data"), color="#1da1f2"))
                                               
                                               
@@ -431,7 +453,7 @@ ui <- dashboardPage(
                              tabPanel("Recomendations", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("Neural Network", withSpinner( plotOutput("ts_nnet_pred", height = "360px"),color="#1da1f2")),
+                                              tabPanel("Neural Network", withSpinner( plotOutput("ts_nnet_pred", height = "380px"),color="#1da1f2")),
                                               tabPanel("Network Posible Future", withSpinner( reactableOutput("ts_nnet_pred_tbl"),color="#1da1f2"))
                                               
                                               

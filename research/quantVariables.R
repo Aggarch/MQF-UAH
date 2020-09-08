@@ -2074,15 +2074,7 @@ h2o.varimp_plot(xgb)
 xgb@parameters
 
 
-# . ----
-# ... ----
-# ....... ---- 
-# ........... ---- 
 
-
-### Andres Garcia ----
-### Market Risk Analisys ---- 
-### MQF - MBA Thesis. ---- 
 
 fth  <- read.csv("fth.csv") 
 rfth <- fth %>% filter(STATUS %in% c("Approved","Completed","Processing"))
@@ -2112,4 +2104,156 @@ graphjs(g,
 
 
 browseURL("https://quantdare.com/more-examples-in-financial-visualisation/")
+
+
+
+### Black & Sholes ####
+
+BlackScholes <- function(S, K, r, T, sig, type){
+  
+  if(type=="C"){
+    d1 <- (log(S/K) + (r + sig^2/2)*T) / (sig*sqrt(T))
+    d2 <- d1 - sig*sqrt(T)
+    
+    value <- S*pnorm(d1) - K*exp(-r*T)*pnorm(d2)
+    return(value)}
+  
+  if(type=="P"){
+    d1 <- (log(S/K) + (r + sig^2/2)*T) / (sig*sqrt(T))
+    d2 <- d1 - sig*sqrt(T)
+    
+    value <-  (K*exp(-r*T)*pnorm(-d2) - S*pnorm(-d1))
+    return(value)}
+}
  
+
+call <- BlackScholes(110,100,0.04,1,0.2,"C")
+put  <- BlackScholes(110,100,0.04,1,0.2,"P")
+
+
+
+# volatility ####
+library(quantmod)
+library(PerformanceAnalytics)
+
+tickers = c("^RUT","^STOXX50E","^HSI", "^N225", "^KS11")
+myEnv <- new.env()
+getSymbols(tickers, src='yahoo', from = "2003-01-01", env = myEnv)
+index <- do.call(merge, c(eapply(myEnv, Ad), all=FALSE))
+
+#Calculate daily returns for all indices and convert to arithmetic returns
+index.ret <- exp(CalculateReturns(index,method="compound")) - 1
+index.ret[1,] <- 0
+
+#Calculate realized volatility
+realizedvol <- rollapply(index.ret, width = 20, FUN=sd.annualized)
+
+
+# Annualized Stats ----
+
+sp500_returns <- tq_get("SP500", "economic.data")%>%
+  na.locf() %>% 
+  tq_transmute(select = price,
+               mutate_fun = periodReturn,
+               period = "monthly",
+               type = "log") %>% na.locf() %>% 
+  column_to_rownames("date") %>% 
+  rename(Asset = "monthly.returns")
+
+# Calculate the mean, volatility, and Sharpe ratio of sp500_returns
+sd_ann <- StdDev.annualized(sp500_returns)
+
+
+# plotly chart 
+chart.RollingPerformance(R = sp500_returns, width = 6, FUN = "StdDev.annualized",
+                         main = "Rolling 6-Month Standard Deviation", plot.engine = "plotly") 
+
+
+# Changing the FUN, the output can adopt in addition, Returns or Sharpe 
+
+
+
+# VaR ----
+
+library(PerformanceAnalytics)
+library(reshape2)
+library(ggplot2)
+
+
+# VaR & CVaR 95% 
+
+# 95%
+var_95_hist  <- VaR(sp500_returns, p=0.95, method="historical")
+var_95_gauss <- VaR(sp500_returns, p=0.95, method="gaussian")
+var_95_mod   <- VaR(sp500_returns, p=0.95, method="modified")
+cvar_95_hist  <- CVaR(sp500_returns, p=0.95, method="historical")
+cvar_95_gauss <- CVaR(sp500_returns, p=0.95, method="gaussian")
+cvar_95_mod   <- CVaR(sp500_returns, p=0.95, method="modified")
+
+
+# 99%
+var_99_hist  <- VaR(sp500_returns, p=0.99, method="historical")
+var_99_gauss <- VaR(sp500_returns, p=0.99, method="gaussian")
+var_99_mod   <- VaR(sp500_returns, p=0.99, method="modified")
+cvar_99_hist  <- CVaR(sp500_returns, p=0.99, method="historical")
+cvar_99_gauss <- CVaR(sp500_returns, p=0.99, method="gaussian")
+cvar_99_mod   <- CVaR(sp500_returns, p=0.99, method="modified")
+
+
+
+vars_95 <- data.frame(rbind(var_95_hist,
+                            var_95_gauss, 
+                            var_95_mod,
+                            cvar_95_hist,
+                            cvar_95_gauss,
+                            cvar_95_mod
+                             ))
+
+
+rownames(vars_95)<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+vars_95$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+
+var_plot_95 <- melt(vars_95, value.name = "Value_at_Risk") %>% mutate(TailVaR = str_detect(type, "CVaR"),
+                                                                      TailVaR = ifelse(TailVaR == "TRUE",1,0))
+
+
+
+ggplotly(
+ggplot(var_plot_95,aes(x=type, y=Value_at_Risk, fill=TailVaR)) + geom_col()
+)
+
+
+vars_99 <- data.frame(rbind(var_99_hist,
+                            var_99_gauss, 
+                            var_99_mod,
+                            cvar_99_hist,
+                            cvar_99_gauss,
+                            cvar_99_mod
+))
+
+
+rownames(vars_99)<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+vars_99$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+
+var_plot_99 <- melt(vars_99, value.name = "Value_at_Risk") %>% mutate(TailVaR = str_detect(type, "CVaR"))
+
+
+ggplotly(
+  ggplot(var_plot_99,aes(x=type, y=Value_at_Risk, fill=TailVaR)) + geom_col()
+)
+
+
+# . ----
+# ... ----
+# ....... ---- 
+# ........... ---- 
+
+
+
+
+
+
+
+### Andres Garcia ----
+### Market Risk Analisys ---- 
+### MQF - MBA Thesis. ---- 

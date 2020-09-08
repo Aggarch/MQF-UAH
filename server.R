@@ -261,7 +261,7 @@ shinyServer(function(input, output) {
 
     }
     
-   # behavior_data <- behavior_data_1 %>% rbind(behavior_data_2)
+  # behavior_data <- behavior_data_1 %>% rbind(behavior_data_2)
 
   price_return <- behavior_data %>%
     group_by(symbol) %>%
@@ -511,8 +511,238 @@ shinyServer(function(input, output) {
     
   })
   
+ 
   
-  Sys.sleep(3)
+  # Rolling Volatility ----
+  return_m_vol <- eventReactive(input$observe, {
+    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>% 
+        dplyr::rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
+    
+    
+    return_m_vol <- behavior_data %>% na.locf() %>% 
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "monthly",
+                   type = "log")%>% na.locf() %>% 
+      column_to_rownames("date") %>% 
+      dplyr::rename(Asset = "monthly.returns")
+    
+    return_m_vol
+    
+  })
+  
+ 
+  # daily returns for VaR and TailVaR ----
+  return_var <- eventReactive(input$observe, {
+    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>% 
+        dplyr::rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
+    
+    
+    return_var <- behavior_data %>%na.locf() %>% 
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "daily",
+                   type = "log")%>% na.locf() %>% 
+      column_to_rownames("date") %>% 
+      dplyr::rename(Asset = daily.returns) %>% 
+      select(-symbol)
+    
+    return_var
+    
+})
+  
+  
+  var_plot_99 <- eventReactive(input$observe, {
+  
+  
+  
+  var_99_hist  <- VaR(return_var(),  p=0.99, method="historical")
+  var_99_gauss <- VaR(return_var(),  p=0.99, method="gaussian")
+  var_99_mod   <- VaR(return_var(),  p=0.99, method="modified")
+  cvar_99_hist <- CVaR(return_var(), p=0.99, method="historical")
+  cvar_99_gauss<- CVaR(return_var(), p=0.99, method="gaussian")
+  cvar_99_mod  <- CVaR(return_var(), p=0.99, method="modified")
+  
+  vars_99 <- data.frame(rbind(var_99_hist,
+                              var_99_gauss, 
+                              var_99_mod,
+                              cvar_99_hist,
+                              cvar_99_gauss,
+                              cvar_99_mod
+  ))
+  
+  
+  vars_99$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+  
+  var_plot_99 <- melt(vars_99) %>% mutate(TailVaR = str_detect(type, "CVaR"),
+                                          TailVaR = ifelse(TailVaR == "TRUE",1,0)) %>% 
+    dplyr::rename(VaR = value)
+  
+  var_plot_99
+  
+  })
+  
+  
+  
+  var_plot_95 <- eventReactive(input$observe, {
+    
+    
+    
+    var_95_hist  <- VaR(return_var(),  p=0.95, method="historical")
+    var_95_gauss <- VaR(return_var(),  p=0.95, method="gaussian")
+    var_95_mod   <- VaR(return_var(),  p=0.95, method="modified")
+    cvar_95_hist <- CVaR(return_var(), p=0.95, method="historical")
+    cvar_95_gauss<- CVaR(return_var(), p=0.95, method="gaussian")
+    cvar_95_mod  <- CVaR(return_var(), p=0.95, method="modified")
+    
+    vars_95 <- data.frame(rbind(var_95_hist,
+                                var_95_gauss, 
+                                var_95_mod,
+                                cvar_95_hist,
+                                cvar_95_gauss,
+                                cvar_95_mod
+    ))
+    
+    
+    vars_95$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+    
+    var_plot_95 <- melt(vars_95) %>% mutate(TailVaR = str_detect(type, "CVaR"),
+                                            TailVaR = ifelse(TailVaR == "TRUE",1,0)) %>% 
+      dplyr::rename(VaR = value)
+    
+    var_plot_95
+    
+  })
+  
+  
+
+  var_plot_90 <- eventReactive(input$observe, {
+    
+    
+  
+    var_90_hist  <- VaR(return_var(),  p=0.90, method="historical")
+    var_90_gauss <- VaR(return_var(),  p=0.90, method="gaussian")
+    var_90_mod   <- VaR(return_var(),  p=0.90, method="modified")
+    cvar_90_hist <- CVaR(return_var(), p=0.90, method="historical")
+    cvar_90_gauss<- CVaR(return_var(), p=0.90, method="gaussian")
+    cvar_90_mod  <- CVaR(return_var(), p=0.90, method="modified")
+    
+    vars_90 <- data.frame(rbind(var_90_hist,
+                                var_90_gauss, 
+                                var_90_mod,
+                                cvar_90_hist,
+                                cvar_90_gauss,
+                                cvar_90_mod
+    ))
+    
+    
+    vars_90$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+    
+    var_plot_90 <- melt(vars_90) %>% mutate(TailVaR = str_detect(type, "CVaR"),
+                                            TailVaR = ifelse(TailVaR == "TRUE",1,0)) %>% 
+      dplyr::rename(VaR = value)
+    
+    var_plot_90
+    
+  })
+  
+  
+  
+  
+  var_plot_85 <- eventReactive(input$observe, {
+    
+    
+    
+    var_85_hist  <- VaR(return_var(),  p=0.85, method="historical")
+    var_85_gauss <- VaR(return_var(),  p=0.85, method="gaussian")
+    var_85_mod   <- VaR(return_var(),  p=0.85, method="modified")
+    cvar_85_hist <- CVaR(return_var(), p=0.85, method="historical")
+    cvar_85_gauss<- CVaR(return_var(), p=0.85, method="gaussian")
+    cvar_85_mod  <- CVaR(return_var(), p=0.85, method="modified")
+    
+    vars_85 <- data.frame(rbind(var_85_hist,
+                                var_85_gauss, 
+                                var_85_mod,
+                                cvar_85_hist,
+                                cvar_85_gauss,
+                                cvar_85_mod
+    ))
+    
+    
+    vars_85$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+    
+    var_plot_85 <- melt(vars_85) %>% mutate(TailVaR = str_detect(type, "CVaR"),
+                                            TailVaR = ifelse(TailVaR == "TRUE",1,0)) %>% 
+      dplyr::rename(VaR = value)
+    
+    var_plot_85
+    
+  })
+  
+  
+  var_plot_80 <- eventReactive(input$observe, {
+    
+    
+    
+    var_80_hist  <- VaR(return_var(),  p=0.80, method="historical")
+    var_80_gauss <- VaR(return_var(),  p=0.80, method="gaussian")
+    var_80_mod   <- VaR(return_var(),  p=0.80, method="modified")
+    cvar_80_hist <- CVaR(return_var(), p=0.80, method="historical")
+    cvar_80_gauss<- CVaR(return_var(), p=0.80, method="gaussian")
+    cvar_80_mod  <- CVaR(return_var(), p=0.80, method="modified")
+    
+    vars_80 <- data.frame(rbind(var_80_hist,
+                                var_80_gauss, 
+                                var_80_mod,
+                                cvar_80_hist,
+                                cvar_80_gauss,
+                                cvar_80_mod
+    ))
+    
+    
+    vars_80$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+    
+    var_plot_80 <- melt(vars_80) %>% mutate(TailVaR = str_detect(type, "CVaR"),
+                                            TailVaR = ifelse(TailVaR == "TRUE",1,0)) %>% 
+      dplyr::rename(VaR = value)
+    
+    var_plot_80
+    
+  })
+   
+#Sys.sleep(3)
   
   # prediction ----
   
@@ -658,7 +888,7 @@ shinyServer(function(input, output) {
   })
   
   #time_series_change_point
-   time_series_changep <- eventReactive(input$observe_1,{
+  time_series_changep <- eventReactive(input$observe_1,{
      
      b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
                       from = input$daterange_1[1],
@@ -1277,6 +1507,108 @@ shinyServer(function(input, output) {
   
   
 })
+  
+  
+  #rolling volatility 6m
+  output$roll_vol_six <- renderPlotly({
+    
+  
+  # plotly chart 
+  chart.RollingPerformance(R = return_m_vol(), width = 6, FUN = "StdDev.annualized",
+                           main = paste(input$variable, "Monthly Log-Returns"), plot.engine = "plotly") 
+    
+    
+  })
+  
+  
+  #rolling volatility 3m
+  output$roll_vol_three <- renderPlotly({
+    
+    
+    # plotly chart 
+    chart.RollingPerformance(R = return_m_vol(), width = 3, FUN = "StdDev.annualized",
+                             main = paste(input$variable, "Monthly Log-Returns"), plot.engine = "plotly") 
+    
+    
+  })
+  
+  
+  #vars_99
+  output$vars_99 <- renderPlotly({
+    
+  
+  ggplotly(
+    ggplot(var_plot_99(),aes(x=type, y=VaR, fill=TailVaR)) + 
+      geom_col()+
+      theme_minimal()+
+      labs(title = paste("Value at Risk for",input$variable)
+        ))
+  
+    
+  }) 
+  
+  
+  
+  #vars_95
+  output$vars_95 <- renderPlotly({
+    
+    
+    ggplotly(
+      ggplot(var_plot_95(),aes(x=type, y=VaR, fill=TailVaR)) + 
+        geom_col()+
+        theme_minimal()+
+        labs(title = paste("Value at Risk for",input$variable)
+        ))
+    
+    
+  }) 
+    
+  
+  #vars_90
+  output$vars_90 <- renderPlotly({
+    
+    
+    ggplotly(
+      ggplot(var_plot_90(),aes(x=type, y=VaR, fill=TailVaR)) + 
+        geom_col()+
+        theme_minimal()+
+        labs(title = paste("Value at Risk for",input$variable)
+        ))
+    
+    
+  }) 
+  
+  
+  
+  #vars_85
+  output$vars_85 <- renderPlotly({
+    
+    
+    ggplotly(
+      ggplot(var_plot_85(),aes(x=type, y=VaR, fill=TailVaR)) + 
+        geom_col()+
+        theme_minimal()+
+        labs(title = paste("Value at Risk for",input$variable)
+        ))
+    
+    
+  }) 
+  
+  
+  #vars_80
+  output$vars_80 <- renderPlotly({
+    
+    
+    ggplotly(
+      ggplot(var_plot_80(),aes(x=type, y=VaR, fill=TailVaR)) + 
+        geom_col()+
+        theme_minimal()+
+        labs(title = paste("Value at Risk for",input$variable)
+        ))
+    
+    
+  }) 
+  
   
   
   output$density <- renderPlotly({

@@ -41,6 +41,8 @@ library(ROCR)
 library(TTR)
 library(skimr)
 library(devtools)
+library(PerformanceAnalytics)
+
 
 
 # 1.) market_list ####
