@@ -143,6 +143,9 @@ shinyServer(function(input, output) {
 
  
     index_cor_d <- behavior_data %>%
+      rbind(tq_get("USEPUINDXD", get = "economic.data",
+                   from = input$daterange[1],
+                   to   = input$daterange[2])) %>% 
       na.locf() %>% 
       group_by(symbol) %>%
       tq_transmute(select = price,
