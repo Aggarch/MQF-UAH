@@ -242,13 +242,10 @@ ui <- dashboardPage(
                                       
                                       tabBox( side = "left", width = 13,
                                               tabPanel("Behaviour", withSpinner( plotlyOutput("evolution",height = "380px"), color = "#1da1f2" )),         
-                                              tabPanel("Summary", withSpinner( reactableOutput("summary"), color="#1da1f2")),
-                                              tabPanel("Rolling Volatility 6m", withSpinner(plotlyOutput("roll_vol_six",height = "380px"), color = "#1da1f2" )),
-                                              tabPanel("Rolling Volatility 3m", withSpinner(plotlyOutput("roll_vol_three",height = "380px"), color = "#1da1f2" ))         
-                                   
+                                              tabPanel("Summary of Monthly Log-Returns", withSpinner( reactableOutput("summary"), color="#1da1f2"))
+
                                       )),
                              
-                                              
                               
                              tabPanel("Returns", 
                                       
@@ -261,6 +258,13 @@ ui <- dashboardPage(
                                               
                                       )),
                              
+                             tabPanel("Volatility", 
+                                      
+                                      tabBox( side = "left", width = 13,
+                                              tabPanel("Rolling Volatility 6m", withSpinner(plotlyOutput("roll_vol_six",height = "380px"), color = "#1da1f2" )),
+                                              tabPanel("Rolling Volatility 3m", withSpinner(plotlyOutput("roll_vol_three",height = "380px"), color = "#1da1f2" ))         
+                                              
+                                      )),
                              
                              
                              tabPanel("VaR & CVaR", 
@@ -273,14 +277,10 @@ ui <- dashboardPage(
                                               tabPanel("80%", withSpinner( plotlyOutput("vars_80", height = "400px"), color="#1da1f2"))
                                               
                                               
-                                              
-                                              
                                       )),
                           
                              
-                             
-                             
-                             tabPanel("Correlation Matrix", 
+                             tabPanel("Corr Matrix", 
                                       
                                       tabBox( side = "left", width = 13,
                                               tabPanel("Daily", withSpinner(plotOutput("index_cor_d",height = "300px"),color="#1da1f2")),
@@ -289,7 +289,7 @@ ui <- dashboardPage(
                                               
                                       )),
                              
-                             tabPanel("Rolling Correlation", 
+                             tabPanel("Rolling Corr", 
                                       
                                       tabBox( side = "left", width = 13,
                                               tabPanel("Weekly", withSpinner(plotlyOutput("rolling_cor_w",height = "300px"),color="#1da1f2")),
