@@ -2183,18 +2183,18 @@ library(ggplot2)
 # VaR & CVaR 95% 
 
 # 95%
-var_95_hist  <- VaR(sp500_returns, p=0.95, method="historical")
-var_95_gauss <- VaR(sp500_returns, p=0.95, method="gaussian")
-var_95_mod   <- VaR(sp500_returns, p=0.95, method="modified")
+var_95_hist   <- VaR(sp500_returns, p=0.95, method="historical")
+var_95_gauss  <- VaR(sp500_returns, p=0.95, method="gaussian")
+var_95_mod    <- VaR(sp500_returns, p=0.95, method="modified")
 cvar_95_hist  <- CVaR(sp500_returns, p=0.95, method="historical")
 cvar_95_gauss <- CVaR(sp500_returns, p=0.95, method="gaussian")
 cvar_95_mod   <- CVaR(sp500_returns, p=0.95, method="modified")
 
 
 # 99%
-var_99_hist  <- VaR(sp500_returns, p=0.99, method="historical")
-var_99_gauss <- VaR(sp500_returns, p=0.99, method="gaussian")
-var_99_mod   <- VaR(sp500_returns, p=0.99, method="modified")
+var_99_hist   <- VaR(sp500_returns, p=0.99, method="historical")
+var_99_gauss  <- VaR(sp500_returns, p=0.99, method="gaussian")
+var_99_mod    <- VaR(sp500_returns, p=0.99, method="modified")
 cvar_99_hist  <- CVaR(sp500_returns, p=0.99, method="historical")
 cvar_99_gauss <- CVaR(sp500_returns, p=0.99, method="gaussian")
 cvar_99_mod   <- CVaR(sp500_returns, p=0.99, method="modified")
