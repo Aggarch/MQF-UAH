@@ -73,7 +73,7 @@ index_cor_d_p <- behavior_data_price %>%
 index_cor_d_p
 
 
-browseURL("https://www.rdocumentation.org/packages/aTSA/versions/3.1.2/topics/adf.test")
+#browseURL("https://www.rdocumentation.org/packages/aTSA/versions/3.1.2/topics/adf.test")
 
 
 # Stochastic Volatility  --------------------------------------------------

@@ -2103,9 +2103,6 @@ graphjs(g,
         vertex.shape=mynames)
 
 
-browseURL("https://quantdare.com/more-examples-in-financial-visualisation/")
-
-
 
 ### Black & Sholes ####
 
@@ -2151,24 +2148,28 @@ realizedvol <- rollapply(index.ret, width = 20, FUN=sd.annualized)
 
 # Annualized Stats ----
 
-sp500_returns <- tq_get("SP500", "economic.data")%>%
+sp500_returns <- tq_get("SP500", "economic.data", 
+                        from="2019-09-17", to = "2020-09-16") %>%
   na.locf() %>% 
   tq_transmute(select = price,
                mutate_fun = periodReturn,
-               period = "monthly",
+               period = "daily",
                type = "log") %>% na.locf() %>% 
   column_to_rownames("date") %>% 
-  rename(Asset = "monthly.returns")
+  rename(Asset = "daily.returns") 
 
 # Calculate the mean, volatility, and Sharpe ratio of sp500_returns
 sd_ann <- StdDev.annualized(sp500_returns)
 
 
 # plotly chart 
-chart.RollingPerformance(R = sp500_returns, width = 6, FUN = "StdDev.annualized",
+chart.RollingPerformance(R = sp500_returns, width = 2, FUN = "StdDev.annualized",
                          main = "Rolling 6-Month Standard Deviation", plot.engine = "plotly") 
 
 
+# regular chart 
+chart.RollingPerformance(R = sp500_returns, width = 66, FUN = "StdDev.annualized",
+                         main = "Rolling 6-Month Standard Deviation") 
 # Changing the FUN, the output can adopt in addition, Returns or Sharpe 
 
 

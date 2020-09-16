@@ -516,7 +516,41 @@ shinyServer(function(input, output) {
   
  
   
-  # Rolling Volatility ----
+  # Rolling Volatility daily ----
+  return_d_vol <- eventReactive(input$observe, {
+    
+    if(!input$variable %in% market_list$ETFs){ 
+      
+      behavior_data <- tq_get(input$variable, get = "economic.data",
+                              from = input$daterange[1],
+                              to = input$daterange[2]
+      )
+    }else{
+      
+      
+      behavior_data <- tq_get(input$variable, get = "stock.prices",
+                              from = input$daterange[1],
+                              to = input$daterange[2]) %>% 
+        dplyr::rename(price = adjusted) %>% 
+        select(price, symbol, date)
+      
+    }
+    
+    
+    return_d_vol <- behavior_data %>% na.locf() %>% 
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "daily",
+                   type = "log")%>% na.locf() %>% 
+      column_to_rownames("date") %>% 
+      dplyr::rename(Asset = "daily.returns")
+    
+    return_d_vol
+    
+  })
+  
+  # Rolling Volatility daily ----
   return_m_vol <- eventReactive(input$observe, {
     
     if(!input$variable %in% market_list$ETFs){ 
@@ -551,6 +585,11 @@ shinyServer(function(input, output) {
   })
   
  
+
+# VaR ---------------------------------------------------------------------
+
+  
+  
   # daily returns for VaR and TailVaR ----
   return_var <- eventReactive(input$observe, {
     
@@ -1512,13 +1551,13 @@ shinyServer(function(input, output) {
 })
   
   
-  #rolling volatility 6m
-  output$roll_vol_six <- renderPlotly({
+  #rolling volatility 1m
+  output$roll_vol_one <- renderPlotly({
     
   
   # plotly chart 
-  chart.RollingPerformance(R = return_m_vol(), width = 6, FUN = "StdDev.annualized",
-                           main = paste(input$variable, "Monthly Log-Returns"), plot.engine = "plotly") 
+  chart.RollingPerformance(R = return_d_vol(), width = 22, FUN = "StdDev.annualized",
+                           main = paste(input$variable, "Daily Log-Returns"), plot.engine = "plotly") 
     
     
   })
@@ -1529,7 +1568,59 @@ shinyServer(function(input, output) {
     
     
     # plotly chart 
+    chart.RollingPerformance(R = return_d_vol(), width = 66, FUN = "StdDev.annualized",
+                             main = paste(input$variable, "Daily Log-Returns"), plot.engine = "plotly") 
+    
+    
+  })
+  
+  #rolling volatility 6m
+  output$roll_vol_six <- renderPlotly({
+    
+    
+    # plotly chart 
+    chart.RollingPerformance(R = return_d_vol(), width = 132, FUN = "StdDev.annualized",
+                             main = paste(input$variable, "Daily Log-Returns"), plot.engine = "plotly") 
+    
+    
+  })
+  
+  
+
+# vols --------------------------------------------------------------------
+
+  
+  
+  
+  #rollingm volatility 1m
+  output$rollm_vol_one <- renderPlotly({
+    
+    
+    # plotly chart 
+    chart.RollingPerformance(R = return_m_vol(), width = 2, FUN = "StdDev.annualized",
+                             main = paste(input$variable, "Monthly Log-Returns"), plot.engine = "plotly") 
+    
+    
+  })
+  
+  
+  #rollingm volatility 3m
+  output$rollm_vol_three <- renderPlotly({
+    
+    
+    # plotly chart 
     chart.RollingPerformance(R = return_m_vol(), width = 3, FUN = "StdDev.annualized",
+                             main = paste(input$variable, "Monthly Log-Returns"), plot.engine = "plotly") 
+    
+    
+  })
+  
+  #rollingm volatility 6m
+  output$rollm_vol_six <- renderPlotly({
+    
+    
+    # plotly chart 
+    chart.RollingPerformance(R = return_m_vol(), width = 6, FUN = "StdDev.annualized",
                              main = paste(input$variable, "Monthly Log-Returns"), plot.engine = "plotly") 
     
     

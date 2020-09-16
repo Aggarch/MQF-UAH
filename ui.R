@@ -258,11 +258,18 @@ ui <- dashboardPage(
                                               
                                       )),
                              
-                             tabPanel("Volatility", 
+                             tabPanel("Rolling Volatility", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("Rolling Volatility 6m", withSpinner(plotlyOutput("roll_vol_six",height = "380px"), color = "#1da1f2" )),
-                                              tabPanel("Rolling Volatility 3m", withSpinner(plotlyOutput("roll_vol_three",height = "380px"), color = "#1da1f2" ))         
+                                              tabPanel("DoD% 1m W", withSpinner(plotlyOutput("roll_vol_one",height = "380px"), color = "#1da1f2" )),         
+                                              tabPanel("DoD% 3m W", withSpinner(plotlyOutput("roll_vol_three",height = "380px"), color = "#1da1f2" )),
+                                              tabPanel("DoD% 6m W", withSpinner(plotlyOutput("roll_vol_six",height = "380px"), color = "#1da1f2" )),
+                                              
+                                              tabPanel("MoM% 1m W", withSpinner(plotlyOutput("rollm_vol_one",height = "380px"), color = "#1da1f2" )),         
+                                              tabPanel("MoM% 3m W", withSpinner(plotlyOutput("rollm_vol_three",height = "380px"), color = "#1da1f2" )),
+                                              tabPanel("MoM% 6m W", withSpinner(plotlyOutput("rollm_vol_six",height = "380px"), color = "#1da1f2" ))
+                                              
+                                              
                                               
                                       )),
                              
