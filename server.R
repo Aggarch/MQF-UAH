@@ -2175,6 +2175,9 @@ shinyServer(function(input, output) {
       dplyr::rename(Date = ds, Price = y) %>%
       select(Date, Price, everything()) %>% 
       
+       
+    
+    
       
       datatable(rownames = F,style ='bootstrap4',
                 extensions = c('Buttons','Scroller'),
@@ -2323,14 +2326,47 @@ shinyServer(function(input, output) {
   
   
   # NNET posible futures 
-  output$ts_nnet_pred_tbl <- renderReactable({
-    
-    pred_show() %>% reactable(compact = T, 
-                              resizable = T)
-    
-    
-  })
-  
+  # output$ts_nnet_pred_tbl <- renderReactable({
+  #   
+  #   pred_show() %>% select(-MOMENTUM, -INDEX) %>%  reactable(compact = T, 
+  #                             resizable = T)
+  #   
+  #   
+  # })
+   
+  output$ts_nnet_pred_tbl <- renderDataTable({ 
+     
+     
+     options(DT.options = list(dom = 'bfrtip',
+                               ordering = F,
+                               initComplete = JS("function(settings, json) {",
+                                                 "$(this.api().table().header()).css({
+                                              'font-size': '15px',
+                                              'color': '#3b444b',
+                                              'text-align':'center',
+                                              'padding-left': '20px',
+                                              'padding-right': '20px',
+                                              'width': '100%'});",
+                                                 "}")))
+     
+     pred_show() %>% select(-MOMENTUM, -INDEX) %>%
+     datatable(rownames = F,style ='bootstrap4',
+               extensions = c('Buttons','Scroller'),
+               options = list(
+                  dom = 'tip',
+                  pageLength = 8,
+                  info = FALSE,
+                  scrollY = 350,
+                  autoWidth = TRUE,
+                  position = 'bottom'
+                  # columnDefs = list(list(width = '200px', targets = c(2, 3)))
+               )
+     )
+     
+     
+     
+     
+     })
   
   
   # -------
