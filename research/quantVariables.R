@@ -1,7 +1,4 @@
-#### QuanTradeR AG : Master in Quantitative Finance UAH ####
-
-# This script, contains all methods applied in the web-app & other useful resources. 
-# Can be understood as the research script where the idea was studied and explored
+#### Quant  AG : Master in Quantitative Finance ####
 
 # ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: ----
 
@@ -15,6 +12,7 @@
 # browseVignettes(package = "tidyquant")
 # browseVignettes(package = "timetk")
 
+
 # Libraries activate the packs, please do install.packages() before continue.
 
 library(tidyverse)
@@ -26,9 +24,9 @@ library(plotly)
 
 # Thesis: Data treatment philosophy:
 # 1.)   Tidy - Data: ####
-# Reference to the macroeconomic data and treasury rates in a tidy format: 
+# makes reference to the macroeconomic data and treasury rates in a tidy format: 
 # Data tidyng phiosophy: Each Column represents a variable, each row show the values.
-browseURL("https://vita.had.co.nz/papers/tidy-data.pdf")
+#browseURL("https://vita.had.co.nz/papers/tidy-data.pdf")
 
 # Displpay some tidyquant options :::
 
@@ -99,7 +97,7 @@ Non_Farm_Payrolls <- tq_get("PAYEMS", get = "economic.data", from = "2010-01-01"
 
 # Unemployment Rate
 Unemployment_Rate <- tq_get("UNRATE", get = "economic.data", from = "2010-01-01")
-      
+
 # US Treasury 10 Years
 Treasury_10y <- tq_get("DGS10", get = "economic.data", from = "2010-01-01")
 
@@ -582,24 +580,24 @@ EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
 EPU_alt <- EPU_index %>%  select(-symbol) %>% 
   mutate(delta = (EPU_index$price)/lag(EPU_index$price)-1)%>% 
   mutate(delta_trigger = ifelse(delta >= 0.10 |
-         EPU_index$price >= mean(EPU_index$price + 
-                  sd(EPU_index$price)*2.3),1L, 0L)) %>% 
+                                  EPU_index$price >= mean(EPU_index$price + 
+                                                            sd(EPU_index$price)*2.3),1L, 0L)) %>% 
   slice(-1) %>% 
   arrange(desc(date)) %>% 
   rename(index = price, Risk = delta_trigger) %>% 
   mutate(Risk = ifelse(Risk == 1, "OFF", "ON"))
-  
+
 
 # Summary of Risk ON|OFF, current year. 
 EPU_abst <-   EPU_alt %>% filter(year(date) >= year(today())) %>% 
   group_by(Risk) %>% summarise(n = n(), .groups = "drop_last") %>% 
   rename( Days = n) %>% 
   mutate("%" = scales::percent( Days/sum(Days))
-         )
+  )
 
 
 # FED rate Expectations #####
-browseURL("https://www.economics-finance.org/jefe/fin/KeaslerGoffpaper.pdf")
+#browseURL("https://www.economics-finance.org/jefe/fin/KeaslerGoffpaper.pdf")
 #browseURL("https://www.cmegroup.com/trading/interest-rates/stir/30-day-federal-fund_quotes_settlements_futures.html")
 #browseURL("https://www.danielstrading.com/education/markets/interest-rates-financials/30-day-federal-funds")
 
@@ -628,7 +626,7 @@ fff  <- tq_get("ZQ=F",    "stock.prices" , from=today()-2000) # Fed Funds Future
 # FedFunds Interest Rates jointed panorama: 
 
 FED_Interest_Rate <- 
-fftu %>% rename("FedFunds Target Upper" = price) %>% 
+  fftu %>% rename("FedFunds Target Upper" = price) %>% 
   select(-symbol) %>% left_join(fftl, by = "date") %>% 
   rename("FedFunds Target Lower" = price) %>% 
   select(-symbol) %>% 
@@ -644,17 +642,17 @@ fftu %>% rename("FedFunds Target Upper" = price) %>%
 
 
 interest_rate_current <- tibble(
-Date  = fff %>% select(date) %>% filter(date == max(date)) %>% pull(), 
-FFF   = fff %>% filter(date == max(date)) %>% pull(adjusted),       # current price for Month fed funds futures.
-target_up = fftu %>% filter(date == max(date)) %>% pull(price),     # Upper Target
-target_low = fftl %>% filter(date == max(date)) %>% pull(price),    # Lower Target
-EFFR   = effr %>% filter(date == max(date)) %>% pull(price),        # current Effective FedFunds
-market_expectation = (100-FFF), # fed funds futures rate implied
-# Market participants expect that the average fed funds rate for current month will be +0.07%
-fed_action = market_expectation-EFFR # The difference between current expectations and current prices.
-#                It's important to keep in mind that the difference must be equal or above +- 0.25 bp (basic points)
-#                fed_action result it's the probable move o Fed eather positive r negative
-
+  Date  = fff %>% select(date) %>% filter(date == max(date)) %>% pull(), 
+  FFF   = fff %>% filter(date == max(date)) %>% pull(adjusted),       # current price for Month fed funds futures.
+  target_up = fftu %>% filter(date == max(date)) %>% pull(price),     # Upper Target
+  target_low = fftl %>% filter(date == max(date)) %>% pull(price),    # Lower Target
+  EFFR   = effr %>% filter(date == max(date)) %>% pull(price),        # current Effective FedFunds
+  market_expectation = (100-FFF), # fed funds futures rate implied
+  # Market participants expect that the average fed funds rate for current month will be +0.07%
+  fed_action = market_expectation-EFFR # The difference between current expectations and current prices.
+  #                It's important to keep in mind that the difference must be equal or above +- 0.25 bp (basic points)
+  #                fed_action result it's the probable move o Fed eather positive r negative
+  
 ) %>%
   mutate(target_range = str_flatten(c(target_low, target_up), collapse = " - "),
          strengh = ifelse(fed_action >= 0.25 | fed_action <= -0.25, "High", "Low"),
@@ -663,9 +661,9 @@ fed_action = market_expectation-EFFR # The difference between current expectatio
          {direction = "Rate High"}
          else if(fed_action < -0.25 & strengh == "High")
          {direction = "Rate Cut"} else{direction = "Constant"},
-         ) %>% 
-         select(Date, target_range, FFF, EFFR, market_expectation, 
-                fed_action, strengh,scenario, direction) 
+  ) %>% 
+  select(Date, target_range, FFF, EFFR, market_expectation, 
+         fed_action, strengh,scenario, direction) 
 
 
 
@@ -691,20 +689,20 @@ interest_rate_all <-
 # Interest Rates graph
 
 ggplotly (
-interest_rate_all %>% ggplot(aes(date, EFFR))+
-  geom_col(color = "#b1d6f0", fill = "blue")+
-  geom_smooth(data = interest_rate_all, 
-              aes(x = date, y = market_expectation),
-              color = "#e03db7",
-              size = 1)+
- geom_smooth(data = EPU_alt,
-        aes(x=date, index/250),
-        color = "red")+
-  theme_classic()+
-  labs(title = "Effective Fed Funds Rate vs EPU",
-       x_axis = "Date")
+  interest_rate_all %>% ggplot(aes(date, EFFR))+
+    geom_col(color = "#b1d6f0", fill = "blue")+
+    geom_smooth(data = interest_rate_all, 
+                aes(x = date, y = market_expectation),
+                color = "#e03db7",
+                size = 1)+
+    geom_smooth(data = EPU_alt,
+                aes(x=date, index/250),
+                color = "red")+
+    theme_classic()+
+    labs(title = "Effective Fed Funds Rate vs EPU",
+         x_axis = "Date")
 )
-  
+
 
 # Asset Selected with TTR:: stats {SMA EMA DEMA ALMA } = Technical Indicators.
 asset <- tq_get("SP500", get = "economic.data") 
@@ -715,14 +713,14 @@ asset <- asset %>%
   select(-symbol) %>% 
   mutate(sma = SMA(asset, 3),
          ema = EMA(asset, 3),
-        dema = DEMA(asset, 3),
-        roc  = ROC(asset),
-        momentum = momentum(asset),
-        rsi = RSI(asset, 5),
-        strong_rsi = ifelse(rsi > 80, 1, 0),
-        weak_rsi   = ifelse(rsi < 20, 1, 0))
-  
-  
+         dema = DEMA(asset, 3),
+         roc  = ROC(asset),
+         momentum = momentum(asset),
+         rsi = RSI(asset, 5),
+         strong_rsi = ifelse(rsi > 80, 1, 0),
+         weak_rsi   = ifelse(rsi < 20, 1, 0))
+
+
 data <-EPU_alt %>% 
   mutate(Risk = ifelse(Risk == "ON", 1, 0),
          delta= index/lag(index)-1) %>% 
@@ -2076,61 +2074,7 @@ h2o.varimp_plot(xgb)
 xgb@parameters
 
 
-# Black Sholes  -----------------------------------------------------------
 
-
-BlackScholes <- function(S, K, r, T, sig, type){
- 
- if(type=="C"){
-  d1 <- (log(S/K) + (r + sig^2/2)*T) / (sig*sqrt(T))
-  d2 <- d1 - sig*sqrt(T)
-  
-  value <- S*pnorm(d1) - K*exp(-r*T)*pnorm(d2)
-  return(value)}
- 
- if(type=="P"){
-  d1 <- (log(S/K) + (r + sig^2/2)*T) / (sig*sqrt(T))
-  d2 <- d1 - sig*sqrt(T)
-  
-  value <-  (K*exp(-r*T)*pnorm(-d2) - S*pnorm(-d1))
-  return(value)}
-}
-
-call <- BlackScholes(110,100,0.04,1,0.2,"C")
-
-# Garch  ------------------------------------------------------------------
-
-
-
-data(EuStockMarkets)
-
-dax <- diff(log(EuStockMarkets))[,"DAX"]
-dax.garch <- garch(dax)  # Fit a GARCH(1,1) to DAX returns
-summary(dax.garch)       # ARCH effects are filtered. However, 
-plot(dax.garch)          # conditional normality seems to be violated
-
-
-sp <- tq_get("SP500", "economic.data") %>% tq_transmute(select = price,
-                                                        mutate_fun = periodReturn,
-                                                        perio = "daily",
-                                                        type = "log") %>% 
-  select(-date) %>% pull()
-
-sp_garch <- garch(sp)
-
-summ <- summary(sp_garch)       # ARCH effects are filtered. However, 
-
-plot(sp_garch)
-
-# . ----
-# ... ----
-# ....... ---- 
-# ........... ---- 
-
-
-### Andres Garcia ----
-### Market Risk Analisys ---- 
-### MQF - MBA Thesis. ---- 
 
 fth  <- read.csv("fth.csv") 
 rfth <- fth %>% filter(STATUS %in% c("Approved","Completed","Processing"))
@@ -2140,6 +2084,7 @@ w<-  perfomance %>% slice(2) %>% pull(Amount)
 pl <- w-d
 trm <- 3250
 ppl<-pl*trm
+
 
 # 3D Graphs
 
@@ -2157,5 +2102,242 @@ graphjs(g,
         vertex.size=0.2,
         vertex.shape=mynames)
 
-browseURL("https://quantdare.com/more-examples-in-financial-visualisation/")
- 
+
+
+### Black & Sholes ####
+
+BlackScholes <- function(S, K, r, T, sig, type){
+  
+  if(type=="C"){
+    d1 <- (log(S/K) + (r + sig^2/2)*T) / (sig*sqrt(T))
+    d2 <- d1 - sig*sqrt(T)
+    
+    value <- S*pnorm(d1) - K*exp(-r*T)*pnorm(d2)
+    return(value)}
+  
+  if(type=="P"){
+    d1 <- (log(S/K) + (r + sig^2/2)*T) / (sig*sqrt(T))
+    d2 <- d1 - sig*sqrt(T)
+    
+    value <-  (K*exp(-r*T)*pnorm(-d2) - S*pnorm(-d1))
+    return(value)}
+}
+
+
+call <- BlackScholes(110,100,0.04,1,0.2,"C")
+put  <- BlackScholes(110,100,0.04,1,0.2,"P")
+
+
+
+# volatility ####
+library(quantmod)
+library(PerformanceAnalytics)
+
+tickers = c("^RUT","^STOXX50E","^HSI", "^N225", "^KS11")
+myEnv <- new.env()
+getSymbols(tickers, src='yahoo', from = "2003-01-01", env = myEnv)
+index <- do.call(merge, c(eapply(myEnv, Ad), all=FALSE))
+
+#Calculate daily returns for all indices and convert to arithmetic returns
+index.ret <- exp(CalculateReturns(index,method="compound")) - 1
+index.ret[1,] <- 0
+
+#Calculate realized volatility
+realizedvol <- rollapply(index.ret, width = 20, FUN=sd.annualized)
+
+
+# Annualized Stats ----
+
+sp500_returns <- tq_get("SP500", "economic.data", 
+                        from="2019-09-17", to = "2020-09-16") %>%
+  na.locf() %>% 
+  tq_transmute(select = price,
+               mutate_fun = periodReturn,
+               period = "daily",
+               type = "log") %>% na.locf() %>% 
+  column_to_rownames("date") %>% 
+  rename(Asset = "daily.returns") 
+
+# Calculate the mean, volatility, and Sharpe ratio of sp500_returns
+sd_ann <- StdDev.annualized(sp500_returns)
+
+
+# plotly chart 
+chart.RollingPerformance(R = sp500_returns, width = 2, FUN = "StdDev.annualized",
+                         main = "Rolling 6-Month Standard Deviation", plot.engine = "plotly") 
+
+
+# regular chart 
+chart.RollingPerformance(R = sp500_returns, width = 66, FUN = "StdDev.annualized",
+                         main = "Rolling 6-Month Standard Deviation") 
+# Changing the FUN, the output can adopt in addition, Returns or Sharpe 
+
+
+
+# VaR ----
+
+library(PerformanceAnalytics)
+library(reshape2)
+library(ggplot2)
+
+
+# VaR & CVaR 95% 
+
+# 95%
+var_95_hist   <- VaR(sp500_returns, p=0.95, method="historical")
+var_95_gauss  <- VaR(sp500_returns, p=0.95, method="gaussian")
+var_95_mod    <- VaR(sp500_returns, p=0.95, method="modified")
+cvar_95_hist  <- CVaR(sp500_returns, p=0.95, method="historical")
+cvar_95_gauss <- CVaR(sp500_returns, p=0.95, method="gaussian")
+cvar_95_mod   <- CVaR(sp500_returns, p=0.95, method="modified")
+
+
+# 99%
+var_99_hist   <- VaR(sp500_returns, p=0.99, method="historical")
+var_99_gauss  <- VaR(sp500_returns, p=0.99, method="gaussian")
+var_99_mod    <- VaR(sp500_returns, p=0.99, method="modified")
+cvar_99_hist  <- CVaR(sp500_returns, p=0.99, method="historical")
+cvar_99_gauss <- CVaR(sp500_returns, p=0.99, method="gaussian")
+cvar_99_mod   <- CVaR(sp500_returns, p=0.99, method="modified")
+
+
+
+vars_95 <- data.frame(rbind(var_95_hist,
+                            var_95_gauss, 
+                            var_95_mod,
+                            cvar_95_hist,
+                            cvar_95_gauss,
+                            cvar_95_mod
+))
+
+
+rownames(vars_95)<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+vars_95$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+
+var_plot_95 <- melt(vars_95, value.name = "Value_at_Risk") %>% mutate(TailVaR = str_detect(type, "CVaR"),
+                                                                      TailVaR = ifelse(TailVaR == "TRUE",1,0))
+
+
+
+ggplotly(
+  ggplot(var_plot_95,aes(x=type, y=Value_at_Risk, fill=TailVaR)) + geom_col()
+)
+
+
+vars_99 <- data.frame(rbind(var_99_hist,
+                            var_99_gauss, 
+                            var_99_mod,
+                            cvar_99_hist,
+                            cvar_99_gauss,
+                            cvar_99_mod
+))
+
+
+rownames(vars_99)<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+vars_99$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+
+var_plot_99 <- melt(vars_99, value.name = "Value_at_Risk") %>% mutate(TailVaR = str_detect(type, "CVaR"))
+
+
+ggplotly(
+  ggplot(var_plot_99,aes(x=type, y=Value_at_Risk, fill=TailVaR)) + geom_col()
+)
+
+
+
+#  GARCH Standard  --------------------------------------------------------
+
+# https://rpubs.com/yevonnael/garch-models-demo
+
+
+stall.packages("spd")
+#install.packages("rugarch")
+
+library(rugarch)
+
+
+sp500_returns <- tq_get("SP500", "economic.data", 
+                        from="2015-09-17", to = "2020-09-16") %>%
+  na.locf() %>% 
+  tq_transmute(select = price,
+               mutate_fun = periodReturn,
+               period = "daily",
+               type = "log") %>% na.locf() %>% 
+  column_to_rownames("date") %>% 
+  rename(Asset = "daily.returns") 
+
+
+
+
+# Specify a standard GARCH model with constant mean
+garchspec <- ugarchspec(mean.model = list(armaOrder = c(0,0)),
+                        variance.model = list(model = "sGARCH"), 
+                        distribution.model = "norm")
+
+# Estimate the model
+garchfit <- ugarchfit(data = sp500_returns, spec = garchspec)
+
+# Use the method sigma to retrieve the estimated volatilities 
+garchvol <- sigma(garchfit)
+
+
+# ggplot garchvol model estimated 
+ggplotly( 
+  garchvol %>% as.data.frame() %>%
+    rownames_to_column(var = "Date") %>% 
+    rename(volatility = V1) %>% 
+    as_tibble() %>% 
+    mutate(Date = as.Date(Date)) %>% 
+    ggplot(aes(x=Date, y=volatility))+
+    theme_minimal()+
+    geom_point(size = 1, color = "orange")+
+    geom_line(size = .3, color = "gray")+
+    labs(x = "Date", y = "GARCH(1,1)   Volatility",
+         title = "SP500")
+  #       title = paste0(input$variable))+
+)
+
+
+
+# garch forecast ----------------------------------------------------------
+
+garchfit <- ugarchfit(data = sp500_returns, spec = garchspec)
+
+garchforecast <- ugarchforecast(fitORspec = garchfit, 
+                                n.ahead = 66)
+
+garch_forecast <- sigma(garchforecast) %>% as.data.frame() %>% 
+  rownames_to_column()
+
+colnames(garch_forecast) <- c("Periodo", "volatility")
+
+
+# ggplot garchvol forecated volatility
+
+ggplotly( 
+  garch_forecast %>% as_tibble() %>% 
+    separate(col = Periodo, into = c("T", "moment"), sep = "\\+") %>% select(-T) %>% 
+    mutate(moment = as.numeric(moment)) %>% 
+    ggplot(aes(x=moment, y = volatility)) +
+    geom_point(size = .5, color = "orange")+
+    geom_line(size = .3, color = "gray")+
+    theme_classic()
+)
+
+
+
+
+# . ----
+# ... ----
+# ....... ---- 
+# ........... ---- 
+
+
+
+
+
+
+
+### Andres Garcia ----
+### Market Risk Analisys ---- 
+### MQF - MBA Thesis. ---- 
