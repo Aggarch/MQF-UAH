@@ -108,6 +108,7 @@ garchspec <- ugarchspec(mean.model = list(armaOrder = c(0,0)),
 # Notes : add , summary(data_pred_show$ASSET), to describe module
 
 
+
 # downloable forecast 
 source("funciones/boton_descarga.R")
 
