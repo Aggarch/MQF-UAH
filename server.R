@@ -146,8 +146,15 @@ shinyServer(function(input, output) {
       rbind(tq_get("USEPUINDXD", get = "economic.data",
                    from = input$daterange[1],
                    to   = input$daterange[2])) %>% 
-      na.locf() %>% 
       group_by(symbol) %>%
+      na.locf() %>% 
+      mutate(symbol = ifelse(symbol == "USEPUINDXD", "EPU", symbol),
+             symbol = ifelse(symbol == "GOLDAMGBD228NLBM","Gold", symbol),
+             symbol = ifelse(symbol == "DCOILWTICO", "WTI", symbol),
+             symbol = ifelse(symbol == "NASDAQCOM","NDAQ", symbol),
+             symbol = ifelse(symbol == "NIKKEI225", "NIKKEI",symbol),
+             symbol = ifelse(symbol == "VIXCLS","VIX", symbol),
+             symbol = ifelse(symbol == "DTWEXAFEGS", "DXY", symbol)) %>% 
       tq_transmute(select = price,
                    mutate_fun = periodReturn,
                    period = "daily",
@@ -185,8 +192,18 @@ shinyServer(function(input, output) {
     
     
     index_cor_m <- behavior_data %>%
-      na.locf() %>% 
+      rbind(tq_get("USEPUINDXD", get = "economic.data",
+                   from = input$daterange[1],
+                   to   = input$daterange[2])) %>% 
       group_by(symbol) %>%
+      na.locf() %>% 
+      mutate(symbol = ifelse(symbol == "USEPUINDXD", "EPU", symbol),
+             symbol = ifelse(symbol == "GOLDAMGBD228NLBM","Gold", symbol),
+             symbol = ifelse(symbol == "DCOILWTICO", "WTI", symbol),
+             symbol = ifelse(symbol == "NASDAQCOM","NDAQ", symbol),
+             symbol = ifelse(symbol == "NIKKEI225", "NIKKEI",symbol),
+             symbol = ifelse(symbol == "VIXCLS","VIX", symbol),
+             symbol = ifelse(symbol == "DTWEXAFEGS", "DXY", symbol)) %>% 
       tq_transmute(select = price,
                    mutate_fun = periodReturn,
                    period = "monthly",
@@ -201,7 +218,7 @@ shinyServer(function(input, output) {
     
   })
   
-  index_cor_y <- eventReactive(input$observe, {
+  index_cor_w <- eventReactive(input$observe, {
     
     
     if(!input$variable %in% market_list$ETFs){ 
@@ -222,19 +239,30 @@ shinyServer(function(input, output) {
     }
     
     
-    index_cor_y <- behavior_data %>%
+    index_cor_w <- behavior_data %>%
+      rbind(tq_get("USEPUINDXD", get = "economic.data",
+                   from = input$daterange[1],
+                   to   = input$daterange[2])) %>% 
+      group_by(symbol) %>%
       na.locf() %>% 
+      mutate(symbol = ifelse(symbol == "USEPUINDXD", "EPU", symbol),
+             symbol = ifelse(symbol == "GOLDAMGBD228NLBM","Gold", symbol),
+             symbol = ifelse(symbol == "DCOILWTICO", "WTI", symbol),
+             symbol = ifelse(symbol == "NASDAQCOM","NDAQ", symbol),
+             symbol = ifelse(symbol == "NIKKEI225", "NIKKEI",symbol),
+             symbol = ifelse(symbol == "VIXCLS","VIX", symbol),
+             symbol = ifelse(symbol == "DTWEXAFEGS", "DXY", symbol)) %>% 
       group_by(symbol) %>%
       tq_transmute(select = price,
                    mutate_fun = periodReturn,
-                   period = "yearly",
+                   period = "weekly",
                    type   = "log") %>% 
-      pivot_wider(names_from = symbol, values_from = yearly.returns) %>%
+      pivot_wider(names_from = symbol, values_from = weekly.returns) %>%
       select(-date) %>% 
       na.locf() %>% 
       cor()
     
-    index_cor_y
+    index_cor_w
     
     
   })
@@ -1755,6 +1783,7 @@ shinyServer(function(input, output) {
     
     corrplot(index_cor_d(),
              method = "color",
+             type = "upper",
              col = col(200),
              addCoef.col = "black",
              tl.col = "darkblue",
@@ -1769,6 +1798,7 @@ shinyServer(function(input, output) {
     
     corrplot(index_cor_m(),
              method = "color",
+             type = "upper",
              col = col(200),
              addCoef.col = "black",
              tl.col = "darkblue",
@@ -1776,16 +1806,17 @@ shinyServer(function(input, output) {
   })
   
   #corrmatrix YoY
-  output$index_cor_y   <- renderPlot({
+  output$index_cor_w   <- renderPlot({
     
     col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
     
-    corrplot(index_cor_y(),
+    corrplot(index_cor_w(),
              method = "color",
+             type = "upper",
              col = col(200),
              addCoef.col = "black",
-             tl.col = "darkblue",
-             order = "hclust")
+             tl.col = "darkblue"
+            )
   })
   
   #rollingcorr
@@ -1797,9 +1828,9 @@ shinyServer(function(input, output) {
       rolling_cor_w() %>%
         filter(symbol != "DXY") %>% 
         ggplot(aes(x = date, y = rolling.corr, color = symbol)) +
-        geom_hline(yintercept =  0, color = palette_light()[[8]]) +
-        geom_point(size = 1.5)+
-        geom_line(size  = 1) +
+        geom_hline(yintercept =  0,size = .2, color = palette_light()[[8]]) +
+        geom_point(size = .5)+
+        geom_line(size  = .3) +
         labs(title = "DXY CUR Baseline ",br(),
              x = "", y = "Dynamic Correlation", color = "") +
         facet_wrap(~ symbol, ncol = 2) +
@@ -1822,9 +1853,9 @@ shinyServer(function(input, output) {
       rolling_cor_m() %>%
         filter(symbol != "DXY") %>% 
         ggplot(aes(x = date, y = rolling.corr, color = symbol)) +
-        geom_hline(yintercept =  0, color = palette_light()[[8]]) +
-        geom_point(size = 1.5)+
-        geom_line(size  = 1) +
+        geom_hline(yintercept =  0, size = .2, color = palette_light()[[8]]) +
+        geom_point(size = .5)+
+        geom_line(size  = .3) +
         labs(title = "DXY CUR Baseline ",br(),
              x = "", y = "Dynamic Correlation", color = "") +
         facet_wrap(~ symbol, ncol = 2) +

@@ -290,17 +290,17 @@ ui <- dashboardPage(
                              tabPanel("Corr Matrix", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("Daily", withSpinner(plotOutput("index_cor_d",height = "300px"),color="#1da1f2")),
-                                              tabPanel("Monthly", withSpinner(plotOutput("index_cor_m",height = "300px"),color="#1da1f2")),
-                                              tabPanel("Yearly", withSpinner(plotOutput("index_cor_y",height = "300px"),color="#1da1f2"))
+                                              tabPanel("Daily", withSpinner(plotOutput("index_cor_d",height = "400px"),color="#1da1f2")),
+                                           #  tabPanel("Weekly", withSpinner(plotOutput("index_cor_w",height = "400px"),color="#1da1f2")),
+                                              tabPanel("Monthly", withSpinner(plotOutput("index_cor_m",height = "400px"),color="#1da1f2"))
                                               
                                       )),
                              
                              tabPanel("Rolling Corr", 
                                       
                                       tabBox( side = "left", width = 13,
-                                              tabPanel("Weekly", withSpinner(plotlyOutput("rolling_cor_w",height = "300px"),color="#1da1f2")),
-                                              tabPanel("Monthly", withSpinner(plotlyOutput("rolling_cor_m",height = "300px"),color="#1da1f2"))
+                                              tabPanel("Weekly", withSpinner(plotlyOutput("rolling_cor_w",height = "450px"),color="#1da1f2")),
+                                              tabPanel("Monthly", withSpinner(plotlyOutput("rolling_cor_m",height = "450px"),color="#1da1f2"))
 
                                               
                                       ))

@@ -49,8 +49,7 @@ library(PerformanceAnalytics)
 # 1.) market_list ####
 
 market_list <- list(    
-  Macroeconomics = c("Global GDP"                   = "NYGDPPCAPKDWLD",
-                     "Economic Policy Risk"         = "USEPUINDXD",
+  Macroeconomics = c("Economic Policy Risk"         = "USEPUINDXD",
                      "Global Economic Uncertainty"  = "GEPUPPP",
                      "Trade Policy Risk"            = "CHNMAINLANDTPU",
                      "Houses Month supply"          = "MSACSR",
