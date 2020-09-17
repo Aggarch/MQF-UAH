@@ -363,7 +363,7 @@ ui <- dashboardPage(
                          wellPanel(
                            tabsetPanel(
                              
-                             tabPanel("Time Series Concept", br(),br(),br(),
+                             tabPanel("tS Concept", br(),br(),br(),
                                       tags$img(src= "comps.jpg",
                                                style = "padding-left:7px;width:600px;height:200px;display:block;margin:auto")),
                              
@@ -372,7 +372,7 @@ ui <- dashboardPage(
                              # tabPanel("Asset TS", withSpinner(plotlyOutput("fcast",height = "600px"),
                              #                                  color="#1da1f2")),
                              
-                             tabPanel("Asset TS", 
+                             tabPanel("Asset tS", 
                                       
                                       tabBox( side = "left", width = 13,
                                               tabPanel("Forecast", withSpinner( plotlyOutput("fcast",height = "380px"), color = "#1da1f2")),         
@@ -382,10 +382,15 @@ ui <- dashboardPage(
                                       )),
                              
                              
-                             tabPanel("TS Returns", withSpinner(plotlyOutput("tsr",height = "380px"), color="#1da1f2")),
-                             tabPanel("Trend Decomposition", withSpinner(plotOutput("trend",height = "380px"), color="#1da1f2")),
-                             tabPanel("TS Daypoints", withSpinner(dataTableOutput("changep",height = "380px"),color="#1da1f2"),
-                                      boton_descarga("down", "Forecast"))
+                           # tabPanel("TS Returns", withSpinner(plotlyOutput("tsr",height = "380px"), color="#1da1f2")),
+                             tabPanel("Trend Decomp", withSpinner(plotOutput("trend",height = "380px"), color="#1da1f2")),
+                             tabPanel("Daypoints", withSpinner(dataTableOutput("changep",height = "380px"),color="#1da1f2"),
+                                      boton_descarga("down", "Forecast")),
+                             tabPanel("GARCH Vol", withSpinner(plotlyOutput("garch_mod",height = "380px"), color="#1da1f2")),
+                             tabPanel("GARCH Forecast", withSpinner(plotlyOutput("vol_forecast",height = "380px"), color="#1da1f2"))
+                           
+                           
+                            
                              
                              
                              

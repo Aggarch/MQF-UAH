@@ -2244,6 +2244,89 @@ ggplotly(
 )
 
 
+
+#  GARCH Standard  --------------------------------------------------------
+
+# https://rpubs.com/yevonnael/garch-models-demo
+
+
+stall.packages("spd")
+#install.packages("rugarch")
+
+library(rugarch)
+
+
+sp500_returns <- tq_get("SP500", "economic.data", 
+                        from="2015-09-17", to = "2020-09-16") %>%
+  na.locf() %>% 
+  tq_transmute(select = price,
+               mutate_fun = periodReturn,
+               period = "daily",
+               type = "log") %>% na.locf() %>% 
+  column_to_rownames("date") %>% 
+  rename(Asset = "daily.returns") 
+
+
+
+
+# Specify a standard GARCH model with constant mean
+garchspec <- ugarchspec(mean.model = list(armaOrder = c(0,0)),
+                        variance.model = list(model = "sGARCH"), 
+                        distribution.model = "norm")
+
+# Estimate the model
+garchfit <- ugarchfit(data = sp500_returns, spec = garchspec)
+
+# Use the method sigma to retrieve the estimated volatilities 
+garchvol <- sigma(garchfit)
+
+
+# ggplot garchvol model estimated 
+ggplotly( 
+garchvol %>% as.data.frame() %>%
+  rownames_to_column(var = "Date") %>% 
+  rename(volatility = V1) %>% 
+  as_tibble() %>% 
+  mutate(Date = as.Date(Date)) %>% 
+  ggplot(aes(x=Date, y=volatility))+
+  theme_minimal()+
+  geom_point(size = 1, color = "orange")+
+  geom_line(size = .3, color = "gray")+
+  labs(x = "Date", y = "GARCH(1,1)   Volatility",
+       title = "SP500")
+  #       title = paste0(input$variable))+
+)
+
+
+
+# garch forecast ----------------------------------------------------------
+
+garchfit <- ugarchfit(data = sp500_returns, spec = garchspec)
+
+garchforecast <- ugarchforecast(fitORspec = garchfit, 
+                                n.ahead = 66)
+
+garch_forecast <- sigma(garchforecast) %>% as.data.frame() %>% 
+  rownames_to_column()
+
+colnames(garch_forecast) <- c("Periodo", "volatility")
+
+
+# ggplot garchvol forecated volatility
+
+ggplotly( 
+garch_forecast %>% as_tibble() %>% 
+  separate(col = Periodo, into = c("T", "moment"), sep = "\\+") %>% select(-T) %>% 
+  mutate(moment = as.numeric(moment)) %>% 
+  ggplot(aes(x=moment, y = volatility)) +
+  geom_point(size = .5, color = "orange")+
+  geom_line(size = .3, color = "gray")+
+  theme_classic()
+)
+
+
+
+
 # . ----
 # ... ----
 # ....... ---- 

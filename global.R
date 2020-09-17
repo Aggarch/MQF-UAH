@@ -41,6 +41,7 @@ library(ROCR)
 library(TTR)
 library(skimr)
 library(devtools)
+library(rugarch)
 library(PerformanceAnalytics)
 
 
@@ -101,11 +102,15 @@ fff  <- tq_get("ZQ=F",    "stock.prices" , from=today()-2000) # Fed Funds Future
 # Economic Policy Uncertaint Index 
 EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
 
+garchspec <- ugarchspec(mean.model = list(armaOrder = c(0,0)),
+                        variance.model = list(model = "sGARCH"), 
+                        distribution.model = "norm")
 
 # Notes : add , summary(data_pred_show$ASSET), to describe module
 
-source("funciones/boton_descarga.R")
 
+# downloable forecast 
+source("funciones/boton_descarga.R")
 
 
 

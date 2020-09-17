@@ -798,6 +798,31 @@ shinyServer(function(input, output) {
   })
   
   
+  # Rolling Volatility daily GARCH ----
+  return_d_vol_t <- eventReactive(input$observe_1,{ 
+    
+    behavior_data <- tq_get(input$variable_1, get = "economic.data",
+                            from = input$daterange_1[1],
+                            to = input$daterange_1[2]
+    )
+
+
+    return_d_vol_t <- behavior_data %>% na.locf() %>%
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "daily",
+                   type = "log")%>% na.locf() %>%
+      ungroup() %>%
+      select(-symbol) %>%
+      column_to_rownames("date") %>%
+      dplyr::rename(Asset = "daily.returns")
+    
+    return_d_vol_t
+    
+  })
+  
+  
   #time_series
   time_series <- eventReactive(input$observe_1,{
     
@@ -873,7 +898,6 @@ shinyServer(function(input, output) {
   })
   
   
-
   #time_series_return
   time_series_rt <- eventReactive(input$observe_1,{
     
@@ -1054,9 +1078,6 @@ shinyServer(function(input, output) {
   })
   
       
-  
-  
-  
   # Model ;;; Neural Networks ------------------------------------------------
   
   
@@ -1340,8 +1361,6 @@ shinyServer(function(input, output) {
   })
   
 
-  
-
   #})
       
       ##### GO to cookbook_gallery, neural_networks.R 4 regression 
@@ -1353,15 +1372,8 @@ shinyServer(function(input, output) {
    
 #-----------------------------------------------------------------------------------------------------------------------------------#
    
-   
-  
-  
-  
   # B) Outputs ####
   
-  
-  
-   
   # Market sentiment ---- 
   #sentiment ::: 
   output$hashtag <- renderDataTable({
@@ -1524,8 +1536,8 @@ shinyServer(function(input, output) {
      ) 
   })
 
-  # description ----
   
+  # description ----
   
   output$treemap <- renderPlotly({ 
   
@@ -1546,9 +1558,7 @@ shinyServer(function(input, output) {
           domain = list(column=0),
           name = "Confirmed",
           textinfo="label+value+percent parent")
-  
-  
-})
+  })
   
   
   #rolling volatility 1m
@@ -1587,7 +1597,7 @@ shinyServer(function(input, output) {
   
   
 
-# vols --------------------------------------------------------------------
+# vols m --------------------------------------------------------------------
 
   
   
@@ -1849,6 +1859,8 @@ shinyServer(function(input, output) {
 
   })
   
+  
+  
   output$returns_w     <- renderPlotly({
     
     ggplotly(
@@ -1921,7 +1933,7 @@ shinyServer(function(input, output) {
     
   })
   
-  output$summary  <- renderReactable  ({ 
+  output$summary    <- renderReactable  ({ 
     
     
     
@@ -1939,9 +1951,76 @@ shinyServer(function(input, output) {
   
   
  
-  
-
   # prediction ----
+  
+  
+  output$garch_mod <- renderPlotly({
+    
+    garchspec <- ugarchspec(mean.model = list(armaOrder = c(0,0)),
+                            variance.model = list(model = "sGARCH"),
+                            distribution.model = "norm")
+    # Estimate the model
+    garchfit <- ugarchfit(data = return_d_vol_t(), spec = garchspec)
+    
+    # Use the method sigma to retrieve the estimated volatilities 
+    garchvol <- sigma(garchfit)
+    
+    # Plot the volatility for 2017
+    # garch_mod <- plot(garchvol)
+    # garch_mod
+    
+    # ggplot garchvol model estimated 
+    ggplotly( 
+      garchvol %>% as.data.frame() %>%
+        rownames_to_column(var = "Date") %>% 
+        dplyr::rename(volatility = V1) %>% 
+        as_tibble() %>% 
+        mutate(Date = as.Date(Date)) %>% 
+        ggplot(aes(x=Date, y=volatility))+
+        theme_minimal()+
+        geom_point(size = .7, color = "orange")+
+        geom_line(size = .3, color = "gray")+
+        geom_smooth(size = .2,se = FALSE)+
+        labs(x = "Date", y = "GARCH(1,1)   Volatility",
+             title = paste0(input$variable_1))
+    )
+    
+  })
+  
+  
+  
+  output$vol_forecast <- renderPlotly({
+    
+    
+  garchfit <- ugarchfit(data = return_d_vol_t(), spec = garchspec)
+  
+  garchforecast <- ugarchforecast(fitORspec = garchfit, 
+                                  n.ahead = 66)
+  
+  garch_forecast <- sigma(garchforecast) %>% as.data.frame() %>% 
+    rownames_to_column()
+  
+  colnames(garch_forecast) <- c("Periodo", "volatility")
+  
+  
+  # ggplot garchvol forecated volatility
+  ggplotly( 
+    
+  garch_forecast %>% as_tibble() %>% 
+    separate(col = Periodo, into = c("T", "moment"), sep = "\\+") %>% select(-T) %>% 
+    mutate(moment = as.numeric(moment)) %>% 
+    ggplot(aes(x=moment, y = volatility)) +
+    geom_point(size = 1, color = "orange")+
+    geom_line(size = .5, color = "gray")+
+    labs(x = "Date", y = "GARCH(1,1)   Volatility T+n",
+         title = paste0(input$variable_1))+
+    theme_classic()
+  
+  )
+  
+  
+})
+  
   
   #forecast
    output$fcast <- renderPlotly({
@@ -1956,9 +2035,6 @@ shinyServer(function(input, output) {
     #
      m <- prophet(b_data)
 
-     
-    
-     
      
      ggplotly(
      plot(m,time_series())+
