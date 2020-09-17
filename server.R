@@ -146,8 +146,16 @@ shinyServer(function(input, output) {
       rbind(tq_get("USEPUINDXD", get = "economic.data",
                    from = input$daterange[1],
                    to   = input$daterange[2])) %>% 
-      na.locf() %>% 
       group_by(symbol) %>%
+      slice(-1) %>% 
+      na.locf() %>% 
+      mutate(symbol = ifelse(symbol == "USEPUINDXD", "EPU", symbol),
+             symbol = ifelse(symbol == "GOLDAMGBD228NLBM","Gold", symbol),
+             symbol = ifelse(symbol == "DCOILWTICO", "WTI", symbol),
+             symbol = ifelse(symbol == "NASDAQCOM","NDAQ", symbol),
+             symbol = ifelse(symbol == "NIKKEI225", "NIKKEI",symbol),
+             symbol = ifelse(symbol == "VIXCLS","VIX", symbol),
+             symbol = ifelse(symbol == "DTWEXAFEGS", "DXY", symbol)) %>% 
       tq_transmute(select = price,
                    mutate_fun = periodReturn,
                    period = "daily",
@@ -185,8 +193,20 @@ shinyServer(function(input, output) {
     
     
     index_cor_m <- behavior_data %>%
-      na.locf() %>% 
+      rbind(tq_get("USEPUINDXD", get = "economic.data",
+                   from = input$daterange[1],
+                   to   = input$daterange[2])) %>% 
+      mutate(symbol = ifelse(symbol == "USEPUINDXD", "EPU", symbol)) %>% 
       group_by(symbol) %>%
+      slice(-1) %>% 
+      na.locf() %>% 
+      mutate(symbol = ifelse(symbol == "USEPUINDXD", "EPU", symbol),
+             symbol = ifelse(symbol == "GOLDAMGBD228NLBM","Gold", symbol),
+             symbol = ifelse(symbol == "DCOILWTICO", "WTI", symbol),
+             symbol = ifelse(symbol == "NASDAQCOM","NDAQ", symbol),
+             symbol = ifelse(symbol == "NIKKEI225", "NIKKEI",symbol),
+             symbol = ifelse(symbol == "VIXCLS","VIX", symbol),
+             symbol = ifelse(symbol == "DTWEXAFEGS", "DXY", symbol)) %>% 
       tq_transmute(select = price,
                    mutate_fun = periodReturn,
                    period = "monthly",
@@ -223,8 +243,21 @@ shinyServer(function(input, output) {
     
     
     index_cor_y <- behavior_data %>%
-      na.locf() %>% 
+      rbind(tq_get("USEPUINDXD", get = "economic.data",
+                   from = input$daterange[1],
+                   to   = input$daterange[2])) %>% 
       group_by(symbol) %>%
+      slice(-1) %>% 
+      na.locf() %>% 
+      mutate(symbol = ifelse(symbol == "USEPUINDXD", "EPU", symbol),
+             symbol = ifelse(symbol == "GOLDAMGBD228NLBM","Gold", symbol),
+             symbol = ifelse(symbol == "DCOILWTICO", "WTI", symbol),
+             symbol = ifelse(symbol == "NASDAQCOM","NDAQ", symbol),
+             symbol = ifelse(symbol == "NIKKEI225", "NIKKEI",symbol),
+             symbol = ifelse(symbol == "VIXCLS","VIX", symbol),
+             symbol = ifelse(symbol == "DTWEXAFEGS", "DXY", symbol),
+             symbol = ifelse(symbol == "A191RL1Q225SBEA", "RGDP",symbol)
+             ) %>% 
       tq_transmute(select = price,
                    mutate_fun = periodReturn,
                    period = "yearly",
@@ -1754,11 +1787,13 @@ shinyServer(function(input, output) {
     col <- colorRampPalette(c("#BB4444", "#EE9988", "#FFFFFF", "#77AADD", "#4477AA"))
     
     corrplot(index_cor_d(),
+             type="upper",
              method = "color",
              col = col(200),
              addCoef.col = "black",
              tl.col = "darkblue",
-             order = "hclust")
+             order = "hclust"
+             )
   })
   
   
@@ -1769,10 +1804,12 @@ shinyServer(function(input, output) {
     
     corrplot(index_cor_m(),
              method = "color",
+             type="upper",
              col = col(200),
              addCoef.col = "black",
              tl.col = "darkblue",
-             order = "hclust")
+             # order = "hclust"
+             )
   })
   
   #corrmatrix YoY
@@ -1782,10 +1819,12 @@ shinyServer(function(input, output) {
     
     corrplot(index_cor_y(),
              method = "color",
+             type="upper",
              col = col(200),
              addCoef.col = "black",
              tl.col = "darkblue",
-             order = "hclust")
+             #order = "hclust"
+             )
   })
   
   #rollingcorr
