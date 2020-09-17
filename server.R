@@ -5,7 +5,7 @@
 shinyServer(function(input, output) {
   
   
-
+  
   # A) Reactive Expressions ####
   
   # Market sentiment ----
@@ -24,7 +24,7 @@ shinyServer(function(input, output) {
   #sentiment
   sentiment <- eventReactive(input$observer, {
     
-
+    
     get_token()
     
     tt <- function(ttt){
@@ -40,14 +40,14 @@ shinyServer(function(input, output) {
       filter(created_at == max(created_at)) %>% 
       select(screen_name, text)%>% 
       dplyr::rename(Accounts=screen_name,
-             Tweets = text) %>%
+                    Tweets = text) %>%
+      
+      
+      tweets
     
-
-    tweets
     
     
-    
-    })
+  })
   
   
   google_trends <- eventReactive(input$observer, {
@@ -86,7 +86,7 @@ shinyServer(function(input, output) {
     vip_tweeters <- lookup_users(users) %>% 
       select(screen_name, text) %>% 
       dplyr::rename(ACCOUNT = screen_name,
-             TWEET = text) %>% head(30) 
+                    TWEET = text) %>% head(30) 
     
   })
   
@@ -100,13 +100,13 @@ shinyServer(function(input, output) {
       rst <- search_tweets(q = ttt, n = 350, include_rts = FALSE)
       return(rst)
     }
-  
+    
     tweets <- tt(input$hashtag)
     
     tweets
-   })
-    
-
+  })
+  
+  
   
   # description ----
   
@@ -140,8 +140,8 @@ shinyServer(function(input, output) {
         select(price, symbol, date)
       
     }
-
- 
+    
+    
     index_cor_d <- behavior_data %>%
       rbind(tq_get("USEPUINDXD", get = "economic.data",
                    from = input$daterange[1],
@@ -168,8 +168,8 @@ shinyServer(function(input, output) {
     
     
   })
-
-
+  
+  
   index_cor_m <- eventReactive(input$observe, {
     
     
@@ -266,13 +266,13 @@ shinyServer(function(input, output) {
     
     
   })
-
+  
   
   
   
   # Rolling Correlation 
   rolling_cor_w <- eventReactive(input$observe, {
-
+    
     if(!input$variable %in% market_list$ETFs){ 
       
       behavior_data <- tq_get(input$variable, get = "economic.data",
@@ -282,46 +282,46 @@ shinyServer(function(input, output) {
       
       
     }else{
-
-
+      
+      
       behavior_data <- tq_get(input$variable, get = "stock.prices",
                               from = input$daterange[1],
                               to = input$daterange[2]) %>%
         dplyr::rename(price = adjusted) %>%
         select(price, symbol, date) %>% na.locf()
-
+      
     }
     
-  # behavior_data <- behavior_data_1 %>% rbind(behavior_data_2)
-
-  price_return <- behavior_data %>%
-    group_by(symbol) %>%
-    tq_transmute(select = price,
-                 mutate_fun = periodReturn,
-                 period = "weekly")
-  
-  baseline_return <- "DTWEXAFEGS" %>%
-    tq_get(get  = "economic.data",
-           from = input$daterange[1],
-           to   = input$daterange[2]) %>%
-    tq_transmute(select     = price,
-                 mutate_fun = periodReturn,
-                 period     = "weekly")
-  
-  returns_joined <- left_join(price_return,
-                              baseline_return,
-                              by = "date") %>% na.locf
-  
-  rolling_cor_w <- returns_joined %>%
-    tq_transmute_xy(x          = weekly.returns.x,
-                    y          = weekly.returns.y,
-                    mutate_fun = runCor,
-                    n          = 7,
-                    col_rename = "rolling.corr") %>% 
-    na.locf()
-  
-  rolling_cor_w
-  
+    # behavior_data <- behavior_data_1 %>% rbind(behavior_data_2)
+    
+    price_return <- behavior_data %>%
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "weekly")
+    
+    baseline_return <- "DTWEXAFEGS" %>%
+      tq_get(get  = "economic.data",
+             from = input$daterange[1],
+             to   = input$daterange[2]) %>%
+      tq_transmute(select     = price,
+                   mutate_fun = periodReturn,
+                   period     = "weekly")
+    
+    returns_joined <- left_join(price_return,
+                                baseline_return,
+                                by = "date") %>% na.locf
+    
+    rolling_cor_w <- returns_joined %>%
+      tq_transmute_xy(x          = weekly.returns.x,
+                      y          = weekly.returns.y,
+                      mutate_fun = runCor,
+                      n          = 7,
+                      col_rename = "rolling.corr") %>% 
+      na.locf()
+    
+    rolling_cor_w
+    
   })
   
   rolling_cor_m <- eventReactive(input$observe, {
@@ -377,7 +377,7 @@ shinyServer(function(input, output) {
     
   })
   
-
+  
   
   
   
@@ -403,13 +403,13 @@ shinyServer(function(input, output) {
       
     }
     
-
+    
     price_return_d <- behavior_data %>%
-           group_by(symbol) %>%
-           tq_transmute(select = price,
-                        mutate_fun = periodReturn,
-                        period = "daily",
-                        type = "log")
+      group_by(symbol) %>%
+      tq_transmute(select = price,
+                   mutate_fun = periodReturn,
+                   period = "daily",
+                   type = "log")
     
     
     price_return_d
@@ -542,7 +542,7 @@ shinyServer(function(input, output) {
     
   })
   
- 
+  
   
   # Rolling Volatility daily ----
   return_d_vol <- eventReactive(input$observe, {
@@ -612,10 +612,10 @@ shinyServer(function(input, output) {
     
   })
   
- 
-
-# VaR ---------------------------------------------------------------------
-
+  
+  
+  # VaR ---------------------------------------------------------------------
+  
   
   
   # daily returns for VaR and TailVaR ----
@@ -651,37 +651,37 @@ shinyServer(function(input, output) {
     
     return_var
     
-})
+  })
   
   
   var_plot_99 <- eventReactive(input$observe, {
-  
-  
-  
-  var_99_hist  <- VaR(return_var(),  p=0.99, method="historical")
-  var_99_gauss <- VaR(return_var(),  p=0.99, method="gaussian")
-  var_99_mod   <- VaR(return_var(),  p=0.99, method="modified")
-  cvar_99_hist <- CVaR(return_var(), p=0.99, method="historical")
-  cvar_99_gauss<- CVaR(return_var(), p=0.99, method="gaussian")
-  cvar_99_mod  <- CVaR(return_var(), p=0.99, method="modified")
-  
-  vars_99 <- data.frame(rbind(var_99_hist,
-                              var_99_gauss, 
-                              var_99_mod,
-                              cvar_99_hist,
-                              cvar_99_gauss,
-                              cvar_99_mod
-  ))
-  
-  
-  vars_99$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
-  
-  var_plot_99 <- melt(vars_99) %>% mutate(TailVaR = str_detect(type, "CVaR"),
-                                          TailVaR = ifelse(TailVaR == "TRUE",1,0)) %>% 
-    dplyr::rename(VaR = value)
-  
-  var_plot_99
-  
+    
+    
+    
+    var_99_hist  <- VaR(return_var(),  p=0.99, method="historical")
+    var_99_gauss <- VaR(return_var(),  p=0.99, method="gaussian")
+    var_99_mod   <- VaR(return_var(),  p=0.99, method="modified")
+    cvar_99_hist <- CVaR(return_var(), p=0.99, method="historical")
+    cvar_99_gauss<- CVaR(return_var(), p=0.99, method="gaussian")
+    cvar_99_mod  <- CVaR(return_var(), p=0.99, method="modified")
+    
+    vars_99 <- data.frame(rbind(var_99_hist,
+                                var_99_gauss, 
+                                var_99_mod,
+                                cvar_99_hist,
+                                cvar_99_gauss,
+                                cvar_99_mod
+    ))
+    
+    
+    vars_99$type<-c("Hist VaR", "Gauss VaR", "Mod VaR", "Hist CVaR", "Gauss CVaR", "Mod CVaR")
+    
+    var_plot_99 <- melt(vars_99) %>% mutate(TailVaR = str_detect(type, "CVaR"),
+                                            TailVaR = ifelse(TailVaR == "TRUE",1,0)) %>% 
+      dplyr::rename(VaR = value)
+    
+    var_plot_99
+    
   })
   
   
@@ -717,11 +717,11 @@ shinyServer(function(input, output) {
   })
   
   
-
+  
   var_plot_90 <- eventReactive(input$observe, {
     
     
-  
+    
     var_90_hist  <- VaR(return_var(),  p=0.90, method="historical")
     var_90_gauss <- VaR(return_var(),  p=0.90, method="gaussian")
     var_90_mod   <- VaR(return_var(),  p=0.90, method="modified")
@@ -811,8 +811,8 @@ shinyServer(function(input, output) {
     var_plot_80
     
   })
-   
-#Sys.sleep(3)
+  
+  #Sys.sleep(3)
   
   # prediction ----
   
@@ -833,8 +833,8 @@ shinyServer(function(input, output) {
                             from = input$daterange_1[1],
                             to = input$daterange_1[2]
     )
-
-
+    
+    
     return_d_vol_t <- behavior_data %>% na.locf() %>%
       group_by(symbol) %>%
       tq_transmute(select = price,
@@ -855,27 +855,27 @@ shinyServer(function(input, output) {
   time_series <- eventReactive(input$observe_1,{
     
     b_data <- tq_get(input$variable_1, get = "economic.data",
-                            from = input$daterange_1[1],
-                            to = input$daterange_1[2]
+                     from = input$daterange_1[1],
+                     to = input$daterange_1[2]
     ) %>%
       select(date, price) %>%
       dplyr::rename(ds=date, y=price) %>%
       na.locf()
-
     
-   m <- prophet(b_data)
-  
+    
+    m <- prophet(b_data)
+    
     future   <- make_future_dataframe(m,periods = 90) 
-     # mutate(weekdays = weekdays(ds)) %>% 
-     # filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
-     # select(-weekdays)
-
-   
-   forecast <-  predict(m, future)
-
-   time_series <- forecast
-
-   time_series
+    # mutate(weekdays = weekdays(ds)) %>% 
+    # filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+    # select(-weekdays)
+    
+    
+    forecast <-  predict(m, future)
+    
+    time_series <- forecast
+    
+    time_series
     
   })
   
@@ -918,9 +918,9 @@ shinyServer(function(input, output) {
     m <- prophet(b_data)
     
     crossval <- cross_validation(m, initial = 40, period = 30, horizon = 65, units = 'days')
-
+    
     # Performance
-  
+    
     crossval
     
   })
@@ -929,36 +929,36 @@ shinyServer(function(input, output) {
   #time_series_return
   time_series_rt <- eventReactive(input$observe_1,{
     
-      b_data_rt <-  tq_get(input$variable_1, get  = "economic.data",
-                        from = input$daterange_1[1],
-                        to   = input$daterange_2[2]) %>%
-                          tq_transmute(select     = price,
-                                       mutate_fun = periodReturn,
-                                       period     = "daily") %>%
-                          dplyr::rename(ds = date, y = daily.returns) %>%
-                          na.locf()
-      
-
+    b_data_rt <-  tq_get(input$variable_1, get  = "economic.data",
+                         from = input$daterange_1[1],
+                         to   = input$daterange_2[2]) %>%
+      tq_transmute(select     = price,
+                   mutate_fun = periodReturn,
+                   period     = "daily") %>%
+      dplyr::rename(ds = date, y = daily.returns) %>%
+      na.locf()
+    
+    
     m_rt <- prophet(b_data_rt)
     future_rt   <- make_future_dataframe(m_rt,periods = 90) 
-      # mutate(weekdays = weekdays(ds)) %>% 
-      # filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
-      # select(-weekdays)
+    # mutate(weekdays = weekdays(ds)) %>% 
+    # filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+    # select(-weekdays)
     
     forecast_rt <-  predict(m_rt, future_rt)
-
+    
     time_series_rt <- forecast_rt
-
+    
     time_series_rt
-
+    
   })
   
   #ts_decomp
   time_series_decom <- eventReactive(input$observe_1,{
     
     b_data_decom <- tq_get(input$variable_1, get = "economic.data",
-                     from = input$daterange_1[1],
-                     to = input$daterange_1[2]
+                           from = input$daterange_1[1],
+                           to = input$daterange_1[2]
     ) %>%
       select(date, price) %>%
       dplyr::rename(ds=date, y=price) %>%
@@ -968,9 +968,9 @@ shinyServer(function(input, output) {
     
     m_decom <- prophet(b_data_decom)
     future_decom   <- make_future_dataframe(m_decom,periods = 90) 
-      # mutate(weekdays = weekdays(ds)) %>% 
-      # filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
-      # select(-weekdays)
+    # mutate(weekdays = weekdays(ds)) %>% 
+    # filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+    # select(-weekdays)
     
     forecast_decom <-  predict(m_decom, future_decom)
     
@@ -983,100 +983,100 @@ shinyServer(function(input, output) {
   
   #time_series_change_point
   time_series_changep <- eventReactive(input$observe_1,{
-     
-     b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
-                      from = input$daterange_1[1],
-                      to = input$daterange_1[2]
-     ) %>%
-       select(date, price) %>%
-       dplyr::rename(ds=date, y=price) %>%
-       na.locf()
-     
-     
-     
-     m_tbl <- prophet(b_data_tbl)
-     future_tbl   <- make_future_dataframe(m_tbl,periods = 90) 
-       # mutate(weekdays = weekdays(ds)) %>% 
-       # filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
-       # select(-weekdays)
-     
-     forecast_tbl <-  predict(m_tbl, future_tbl)
-   
-     time_series_changep <- forecast_tbl
-     
-     time_series_changep
-     
-   })
+    
+    b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
+                         from = input$daterange_1[1],
+                         to = input$daterange_1[2]
+    ) %>%
+      select(date, price) %>%
+      dplyr::rename(ds=date, y=price) %>%
+      na.locf()
+    
+    
+    
+    m_tbl <- prophet(b_data_tbl)
+    future_tbl   <- make_future_dataframe(m_tbl,periods = 90) 
+    # mutate(weekdays = weekdays(ds)) %>% 
+    # filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+    # select(-weekdays)
+    
+    forecast_tbl <-  predict(m_tbl, future_tbl)
+    
+    time_series_changep <- forecast_tbl
+    
+    time_series_changep
+    
+  })
   
   # prescription -----
-
-   observeEvent(input$observe_2, {
-     # Show a modal when the button is pressed
-     shinyalert("Notification!", "Click on -Diagnose- every time you change variables",
-                type = "success",showConfirmButton = T,
-                showCancelButton = FALSE,  timer = 40000, animation = TRUE,
-                closeOnEsc = T,
-                closeOnClickOutside = T)
-   })
-   
-   
-   # EPU - Economic Policy Uncertainty ::::
-   
+  
+  observeEvent(input$observe_2, {
+    # Show a modal when the button is pressed
+    shinyalert("Notification!", "Click on -Diagnose- every time you change variables",
+               type = "success",showConfirmButton = T,
+               showCancelButton = FALSE,  timer = 40000, animation = TRUE,
+               closeOnEsc = T,
+               closeOnClickOutside = T)
+  })
+  
+  
+  # EPU - Economic Policy Uncertainty ::::
+  
   EPU_alt <- eventReactive(input$observe_2,{
-     
-     # EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
-     # triggers if delta increase 10 % or more OR index equals or its above 90 days mean
-
-     EPU_alt <- EPU_index %>%  select(-symbol) %>%
-       mutate(delta = (EPU_index$price)/lag(EPU_index$price)-1)%>%
-       mutate(delta_trigger = ifelse(delta >= 0.10 |
-                                       EPU_index$price >= mean(EPU_index$price +
-                                                                 sd(EPU_index$price)*2.3),1L, 0L)) %>%
-       slice(-1) %>%
-       arrange(desc(date)) %>%
-       dplyr::rename(index = price, Risk = delta_trigger) %>%
-       mutate(Risk = ifelse(Risk == 1, "OFF", "ON"),
-              delta = scales::percent(round(delta,2)),
-              index = round(index)) 
-     
-     EPU_alt
-     
+    
+    # EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
+    # triggers if delta increase 10 % or more OR index equals or its above 90 days mean
+    
+    EPU_alt <- EPU_index %>%  select(-symbol) %>%
+      mutate(delta = (EPU_index$price)/lag(EPU_index$price)-1)%>%
+      mutate(delta_trigger = ifelse(delta >= 0.10 |
+                                      EPU_index$price >= mean(EPU_index$price +
+                                                                sd(EPU_index$price)*2.3),1L, 0L)) %>%
+      slice(-1) %>%
+      arrange(desc(date)) %>%
+      dplyr::rename(index = price, Risk = delta_trigger) %>%
+      mutate(Risk = ifelse(Risk == 1, "OFF", "ON"),
+             delta = scales::percent(round(delta,2)),
+             index = round(index)) 
+    
+    EPU_alt
+    
   })
   
   EPU_abst <- eventReactive(input$observe_2,{
     
     # EPU_index <- tq_get("USEPUINDXD", get = "economic.data", from = today()-2000)
     
-     # Summary of Risk ON|OFF, current year. 
-     EPU_abst <-   EPU_alt() %>% filter(year(date) >= year(today())) %>% 
-       group_by(Risk) %>% summarise(n = n(), .groups = "drop_last") %>% 
-       dplyr::rename( Days = n) %>% 
-       mutate("%" = scales::percent( Days/sum(Days))) %>% 
-       mutate_if(is.character, as.factor)
-     
-     EPU_abst
-     
+    # Summary of Risk ON|OFF, current year. 
+    EPU_abst <-   EPU_alt() %>% filter(year(date) >= year(today())) %>% 
+      group_by(Risk) %>% summarise(n = n(), .groups = "drop_last") %>% 
+      dplyr::rename( Days = n) %>% 
+      mutate("%" = scales::percent( Days/sum(Days))) %>% 
+      mutate_if(is.character, as.factor)
+    
+    EPU_abst
+    
   })
   
   interest_rate_all <- eventReactive(input$observe_2,{
     
-      # Past Rates: 
-
-      interest_rate_all <- fff %>%   select(date, FFF = adjusted) %>% 
-        left_join(fftu, by = "date") %>% 
-        dplyr::rename(target_up = price) %>% 
-        select(-symbol) %>% left_join(fftl, by = "date") %>% 
-        dplyr::rename(target_low = price) %>% select(-symbol) %>% 
-        left_join(effr, by = "date") %>% 
-        dplyr::rename(EFFR = price) %>% select(-symbol) %>% 
-        mutate(market_expectation = 100-FFF,
-               fed_action = market_expectation-EFFR) %>% 
-        na.locf() %>% 
-        select(-target_low, -target_up, -FFF)
-      
-      interest_rate_all
-      
-})
+    # Past Rates: 
+    
+    interest_rate_all <- fff %>%   select(date, FFF = adjusted) %>% 
+      left_join(fftu, by = "date") %>% 
+      dplyr::rename(target_up = price) %>% 
+      select(-symbol) %>% left_join(fftl, by = "date") %>% 
+      dplyr::rename(target_low = price) %>% select(-symbol) %>% 
+      left_join(effr, by = "date") %>% 
+      dplyr::rename(EFFR = price) %>% select(-symbol) %>% 
+      mutate(market_expectation = 100-FFF,
+             fed_action = market_expectation-EFFR) %>% 
+      na.locf() %>% 
+      select(-target_low, -target_up, -FFF)
+    
+    interest_rate_all
+    
+  })
   
   interest_rate_all_tbl <- eventReactive(input$observe_2,{
     
@@ -1095,17 +1095,17 @@ shinyServer(function(input, output) {
       unite("Target Range", target_low, target_up, sep = " - ") %>% 
       arrange(desc(date)) %>% 
       mutate(market_expectation = round(market_expectation, 3),
-                                    fed_action = round(fed_action,3)) %>% 
+             fed_action = round(fed_action,3)) %>% 
       dplyr::rename("Market Expectations" = market_expectation,
-             "FED action" = fed_action,
-             "Date" = date)
-      
-
+                    "FED action" = fed_action,
+                    "Date" = date)
+    
+    
     interest_rate_all_tbl
     
   })
   
-      
+  
   # Model ;;; Neural Networks ------------------------------------------------
   
   
@@ -1225,7 +1225,7 @@ shinyServer(function(input, output) {
   
   
   # Applied Model of Nnet -------------------------------------------------------
-
+  
   # generate future dataframe ::: 
   data_pred_show <- eventReactive(input$observe_2,{  
     
@@ -1240,116 +1240,116 @@ shinyServer(function(input, output) {
     mod <- nnet(up ~ ., data = data[t.id,],
                 size = 5 , maxit = 1000000, decay = .001, rang = 0.07,
                 na.action = na.omit, skip = T)
-
+    
     saveRDS(mod, "neural_networks/mod.rds")
     
     today() %m-% months(month(today())) -> t
     
-      # Model future data
-      asset_future <- tq_get(input$variable_2, get = "economic.data",from = t) %>%
-        select(date, price) %>%
-        dplyr::rename(ds = date, y = price)
-
-      epu_future <- EPU_alt() %>%
-        select(date, index) %>%
-        dplyr::rename(ds = date, y = index)
-
-      m <- prophet(asset_future)
-      n <- prophet(epu_future)
-
-      future <- make_future_dataframe(m, periods = 7) 
-         # mutate(weekdays = weekdays(ds)) %>% 
-         # filter(!weekdays == "Saturday") %>% 
-         # select(-weekdays)
-      
-      tail(future)
-      
-      future_epu <- make_future_dataframe(n, periods = 7) 
-         # mutate(weekdays = weekdays(ds)) %>% 
-         # filter(!weekdays == "Saturday")%>% 
-         # select(-weekdays)
-      
-      tail(future_epu)
-
-      forecast <- predict(m, future)
-      forecast_epu <- predict(n, future_epu)
-
-      # Future asset
-      asset_future_price <-   tail(forecast[c('ds', 'yhat')]) %>%
-        dplyr::rename(date = ds, asset = yhat) %>%
-        mutate(sma = SMA(asset, 1),
-               ema = EMA(asset, 1),
-               dema = DEMA(asset,1),
-               roc  = ROC(asset),
-               momentum = momentum(asset),
-               rsi = RSI(asset, 1),
-               strong_rsi = ifelse(rsi > 80, 1, 0),
-               weak_rsi   = ifelse(rsi < 20, 1, 0)) %>%
-        mutate(up = ifelse(momentum > 0, 1 ,0)) %>%
-        fill(roc, momentum, rsi,
-             strong_rsi, weak_rsi, up, .direction = "up") %>%
-        arrange(desc(date)) %>% slice(-1)
-
-      # Fed actions == last, Asumming Ceteris paribus
-      fed <- interest_rate_all() %>% tail() %>% select(-date) %>% slice(1:5)
-
-      # Future EPU
-      EPU_future_price <-   tail(forecast_epu[c('ds', 'yhat')]) %>%
-        dplyr::rename(price = yhat, date = ds) %>%
-        mutate(delta = price/lag(price)-1)%>%
-        mutate(delta_trigger = ifelse(delta >= 0.09 |
-                                        price >= mean(price +
-                                                        sd(price)*5),1L, 0L)) %>%
-        fill(delta, .direction = "up") %>%
-        fill(delta_trigger, .direction =  "up") %>%
-        # slice(-1) %>%
-        arrange(desc(date)) %>%
-        dplyr::rename(index = price, Risk = delta_trigger) %>%
-        mutate(Risk = ifelse(Risk == 1, "OFF", "ON")) %>%
-        mutate( delta= (index/lag(index)-1)) %>%
-        # left_join(interest_rate_all, by = "date") %>%
-        mutate(delta_h = ifelse(delta > .50, 1, 0),
-               delta_l = ifelse(delta < -.50, 1, 0),
-               d_1_2_p = ifelse(between(delta, .1,.2), 1,0),
-               d_1_2_n = ifelse(between(delta, -.2,-.1), 1,0),
-               d_3_5_p = ifelse(between(delta, .3, .5),1, 0),
-               d_3_5_n = ifelse(between(delta, -.5, -.3),1,0)) %>%
-        slice(-1)
-      
-      
-      # Future dataset
-      data_new <- EPU_future_price %>%
-        left_join(asset_future_price, by = "date") %>%
-        cbind(fed) %>% as_tibble() %>%
-        mutate(date = as.Date(date),
-               Risk = ifelse(Risk == "ON", 1, 0))
-      
-      
-      data_pred <-  data_new %>% rbind(head(data(), 30)) %>% na.locf()
-      
-      
-      mod <- readRDS("neural_networks/mod.rds")
-      
-      data_pred_show <- data_pred%>%
-        select(-delta_h, -delta_l, -d_1_2_n, -d_1_2_p,
-               -d_3_5_p, -d_3_5_n, -strong_rsi, -weak_rsi) %>%
-        mutate(pred = predict(mod, newdata = data_pred, type = "class"),
-               prob = predict(mod, newdata = data_pred, type = "raw")[,1],
-               prob = scales::percent(prob, accuracy = 40)) %>%
-        mutate(prob = ifelse( date <= today(), "100%", prob ),
-               pred = ifelse( pred == 1, "BUY", "SELL")) %>%
-        select(-up, -pred, -prob) %>%
-        dplyr::rename_all(.funs = toupper) %>% 
-        select(-SMA, -EMA, -DEMA) %>% 
-        dplyr::rename(EXPECTATION = MARKET_EXPECTATION)
-        
+    # Model future data
+    asset_future <- tq_get(input$variable_2, get = "economic.data",from = t) %>%
+      select(date, price) %>%
+      dplyr::rename(ds = date, y = price)
+    
+    epu_future <- EPU_alt() %>%
+      select(date, index) %>%
+      dplyr::rename(ds = date, y = index)
+    
+    m <- prophet(asset_future)
+    n <- prophet(epu_future)
+    
+    future <- make_future_dataframe(m, periods = 7) 
+    # mutate(weekdays = weekdays(ds)) %>% 
+    # filter(!weekdays == "Saturday") %>% 
+    # select(-weekdays)
+    
+    tail(future)
+    
+    future_epu <- make_future_dataframe(n, periods = 7) 
+    # mutate(weekdays = weekdays(ds)) %>% 
+    # filter(!weekdays == "Saturday")%>% 
+    # select(-weekdays)
+    
+    tail(future_epu)
+    
+    forecast <- predict(m, future)
+    forecast_epu <- predict(n, future_epu)
+    
+    # Future asset
+    asset_future_price <-   tail(forecast[c('ds', 'yhat')]) %>%
+      dplyr::rename(date = ds, asset = yhat) %>%
+      mutate(sma = SMA(asset, 1),
+             ema = EMA(asset, 1),
+             dema = DEMA(asset,1),
+             roc  = ROC(asset),
+             momentum = momentum(asset),
+             rsi = RSI(asset, 1),
+             strong_rsi = ifelse(rsi > 80, 1, 0),
+             weak_rsi   = ifelse(rsi < 20, 1, 0)) %>%
+      mutate(up = ifelse(momentum > 0, 1 ,0)) %>%
+      fill(roc, momentum, rsi,
+           strong_rsi, weak_rsi, up, .direction = "up") %>%
+      arrange(desc(date)) %>% slice(-1)
+    
+    # Fed actions == last, Asumming Ceteris paribus
+    fed <- interest_rate_all() %>% tail() %>% select(-date) %>% slice(1:5)
+    
+    # Future EPU
+    EPU_future_price <-   tail(forecast_epu[c('ds', 'yhat')]) %>%
+      dplyr::rename(price = yhat, date = ds) %>%
+      mutate(delta = price/lag(price)-1)%>%
+      mutate(delta_trigger = ifelse(delta >= 0.09 |
+                                      price >= mean(price +
+                                                      sd(price)*5),1L, 0L)) %>%
+      fill(delta, .direction = "up") %>%
+      fill(delta_trigger, .direction =  "up") %>%
+      # slice(-1) %>%
+      arrange(desc(date)) %>%
+      dplyr::rename(index = price, Risk = delta_trigger) %>%
+      mutate(Risk = ifelse(Risk == 1, "OFF", "ON")) %>%
+      mutate( delta= (index/lag(index)-1)) %>%
+      # left_join(interest_rate_all, by = "date") %>%
+      mutate(delta_h = ifelse(delta > .50, 1, 0),
+             delta_l = ifelse(delta < -.50, 1, 0),
+             d_1_2_p = ifelse(between(delta, .1,.2), 1,0),
+             d_1_2_n = ifelse(between(delta, -.2,-.1), 1,0),
+             d_3_5_p = ifelse(between(delta, .3, .5),1, 0),
+             d_3_5_n = ifelse(between(delta, -.5, -.3),1,0)) %>%
+      slice(-1)
+    
+    
+    # Future dataset
+    data_new <- EPU_future_price %>%
+      left_join(asset_future_price, by = "date") %>%
+      cbind(fed) %>% as_tibble() %>%
+      mutate(date = as.Date(date),
+             Risk = ifelse(Risk == "ON", 1, 0))
+    
+    
+    data_pred <-  data_new %>% rbind(head(data(), 30)) %>% na.locf()
+    
+    
+    mod <- readRDS("neural_networks/mod.rds")
+    
+    data_pred_show <- data_pred%>%
+      select(-delta_h, -delta_l, -d_1_2_n, -d_1_2_p,
+             -d_3_5_p, -d_3_5_n, -strong_rsi, -weak_rsi) %>%
+      mutate(pred = predict(mod, newdata = data_pred, type = "class"),
+             prob = predict(mod, newdata = data_pred, type = "raw")[,1],
+             prob = scales::percent(prob, accuracy = 40)) %>%
+      mutate(prob = ifelse( date <= today(), "100%", prob ),
+             pred = ifelse( pred == 1, "BUY", "SELL")) %>%
+      select(-up, -pred, -prob) %>%
+      dplyr::rename_all(.funs = toupper) %>% 
+      select(-SMA, -EMA, -DEMA) %>% 
+      dplyr::rename(EXPECTATION = MARKET_EXPECTATION)
+    
     
     data_pred_show
     
   })
-
+  
   # Neural network in regression ---------------------------------------------
-
+  
   pred_show <- eventReactive(input$observe_2,{ 
     
     
@@ -1357,49 +1357,49 @@ shinyServer(function(input, output) {
     
     
     t.id <- createDataPartition(data_pred_show$ASSET , p= 0.7, list = F)
-
-
+    
+    
     fit_n <- nnet(ASSET ~., data=data_pred_show[t.id, ],
-                size = 15, decay = 0.2, rang = 0.1,
-                maxit = 100000000, linout=T)
-
+                  size = 15, decay = 0.2, rang = 0.1,
+                  maxit = 100000000, linout=T)
+    
     saveRDS(fit_n, "neural_networks/fit.rds")
-
+    
     fit_n <- readRDS("neural_networks//fit.rds")
-     
+    
     fit <-  readRDS("neural_networks/nnet_alternative_sp500.rds")
-   
-  pred_show <- data_pred_show %>%
-    mutate(PRED_nnet = predict(fit, data_pred_show)[,1]) %>% 
-    select(-FED_ACTION, -RISK, -RSI, -EXPECTATION, -EFFR,
-           -DELTA, -ROC) %>% 
-    head(100) %>%  
-    mutate_if(is.numeric, round,2) %>% 
-    mutate(W.Forecast  = PRED_nnet-(INDEX * .3))
+    
+    pred_show <- data_pred_show %>%
+      mutate(PRED_nnet = predict(fit, data_pred_show)[,1]) %>% 
+      select(-FED_ACTION, -RISK, -RSI, -EXPECTATION, -EFFR,
+             -DELTA, -ROC) %>% 
+      head(100) %>%  
+      mutate_if(is.numeric, round,2) %>% 
+      mutate(W.Forecast  = PRED_nnet-(INDEX * .3))
     # rowwise() %>% 
     # mutate(diff =round(ASSET - mean(PRED_nnet,W.Forecast))) 
     # mutate(diff = ASSET - PRED_nnet)
-
-  
-  pred_show
-  
-  #archivos <- list.files() %>% enframe() %>% filter(str_detect(value, c("fit.rds|mod.rds"))) %>% pull(value)
-  #walk(.x = archivos, .f = file.remove)
-  
+    
+    
+    pred_show
+    
+    #archivos <- list.files() %>% enframe() %>% filter(str_detect(value, c("fit.rds|mod.rds"))) %>% pull(value)
+    #walk(.x = archivos, .f = file.remove)
+    
   })
   
-
+  
   #})
-      
-      ##### GO to cookbook_gallery, neural_networks.R 4 regression 
-      ##### Applied example to the data_pred_show example 
-      ##### Create a plot of the neural network to share it 
-      ##### Maybe nnet plot must be static.
-
-
-   
-#-----------------------------------------------------------------------------------------------------------------------------------#
-   
+  
+  ##### GO to cookbook_gallery, neural_networks.R 4 regression 
+  ##### Applied example to the data_pred_show example 
+  ##### Create a plot of the neural network to share it 
+  ##### Maybe nnet plot must be static.
+  
+  
+  
+  #-----------------------------------------------------------------------------------------------------------------------------------#
+  
   # B) Outputs ####
   
   # Market sentiment ---- 
@@ -1432,7 +1432,7 @@ shinyServer(function(input, output) {
       filter(created_at == max(created_at)) %>% 
       select(screen_name, text)%>% 
       dplyr::rename(Accounts=screen_name,
-             Tweets = text) %>%
+                    Tweets = text) %>%
       
       datatable( rownames = F, style = 'bootstrap4',
                  extensions = c('Buttons','Scroller'),
@@ -1444,7 +1444,7 @@ shinyServer(function(input, output) {
                    autoWidth = TRUE
                  ))
     tweets
-      })
+  })
   
   #newspapers
   output$news <- renderDataTable({
@@ -1459,7 +1459,7 @@ shinyServer(function(input, output) {
     vip_tweeters <- lookup_users(users) %>% 
       select(screen_name, text) %>% 
       dplyr::rename(ACCOUNT = screen_name,
-             TWEET = text) %>% head(30) 
+                    TWEET = text) %>% head(30) 
     
     
     options(DT.options = list(dom = 'bfrtip',
@@ -1476,8 +1476,8 @@ shinyServer(function(input, output) {
     # read text in datatable
     
     vip_tweets <- 
-     vip_tweeters %>%
-        datatable( rownames = F, style = 'bootstrap4',
+      vip_tweeters %>%
+      datatable( rownames = F, style = 'bootstrap4',
                  extensions = c('Buttons','Scroller'),
                  options = list(
                    dom = 'bfrtip',
@@ -1541,61 +1541,61 @@ shinyServer(function(input, output) {
         dplyr::rename(value = paste0(arg,"_world"))
       
       return(google.trends)
-
+      
     }
     
     
     arg = input$hashtag
     gTrend <- ggtrend(arg)
-     
-     gTrend
     
-     gTrend <- 
+    gTrend
+    
+    gTrend <- 
       ggplotly(
-      gTrend %>%  ggplot(aes(x=date, y = value))+
-        geom_line(color = "gray")+
-        geom_point( color = "steelblue")+
-        geom_smooth(color = "pink")+
-        theme_classic()+
-        labs(x = "Date", y = " Ressecion Search" , 
-          title = paste("Searches of" ,arg," at Google Trends"),
-          subtitle = "information collected Since 2004"
-       )
-     ) 
+        gTrend %>%  ggplot(aes(x=date, y = value))+
+          geom_line(color = "gray")+
+          geom_point( color = "steelblue")+
+          geom_smooth(color = "pink")+
+          theme_classic()+
+          labs(x = "Date", y = " Ressecion Search" , 
+               title = paste("Searches of" ,arg," at Google Trends"),
+               subtitle = "information collected Since 2004"
+          )
+      ) 
   })
-
+  
   
   # description ----
   
   output$treemap <- renderPlotly({ 
-  
-  
+    
+    
     conf_df <- coronavirus %>% 
-    filter(type == "confirmed") %>%
-    group_by(country) %>%
-    summarise(total_cases = sum(cases), .groups = "drop") %>%
-    arrange(-total_cases) %>%
-    mutate(parents = "Confirmed") %>%
-    ungroup() 
-  
-  plot_ly(data = conf_df,
-          type= "treemap",
-          values = ~total_cases,
-          labels= ~ country,
-          parents=  ~parents,
-          domain = list(column=0),
-          name = "Confirmed",
-          textinfo="label+value+percent parent")
+      filter(type == "confirmed") %>%
+      group_by(country) %>%
+      summarise(total_cases = sum(cases), .groups = "drop") %>%
+      arrange(-total_cases) %>%
+      mutate(parents = "Confirmed") %>%
+      ungroup() 
+    
+    plot_ly(data = conf_df,
+            type= "treemap",
+            values = ~total_cases,
+            labels= ~ country,
+            parents=  ~parents,
+            domain = list(column=0),
+            name = "Confirmed",
+            textinfo="label+value+percent parent")
   })
   
   
   #rolling volatility 1m
   output$roll_vol_one <- renderPlotly({
     
-  
-  # plotly chart 
-  chart.RollingPerformance(R = return_d_vol(), width = 22, FUN = "StdDev.annualized",
-                           main = paste(input$variable, "Daily Log-Returns"), plot.engine = "plotly") 
+    
+    # plotly chart 
+    chart.RollingPerformance(R = return_d_vol(), width = 22, FUN = "StdDev.annualized",
+                             main = paste(input$variable, "Daily Log-Returns"), plot.engine = "plotly") 
     
     
   })
@@ -1624,9 +1624,9 @@ shinyServer(function(input, output) {
   })
   
   
-
-# vols m --------------------------------------------------------------------
-
+  
+  # vols m --------------------------------------------------------------------
+  
   
   
   
@@ -1668,14 +1668,14 @@ shinyServer(function(input, output) {
   #vars_99
   output$vars_99 <- renderPlotly({
     
-  
-  ggplotly(
-    ggplot(var_plot_99(),aes(x=type, y=VaR, fill=TailVaR)) + 
-      geom_col()+
-      theme_minimal()+
-      labs(title = paste("Value at Risk for",input$variable)
+    
+    ggplotly(
+      ggplot(var_plot_99(),aes(x=type, y=VaR, fill=TailVaR)) + 
+        geom_col()+
+        theme_minimal()+
+        labs(title = paste("Value at Risk for",input$variable)
         ))
-  
+    
     
   }) 
   
@@ -1694,7 +1694,7 @@ shinyServer(function(input, output) {
     
     
   }) 
-    
+  
   
   #vars_90
   output$vars_90 <- renderPlotly({
@@ -1788,9 +1788,9 @@ shinyServer(function(input, output) {
              addCoef.col = "black",
              tl.col = "darkblue",
              order = "hclust")
-   })
+  })
   
-
+  
   #corrmatrix MoM
   output$index_cor_m   <- renderPlot({
     
@@ -1816,7 +1816,7 @@ shinyServer(function(input, output) {
              col = col(200),
              addCoef.col = "black",
              tl.col = "darkblue"
-            )
+    )
   })
   
   #rollingcorr
@@ -1824,7 +1824,7 @@ shinyServer(function(input, output) {
     
     # DXY_mean_cor <- mean(index_cor [,7:7])
     
-     ggplotly( 
+    ggplotly( 
       rolling_cor_w() %>%
         filter(symbol != "DXY") %>% 
         ggplot(aes(x = date, y = rolling.corr, color = symbol)) +
@@ -1869,11 +1869,11 @@ shinyServer(function(input, output) {
     
   })
   
-
+  
   
   #returns
   output$returns_d     <- renderPlotly({
-
+    
     ggplotly(
       price_return_d()%>%
         mutate(Color = ifelse(daily.returns > 0.00, "green", "red")) %>%
@@ -1886,8 +1886,8 @@ shinyServer(function(input, output) {
         labs(x = "Date", y = "Log Price Returns",
              title = paste0(input$variable))+
         theme(legend.position = "none")
-      )
-
+    )
+    
   })
   
   
@@ -1975,13 +1975,13 @@ shinyServer(function(input, output) {
                    type = "log")
     
     table.Stats(price_evolution$monthly.returns) %>% 
-            reactable::reactable(defaultPageSize =20, compact = T)    
+      reactable::reactable(defaultPageSize =20, compact = T)    
     
     
-    })
+  })
   
   
- 
+  
   # prediction ----
   
   
@@ -2023,39 +2023,39 @@ shinyServer(function(input, output) {
   output$vol_forecast <- renderPlotly({
     
     
-  garchfit <- ugarchfit(data = return_d_vol_t(), spec = garchspec)
-  
-  garchforecast <- ugarchforecast(fitORspec = garchfit, 
-                                  n.ahead = 66)
-  
-  garch_forecast <- sigma(garchforecast) %>% as.data.frame() %>% 
-    rownames_to_column()
-  
-  colnames(garch_forecast) <- c("Periodo", "volatility")
-  
-  
-  # ggplot garchvol forecated volatility
-  ggplotly( 
+    garchfit <- ugarchfit(data = return_d_vol_t(), spec = garchspec)
     
-  garch_forecast %>% as_tibble() %>% 
-    separate(col = Periodo, into = c("T", "moment"), sep = "\\+") %>% select(-T) %>% 
-    mutate(moment = as.numeric(moment)) %>% 
-    ggplot(aes(x=moment, y = volatility)) +
-    geom_point(size = 1, color = "orange")+
-    geom_line(size = .5, color = "gray")+
-    labs(x = "Date", y = "GARCH(1,1)   Volatility T+n",
-         title = paste0(input$variable_1))+
-    theme_classic()
-  
-  )
-  
-  
-})
+    garchforecast <- ugarchforecast(fitORspec = garchfit, 
+                                    n.ahead = 66)
+    
+    garch_forecast <- sigma(garchforecast) %>% as.data.frame() %>% 
+      rownames_to_column()
+    
+    colnames(garch_forecast) <- c("Periodo", "volatility")
+    
+    
+    # ggplot garchvol forecated volatility
+    ggplotly( 
+      
+      garch_forecast %>% as_tibble() %>% 
+        separate(col = Periodo, into = c("T", "moment"), sep = "\\+") %>% select(-T) %>% 
+        mutate(moment = as.numeric(moment)) %>% 
+        ggplot(aes(x=moment, y = volatility)) +
+        geom_point(size = 1, color = "orange")+
+        geom_line(size = .5, color = "gray")+
+        labs(x = "Date", y = "GARCH(1,1)   Volatility T+n",
+             title = paste0(input$variable_1))+
+        theme_classic()
+      
+    )
+    
+    
+  })
   
   
   #forecast
-   output$fcast <- renderPlotly({
-
+  output$fcast <- renderPlotly({
+    
     b_data <- tq_get(input$variable_1, get = "economic.data",
                      from = input$daterange_1[1],
                      to = input$daterange_1[2]
@@ -2064,252 +2064,255 @@ shinyServer(function(input, output) {
       dplyr::rename(ds=date, y=price) %>%
       na.locf()
     #
-     m <- prophet(b_data)
-
-     
-     ggplotly(
-     plot(m,time_series())+
-       xlab("Date") +
-       ylab("Asset") +
-       theme_get () + 
-       ggtitle(paste0(input$variable_1))+
-       add_changepoints_to_plot(m),dynamicTicks = TRUE,
-     layerData = 1, originalData = F) %>%
-       rangeslider() %>%
-       layout(hovermode = "x")
-
-  #   
-   })
-   
+    m <- prophet(b_data)
+    
+    
+    ggplotly(
+      plot(m,time_series())+
+        xlab("Date") +
+        ylab("Asset") +
+        theme_get () + 
+        ggtitle(paste0(input$variable_1))+
+        add_changepoints_to_plot(m),dynamicTicks = TRUE,
+      layerData = 1, originalData = F) %>%
+      rangeslider() %>%
+      layout(hovermode = "x")
+    
+    #   
+  })
+  
   #tsr forecast 
-   output$tsr <- renderPlotly({
-
-   b_data_rt <-  tq_get(input$variable_1, get  = "economic.data",
-                        from = input$daterange_1[1],
-                        to   = input$daterange_2[2] )%>%
-                          tq_transmute(select     = price,
-                                       mutate_fun = periodReturn,
-                                       period     = "daily") %>%
-                          dplyr::rename(ds = date, y = daily.returns) %>%
-                          na.locf()
+  output$tsr <- renderPlotly({
     
-
-   m_rt <- prophet(b_data_rt)
+    b_data_rt <-  tq_get(input$variable_1, get  = "economic.data",
+                         from = input$daterange_1[1],
+                         to   = input$daterange_2[2] )%>%
+      tq_transmute(select     = price,
+                   mutate_fun = periodReturn,
+                   period     = "daily") %>%
+      dplyr::rename(ds = date, y = daily.returns) %>%
+      na.locf()
     
-   # ggplotly( 
-   # plot(m_rt, time_series_rt())
-   # )
-   ggplotly(
-     plot(m_rt,time_series_rt()
-     ),dynamicTicks = TRUE,
-     layerData = 2, originalData = FALSE) %>%
-     rangeslider() %>%
-     layout(hovermode = "x")
-
-
-   })
-   
+    
+    m_rt <- prophet(b_data_rt)
+    
+    # ggplotly( 
+    # plot(m_rt, time_series_rt())
+    # )
+    ggplotly(
+      plot(m_rt,time_series_rt()
+      ),dynamicTicks = TRUE,
+      layerData = 2, originalData = FALSE) %>%
+      rangeslider() %>%
+      layout(hovermode = "x")
+    
+    
+  })
+  
   #tsr decom 
-   output$trend <- renderPlot({
-     
-     b_data_decom <- tq_get(input$variable_1, get = "economic.data",
-                            from = input$daterange_1[1],
-                            to = input$daterange_1[2]) %>%
-       select(date, price) %>%
-       dplyr::rename(ds=date, y=price) %>%
-       na.locf()
-     
-     
-     
-     m_decom <- prophet(b_data_decom)
-     
-     prophet_plot_components(m_decom,time_series_decom())
-       
-    })
+  output$trend <- renderPlot({
+    
+    b_data_decom <- tq_get(input$variable_1, get = "economic.data",
+                           from = input$daterange_1[1],
+                           to = input$daterange_1[2]) %>%
+      select(date, price) %>%
+      dplyr::rename(ds=date, y=price) %>%
+      na.locf()
+    
+    
+    
+    m_decom <- prophet(b_data_decom)
+    
+    prophet_plot_components(m_decom,time_series_decom())
+    
+  })
   
   #ts_changepoint
-   output$changep <- renderDataTable({
-     
-     b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
-                      from = input$daterange_1[1],
-                      to = input$daterange_1[2]
-     ) %>%
-       select(date, price) %>%
-       dplyr::rename(ds=date, y=price) %>%
-       na.locf()
-
-
-
-     m_tbl <- prophet(b_data_tbl)
-     future_tbl   <- make_future_dataframe(m_tbl,periods = 95) 
-       # mutate(weekdays = weekdays(ds)) %>% 
-       # filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
-       # select(-weekdays)
-     
-     forecast_tbl <-  predict(m_tbl, future_tbl)
-
-     options(DT.options = list(dom = 'bfrtip',
-                               ordering = F,
-                               initComplete = JS("function(settings, json) {",
-                                                 "$(this.api().table().header()).css({
+  output$changep <- renderDataTable({
+    
+    b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
+                         from = input$daterange_1[1],
+                         to = input$daterange_1[2]
+    ) %>%
+      select(date, price) %>%
+      dplyr::rename(ds=date, y=price) %>%
+      na.locf()
+    
+    
+    
+    m_tbl <- prophet(b_data_tbl)
+    future_tbl   <- make_future_dataframe(m_tbl,periods = 95) 
+    # mutate(weekdays = weekdays(ds)) %>% 
+    # filter(!weekdays %in% c("Saturday", "Sunday")) %>% 
+    # select(-weekdays)
+    
+    forecast_tbl <-  predict(m_tbl, future_tbl)
+    
+    options(DT.options = list(dom = 'bfrtip',
+                              ordering = F,
+                              initComplete = JS("function(settings, json) {",
+                                                "$(this.api().table().header()).css({
                                               'font-size': '15px',
                                               'color': '#3b444b',
                                               'text-align':'center',
                                               'padding-left': '20px',
                                               'padding-right': '20px',
                                               'width': '100%'});",
-                                                 "}")))
-
-     
-     changep <- 
-       time_series_changep() %>% 
-       select(ds, yhat, yhat_lower, yhat_upper) %>%
-       mutate(yhat = round(yhat,2)) %>% 
-       mutate(yhat_lower = round(yhat_lower,2)) %>% 
-       mutate(yhat_upper = round(yhat_upper,2)) %>% 
-       as_tibble() %>% 
-       mutate(ds = as.Date(substr(ds,0,10))) %>% 
-       left_join(b_data_tbl, by="ds") %>%
-       filter(ds >= ymd(today()-7)) %>% 
-       mutate(y=ifelse(is.na(y),"Uncertain",y)) %>% 
-       dplyr::rename(Date = ds, Price = y) %>%
-       select(Date, Price, everything()) %>% 
-     
+                                                "}")))
+    
+    
+    changep <- 
+      time_series_changep() %>% 
+      select(ds, yhat, yhat_lower, yhat_upper) %>%
+      mutate(yhat = round(yhat,2)) %>% 
+      mutate(yhat_lower = round(yhat_lower,2)) %>% 
+      mutate(yhat_upper = round(yhat_upper,2)) %>% 
+      as_tibble() %>% 
+      mutate(ds = as.Date(substr(ds,0,10))) %>% 
+      left_join(b_data_tbl, by="ds") %>%
+      filter(ds >= ymd(today()-7)) %>% 
+      mutate(y=ifelse(is.na(y),"Uncertain",y)) %>% 
+      dplyr::rename(Date = ds, Price = y) %>%
+      select(Date, Price, everything()) %>% 
+      
+      
+      
+      
+      
+      datatable(rownames = F,style ='bootstrap4',
+                extensions = c('Buttons','Scroller'),
+                options = list(
+                  dom = 'tip',
+                  pageLength = 8,
+                  info = FALSE,
+                  scrollY = 350,
+                  autoWidth = TRUE,
+                  position = 'bottom'
+                  # columnDefs = list(list(width = '200px', targets = c(2, 3)))
+                )
+      )
+    
+    
+  })
   
-       datatable(rownames = F,style ='bootstrap4',
-                 extensions = c('Buttons','Scroller'),
-                 options = list(
-                   dom = 'tip',
-                   pageLength = 8,
-                   info = FALSE,
-                   scrollY = 350,
-                   autoWidth = TRUE,
-                   position = 'bottom'
-                   # columnDefs = list(list(width = '200px', targets = c(2, 3)))
-                   )
-       )
-
-     
-   })
-
   #downloable ::  
-   changep <- reactive({
-     
-     b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
-                          from = input$daterange_1[1],
-                          to = input$daterange_1[2]
-     ) %>%
-       select(date, price) %>%
-       dplyr::rename(ds=date, y=price) %>%
-       na.locf()
-     
-     changep <- 
-       time_series_changep() %>% 
-       select(ds, yhat, yhat_lower, yhat_upper) %>%
-       as_tibble() %>% 
-       mutate(ds = as.Date(substr(ds,0,10))) %>% 
-       left_join(b_data_tbl, by="ds") %>%
-       filter(ds >= ymd(today()-7)) %>% 
-       mutate(y=ifelse(is.na(y),"Uncertain",y)) %>% 
-       dplyr::rename(Date = ds, Price = y ) %>% 
-       select(Date, Price, everything())
-
-     
-   })
-   
-   output$down <- downloadHandler(
-     filename = paste0(input$variable_1,"_forecast.xlsx"),
-     content = function(file){ 
-       openxlsx::write.xlsx(changep(), file)
-       
-     }
-   )
-   
-   
-   
-
-   output$performance <- render_gt({ 
-     
-     
-     performance() %>% head(8) %>%  gt()
-     
-     })
+  changep <- reactive({
+    
+    b_data_tbl <- tq_get(input$variable_1, get = "economic.data",
+                         from = input$daterange_1[1],
+                         to = input$daterange_1[2]
+    ) %>%
+      select(date, price) %>%
+      dplyr::rename(ds=date, y=price) %>%
+      na.locf()
+    
+    changep <- 
+      time_series_changep() %>% 
+      select(ds, yhat, yhat_lower, yhat_upper) %>%
+      as_tibble() %>% 
+      mutate(ds = as.Date(substr(ds,0,10))) %>% 
+      left_join(b_data_tbl, by="ds") %>%
+      filter(ds >= ymd(today()-7)) %>% 
+      mutate(y=ifelse(is.na(y),"Uncertain",y)) %>% 
+      dplyr::rename(Date = ds, Price = y ) %>% 
+      select(Date, Price, everything())
+    
+    
+  })
+  
+  output$down <- downloadHandler(
+    filename = paste0(input$variable_1,"_forecast.xlsx"),
+    content = function(file){ 
+      openxlsx::write.xlsx(changep(), file)
+      
+    }
+  )
   
   
-   output$crossv <- renderPlotly({ 
-     
-     performance <- crossval()
-     
-     ggplotly( plot_cross_validation_metric(performance, metric = 'mape') )    
-     
-     })
-   
+  
+  
+  output$performance <- render_gt({ 
+    
+    
+    performance() %>% head(8) %>%  gt()
+    
+  })
+  
+  
+  output$crossv <- renderPlotly({ 
+    
+    performance <- crossval()
+    
+    ggplotly( plot_cross_validation_metric(performance, metric = 'mape') )    
+    
+  })
+  
   # prescription ----
   
   # EPU Tables
-   
+  
   # Detailed
-   output$epu_data <- renderReactable ({
-
-
-     EPU_alt() %>% head(8) %>% 
-       dplyr::rename(Delta = delta, "EPU Index" = index, 
-              Date = date, "Risk Appetite" = Risk) %>%  reactable(compact = T,
-                                                                  resizable = T)
-
-   })
-
-  # Grouped
-   output$epu_abst <- renderPlotly ({
-
-
-     ggplotly(EPU_abst() %>% ggplot(aes(x = Risk, y = Days, fill = Risk))+
-                geom_col()+
-                theme_classic()+
-                labs(title = "Day count of Risk OFF/ON for the current year" )
-     )
-     
-
-   })
-
-  # Interest Rates graph
-   output$rates_risk <- renderPlotly ({
-
-  #EPU_alt <- EPU_alt()
-
-   ggplotly (interest_rate_all() %>% ggplot(aes(date, EFFR))+
-       geom_col(color = "#b1d6f0", fill = "blue")+
-       geom_smooth(data = interest_rate_all(),
-                   aes(x = date, y = market_expectation),
-                   color = "#e03db7",
-                   size = 1)+
-       geom_smooth(data = EPU_alt(),
-                   aes(x=date, index/250),
-                   color = "#d60000")+
-       theme_classic()+
-       labs(title = "Effective Fed Funds Rate vs EPU",
-            x_axis = "Date")
-   )
-
+  output$epu_data <- renderReactable ({
+    
+    
+    EPU_alt() %>% head(8) %>% 
+      dplyr::rename(Delta = delta, "EPU Index" = index, 
+                    Date = date, "Risk Appetite" = Risk) %>%  reactable(compact = T,
+                                                                        resizable = T)
+    
   })
-
+  
+  # Grouped
+  output$epu_abst <- renderPlotly ({
+    
+    
+    ggplotly(EPU_abst() %>% ggplot(aes(x = Risk, y = Days, fill = Risk))+
+               geom_col()+
+               theme_classic()+
+               labs(title = "Day count of Risk OFF/ON for the current year" )
+    )
+    
+    
+  })
+  
+  # Interest Rates graph
+  output$rates_risk <- renderPlotly ({
+    
+    #EPU_alt <- EPU_alt()
+    
+    ggplotly (interest_rate_all() %>% ggplot(aes(date, EFFR))+
+                geom_col(color = "#b1d6f0", fill = "blue")+
+                geom_smooth(data = interest_rate_all(),
+                            aes(x = date, y = market_expectation),
+                            color = "#e03db7",
+                            size = 1)+
+                geom_smooth(data = EPU_alt(),
+                            aes(x=date, index/250),
+                            color = "#d60000")+
+                theme_classic()+
+                labs(title = "Effective Fed Funds Rate vs EPU",
+                     x_axis = "Date")
+    )
+    
+  })
+  
   # Fed Interest Rates Analisys
-   output$fed_data <- renderReactable ({
-     
-      interest_rate_all_tbl() %>%
-       dplyr::rename(Expectation = "Market Expectations",
-                     "R-Range"= "Target Range") %>% 
-       head(8) %>%
-       reactable(compact = T,
-                 resizable = T,
-       )
-     
-   })
-   
+  output$fed_data <- renderReactable ({
+    
+    interest_rate_all_tbl() %>%
+      dplyr::rename(Expectation = "Market Expectations",
+                    "R-Range"= "Target Range") %>% 
+      head(8) %>%
+      reactable(compact = T,
+                resizable = T,
+      )
+    
+  })
+  
   
   # Neural Network visualizacion 
-   output$ts_nnet_pred <- renderPlot({
-     
+  output$ts_nnet_pred <- renderPlot({
+    
     # fit <- readRDS("nnet_fit_sp500.rds") # trained
     
     fit <- readRDS("neural_networks/fit.rds") 
@@ -2318,25 +2321,58 @@ shinyServer(function(input, output) {
     
     plot(fit, max.sp = T)
     
-
-   }) # checked
-  
-
-  # NNET posible futures 
-   output$ts_nnet_pred_tbl <- renderReactable({
-     
-     pred_show() %>% reactable(compact = T, 
-                               resizable = T)
-
-     
-   })
-   
-   
-   
-  # -------
-   
     
-  # Close of Main function  
+  }) # checked
+  
+  
+  # NNET posible futures 
+  # output$ts_nnet_pred_tbl <- renderReactable({
+  #   
+  #   pred_show() %>% select(-MOMENTUM, -INDEX) %>%  reactable(compact = T, 
+  #                             resizable = T)
+  #   
+  #   
+  # })
+  
+  output$ts_nnet_pred_tbl <- renderDataTable({ 
+    
+    
+    options(DT.options = list(dom = 'bfrtip',
+                              ordering = F,
+                              initComplete = JS("function(settings, json) {",
+                                                "$(this.api().table().header()).css({
+                                              'font-size': '15px',
+                                              'color': '#3b444b',
+                                              'text-align':'center',
+                                              'padding-left': '20px',
+                                              'padding-right': '20px',
+                                              'width': '100%'});",
+                                                "}")))
+    
+    pred_show() %>% select(-MOMENTUM, -INDEX) %>%
+      datatable(rownames = F,style ='bootstrap4',
+                extensions = c('Buttons','Scroller'),
+                options = list(
+                  dom = 'tip',
+                  pageLength = 8,
+                  info = FALSE,
+                  scrollY = 350,
+                  autoWidth = TRUE,
+                  position = 'bottom'
+                  # columnDefs = list(list(width = '200px', targets = c(2, 3)))
+                )
+      )
+    
+    
+    
+    
   })
+  
+  
+  # -------
+  
+  
+  # Close of Main function  
+})
 
 

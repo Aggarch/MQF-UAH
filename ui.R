@@ -101,28 +101,28 @@ ui <- dashboardPage(
                          h5(
                            helpText(
                              # div(style="text-align:center",
-                            div( div(style="text-align:center",
-                           
-                           "Uncertainty is a constant, Data-driven decision making, inspired in business knowledge and behaviour, contribute to performance",br(),
-                           "The challenge is to close the gap between the quantitative and the qualitative and reduce markets complexity using Data Science, ",br(),
-                           
-
-                           "Variables you can interact with in this tool belongs to four cathegories:  Macroeconomics, Commodities, Equity-Indices & Currencies.", br(),
-                
-                          "NOTE: This R web-app is the result of an academic research, more variables can be included as well to respond more specific needs.", br(),
-                          br(),br(),br(),br(),
-                          
-                          tags$img(src   = "https://wwwen.uni.lu/var/storage/images/media/images/data_science_explore/1136248-1-fre-FR/data_science_explore.png", 
-                                   width = "500px", height = "200px", 
-                                   style = "width:390px;height:150px;display:block;margin:auto"),br(),
-                          tags$a(href="https://r4ds.had.co.nz/explore-intro.html","R for Data Science"))
-                 
-                         )
+                             div( div(style="text-align:center",
+                                      
+                                      "Uncertainty is a constant, Data-driven decision making, inspired in business knowledge and behaviour, contribute to performance",br(),
+                                      "The challenge is to close the gap between the quantitative and the qualitative and reduce markets complexity using Data Science, ",br(),
+                                      
+                                      
+                                      "Variables you can interact with in this tool belongs to four cathegories:  Macroeconomics, Commodities, Equity-Indices & Currencies.", br(),
+                                      
+                                      "NOTE: This R web-app is the result of an academic research, more variables can be included as well to respond more specific needs.", br(),
+                                      br(),br(),br(),br(),
+                                      
+                                      tags$img(src   = "https://wwwen.uni.lu/var/storage/images/media/images/data_science_explore/1136248-1-fre-FR/data_science_explore.png", 
+                                               width = "500px", height = "200px", 
+                                               style = "width:390px;height:150px;display:block;margin:auto"),br(),
+                                      tags$a(href="https://r4ds.had.co.nz/explore-intro.html","R for Data Science"))
+                                  
+                             )
                            )
-                         
-                       )
-                    ) 
-                 )
+                           
+                         )
+                       ) 
+                )
               )
       ),
       tabItem("paradigm",
@@ -199,11 +199,11 @@ ui <- dashboardPage(
                          
                          h5( 
                            helpText( "¿What Happened and Why?" , br(),br(),
-                                    "Central and deviation measures, distributions of frequency and others descriptions, tells the what,
+                                     "Central and deviation measures, distributions of frequency and others descriptions, tells the what,
                                     The why it's a Story-Telling, interpretation based.
                                     Coronavirus data on www.who.int."
-                                    )
-                                ),
+                           )
+                         ),
                          
                          pickerInput(
                            inputId = "variable",
@@ -243,10 +243,10 @@ ui <- dashboardPage(
                                       tabBox( side = "left", width = 13,
                                               tabPanel("Behaviour", withSpinner( plotlyOutput("evolution",height = "380px"), color = "#1da1f2" )),         
                                               tabPanel("Summary of Monthly Log-Returns", withSpinner( reactableOutput("summary"), color="#1da1f2"))
-
+                                              
                                       )),
                              
-                              
+                             
                              tabPanel("Returns", 
                                       
                                       tabBox( side = "left", width = 13,
@@ -285,13 +285,13 @@ ui <- dashboardPage(
                                               
                                               
                                       )),
-                          
+                             
                              
                              tabPanel("Corr Matrix", 
                                       
                                       tabBox( side = "left", width = 13,
                                               tabPanel("Daily", withSpinner(plotOutput("index_cor_d",height = "400px"),color="#1da1f2")),
-                                           #  tabPanel("Weekly", withSpinner(plotOutput("index_cor_w",height = "400px"),color="#1da1f2")),
+                                              #  tabPanel("Weekly", withSpinner(plotOutput("index_cor_w",height = "400px"),color="#1da1f2")),
                                               tabPanel("Monthly", withSpinner(plotOutput("index_cor_m",height = "400px"),color="#1da1f2"))
                                               
                                       )),
@@ -301,7 +301,7 @@ ui <- dashboardPage(
                                       tabBox( side = "left", width = 13,
                                               tabPanel("Weekly", withSpinner(plotlyOutput("rolling_cor_w",height = "450px"),color="#1da1f2")),
                                               tabPanel("Monthly", withSpinner(plotlyOutput("rolling_cor_m",height = "450px"),color="#1da1f2"))
-
+                                              
                                               
                                       ))
                              
@@ -332,7 +332,7 @@ ui <- dashboardPage(
                                   
                                   "The time series isolate the components, combines them efficiently to 
                                   predict a range of values with the main aspects of the price.", 
-                               
+                                  
                                   
                          ),
                          pickerInput(
@@ -382,15 +382,15 @@ ui <- dashboardPage(
                                       )),
                              
                              
-                           # tabPanel("TS Returns", withSpinner(plotlyOutput("tsr",height = "380px"), color="#1da1f2")),
+                             # tabPanel("TS Returns", withSpinner(plotlyOutput("tsr",height = "380px"), color="#1da1f2")),
                              tabPanel("Trend Decomp", withSpinner(plotOutput("trend",height = "380px"), color="#1da1f2")),
                              tabPanel("Daypoints", withSpinner(dataTableOutput("changep",height = "380px"),color="#1da1f2"),
                                       boton_descarga("down", "Forecast")),
                              tabPanel("GARCH Vol", withSpinner(plotlyOutput("garch_mod",height = "380px"), color="#1da1f2")),
                              tabPanel("GARCH Forecast", withSpinner(plotlyOutput("vol_forecast",height = "380px"), color="#1da1f2"))
-                           
-                           
-                            
+                             
+                             
+                             
                              
                              
                              
@@ -420,7 +420,7 @@ ui <- dashboardPage(
                                   "Uncertainty Measurement & Monetary Policy are key examples of valuable 
                                   information that might be consider as exogenous and impact forecast."
                                   
-
+                                  
                          ),
                          pickerInput(
                            inputId = "variable_2",
@@ -466,7 +466,9 @@ ui <- dashboardPage(
                                       
                                       tabBox( side = "left", width = 13,
                                               tabPanel("Neural Network", withSpinner( plotOutput("ts_nnet_pred", height = "380px"),color="#1da1f2")),
-                                              tabPanel("Network Posible Future", withSpinner( reactableOutput("ts_nnet_pred_tbl"),color="#1da1f2"))
+                                              tabPanel("Network Posible Future", withSpinner( dataTableOutput ("ts_nnet_pred_tbl"),color="#1da1f2"))
+                                              
+                                              #   tabPanel("Network Posible Future", withSpinner( reactableOutput("ts_nnet_pred_tbl"),color="#1da1f2"))
                                               
                                               
                                               
@@ -482,7 +484,7 @@ ui <- dashboardPage(
                                       #          style = "padding-left:7px;width:570px;height:400px;display:block;margin:auto"), br(),
                                       tags$a(href="https://www.myfxbook.com/members/andresga/andresgarciadcgmailcom/6639617/Rnw5ctS8zsiRhllVSaLK",
                                              "Explore more about a M2Market Management Strategy",
-                                              style = "padding-left:11px"))
+                                             style = "padding-left:11px"))
                              
                              
                            )
@@ -505,7 +507,7 @@ ui <- dashboardPage(
                          
                          h5( 
                            helpText("¿How does people feel about risk?" , br(),br(),
-                                
+                                    
                                     "Minimalistic example of market sentiment analysis."),
                          ),
                          
