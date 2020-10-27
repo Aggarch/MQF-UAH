@@ -1,5 +1,107 @@
 
 
+customTheme <- shinyDashboardThemeDIY(
+  ### general
+  appFontFamily = "Arial"
+  ,appFontColor = "#2D2D2D"
+  ,primaryFontColor = "#0F0F0F"
+  ,infoFontColor = "#0F0F0F"
+  ,successFontColor = "#0F0F0F"
+  ,warningFontColor = "#0F0F0F"
+  ,dangerFontColor = "#0F0F0F"
+  ,bodyBackColor = "#F0F0F0"
+  
+  ### header
+  ,logoBackColor = "#787878"
+  
+  ,headerButtonBackColor = "#787878"
+  ,headerButtonIconColor = "#DCDCDC"
+  ,headerButtonBackColorHover = "#646464"
+  ,headerButtonIconColorHover = "#3C3C3C"
+  
+  ,headerBackColor = "#787878"
+  ,headerBoxShadowColor = ""
+  ,headerBoxShadowSize = "0px 0px 0px"
+  
+  ### sidebar
+  ,sidebarBackColor = "#FFFFFF"
+  ,sidebarPadding = "0"
+  
+  ,sidebarMenuBackColor = "transparent"
+  ,sidebarMenuPadding = "0"
+  ,sidebarMenuBorderRadius = 0
+  
+  ,sidebarShadowRadius = ""
+  ,sidebarShadowColor = "0px 0px 0px"
+  
+  ,sidebarUserTextColor = "#737373"
+  
+  ,sidebarSearchBackColor = "#F0F0F0"
+  ,sidebarSearchIconColor = "#646464"
+  ,sidebarSearchBorderColor = "#DCDCDC"
+  
+  ,sidebarTabTextColor = "#646464"
+  ,sidebarTabTextSize = "14"
+  ,sidebarTabBorderStyle = "none"
+  ,sidebarTabBorderColor = "none"
+  ,sidebarTabBorderWidth = "0"
+  
+  ,sidebarTabBackColorSelected = "#E6E6E6"
+  ,sidebarTabTextColorSelected = "#000000"
+  ,sidebarTabRadiusSelected = "0px"
+  
+  ,sidebarTabBackColorHover = "#F5F5F5"
+  ,sidebarTabTextColorHover = "#000000"
+  ,sidebarTabBorderStyleHover = "none solid none none"
+  ,sidebarTabBorderColorHover = "#C8C8C8"
+  ,sidebarTabBorderWidthHover = "4"
+  ,sidebarTabRadiusHover = "0px"
+  
+  ### boxes
+  ,boxBackColor = "#FFFFFF"
+  ,boxBorderRadius = "5"
+  ,boxShadowSize = "none"
+  ,boxShadowColor = ""
+  ,boxTitleSize = "18"
+  ,boxDefaultColor = "#E1E1E1"
+  ,boxPrimaryColor = "#5F9BD5"
+  ,boxInfoColor = "#B4B4B4"
+  ,boxSuccessColor = "#70AD47"
+  ,boxWarningColor = "#ED7D31"
+  ,boxDangerColor = "#E84C22"
+  
+  ,tabBoxTabColor = "#F8F8F8"
+  ,tabBoxTabTextSize = "14"
+  ,tabBoxTabTextColor = "#646464"
+  ,tabBoxTabTextColorSelected = "#2D2D2D"
+  ,tabBoxBackColor = "#F8F8F8"
+  ,tabBoxHighlightColor = "#C8C8C8"
+  ,tabBoxBorderRadius = "5"
+  
+  ### inputs
+  ,buttonBackColor = "#D7D7D7"
+  ,buttonTextColor = "#2D2D2D"
+  ,buttonBorderColor = "#969696"
+  ,buttonBorderRadius = "5"
+  
+  ,buttonBackColorHover = "#BEBEBE"
+  ,buttonTextColorHover = "#000000"
+  ,buttonBorderColorHover = "#969696"
+  
+  ,textboxBackColor = "#FFFFFF"
+  ,textboxBorderColor = "#767676"
+  ,textboxBorderRadius = "5"
+  ,textboxBackColorSelect = "#F5F5F5"
+  ,textboxBorderColorSelect = "#6C6C6C"
+  
+  ### tables
+  ,tableBackColor = "#F8F8F8"
+  ,tableBorderColor = "#EEEEEE"
+  ,tableBorderTopSize = "1"
+  ,tableBorderRowSize = "1"
+)
+
+
 # 0.) ui ####
 skin <- Sys.getenv("DASHBOARD_SKIN")
 skin <- tolower(skin)
@@ -13,28 +115,45 @@ t <- "QuanTradeR"
 #               icon("fort-awesome"))
 # )
 
+customLogo <- shinyDashboardLogoDIY(
+  
+  boldText = ""
+  ,mainText = "QuanTradeR"
+  ,textSize = 18
+  ,badgeText = "v1.0"
+  ,badgeTextColor = "white"
+  ,badgeTextSize = 3
+  ,badgeBackColor = "green"
+  ,badgeBorderRadius = 3
+  
+)
+
+# blue_gradient, flat_red,grey_light,grey_dark,
+# onenote,poor_mans_flatly,purple_gradient
 
 # 1.) dashboardPage ####
 ui <- dashboardPage(
-  dashboardHeader(title = t, titleWidth = 200, 
-                  # dashboardHeader(title = span(tagList(icon("calendar"), "Example"))),
-                  
-                  tags$li(class="dropdown",tags$a(href="https://github.com/Aggarch/", 
-                                                  icon("github","fa-2x"), "",
-                                                  style= "padding-left:27px,width:550px;height:40px",
-                                                  target="_blank")),
-                  tags$li(class="dropdown",tags$a(href="https://www.teletrader.com/markets/world", 
-                                                  icon("accusoft","fa-2x"), "",
-                                                  style= "padding-left:27px,width:550px;height:40px",
-                                                  target="_blank")),
-                  tags$li(class="dropdown",tags$a(href="https://twitter.com/AndgTrader", 
-                                                  icon("twitter","fa-2x"), "",
-                                                  style= "padding-left:27px,width:550px;height:40px",
-                                                  target="_blank")),
-                  tags$li(class="dropdown",tags$a(href="https://www.bloomberg.com/live", 
-                                                  icon("newspaper","fa-2x"), "",
-                                                  style= "padding-left:27px,width:550px;height:40px",
-                                                  target="_blank"))),
+  dashboardHeader(
+    
+    title = customLogo, titleWidth = 200, 
+    # dashboardHeader(title = span(tagList(icon("calendar"), "Example"))),
+    
+    tags$li(class="dropdown",tags$a(href="https://github.com/Aggarch/", 
+                                    icon("github","fa-2x"), "",
+                                    style= "padding-left:27px,width:550px;height:20px",
+                                    target="_blank")),
+    tags$li(class="dropdown",tags$a(href="https://www.teletrader.com/markets/world", 
+                                    icon("accusoft","fa-2x"), "",
+                                    style= "padding-left:27px,width:550px;height:20px",
+                                    target="_blank")),
+    tags$li(class="dropdown",tags$a(href="https://twitter.com/AndgTrader", 
+                                    icon("twitter","fa-2x"), "",
+                                    style= "padding-left:27px,width:550px;height:20px",
+                                    target="_blank")),
+    tags$li(class="dropdown",tags$a(href="https://www.bloomberg.com/live", 
+                                    icon("newspaper","fa-2x"), "",
+                                    style= "padding-left:27px,width:550px;height:20px",
+                                    target="_blank"))),
   dashboardSidebar(width = 200,
                    sidebarMenu(
                      menuItem("Presentation", tabName = "home", icon = icon("file-code   ")),
@@ -88,6 +207,12 @@ ui <- dashboardPage(
                    
   ),
   dashboardBody(
+    
+    shinyDashboardThemes(
+      theme = "blue_gradient"
+      
+    ),
+    
     tabItems(
       tabItem("home",
               fluidPage(
