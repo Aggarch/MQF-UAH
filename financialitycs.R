@@ -161,59 +161,6 @@ income_03-clean_outcome_03
 
 
 
-# Cash Position on April 2nd ::: 
-
-# Income Sources ::: 
-
-rohos   <- 2000000
-saved   <- 520000
-ctrader <- 730
-trm     <- 3550
-extra   <- 24000
-
-# Total IN
-income = rohos + saved + (ctrader * trm) + (extra * 8)
-
-
-# Fix Expenses :::
-
-rina  <- 300000
-water <- 150000
-light <- 450000
-movistar <- 90000
-
-# FIXEX
-fix_expense= rina+water+light+movistar
-   
-# Variable Expenses :::
-
-ctrader_depo <- 1830000
-total_expense= fix_expense + ctrader_depo
-
-# Cash 
-
-cash <- income - total_expense
-
-
-
-exe <- function(pl){ 
-v <- 1889000
-a <- 5878000
-trm <- 3800
-
-
-D <- v+a
-I <- trm*pl
-
-R <- D-I
-
-RRP <- R/1500000
-RRM <- R/3500000
-
-return(list(D,I,R, RRP,RRM))
-
-}
-
 library(tidyverse)
 setwd("C:/Users/andre/Downloads")
 
@@ -237,4 +184,5 @@ mb <- pb %>%
 
 mb %>% select(ym,income,fixE,fixF,varF) %>% 
    rowwise() %>% mutate(all_out = sum(fixE,fixF,varF)) %>% 
-   mutate(result = income-all_out)
+   mutate(result = income-all_out) %>% 
+   mutate(validation = income>all_out)
